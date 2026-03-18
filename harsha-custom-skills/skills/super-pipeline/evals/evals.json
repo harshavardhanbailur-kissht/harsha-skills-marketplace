@@ -1,0 +1,92 @@
+{
+  "skill_name": "super-skill-pipeline",
+  "evals": [
+    {
+      "id": 1,
+      "name": "trivial-route-bypass",
+      "prompt": "Add a console.log('hello') to the index.js file in this project",
+      "expected_output": "Should recognize this as TRIVIAL complexity, skip the entire pipeline, and just do the task directly. No .deep-think/, .orchestrator/, or .parallel/ directories should be created.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "no-pipeline-directories-created",
+          "type": "file_absent",
+          "description": "No .deep-think, .orchestrator, or .parallel directories should exist"
+        },
+        {
+          "name": "task-completed-directly",
+          "type": "output_check",
+          "description": "The actual edit should be made without pipeline overhead"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "medium-route-think-then-parallel",
+      "prompt": "I need to add a complete authentication system to my React app — login, registration, password reset, and protected routes. The app uses React Router v6, Tailwind CSS, and has an existing Express backend with a /api/users endpoint. Think deeply about this then build it in parallel.",
+      "expected_output": "Should assess as MEDIUM complexity. Should create .deep-think/ with 6+ analysis files, then run the ThinkingCompiler adapter to produce .parallel/PLAN.md with execution layers, then launch sub-agents to build components in parallel. The .pipeline/status.md should track the full journey.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "complexity-assessed-as-medium",
+          "type": "content_check",
+          "description": ".pipeline/status.md should contain 'MEDIUM' complexity"
+        },
+        {
+          "name": "deep-think-files-created",
+          "type": "file_exists",
+          "description": ".deep-think/ directory should have OVERVIEW.md, EXECUTION_CHECKLIST.md, ARCHITECTURE.md, IMPLEMENTATION.md at minimum"
+        },
+        {
+          "name": "adapter-produced-plan",
+          "type": "file_exists",
+          "description": ".parallel/PLAN.md should exist with execution layers"
+        },
+        {
+          "name": "plan-has-multiple-layers",
+          "type": "content_check",
+          "description": "PLAN.md should contain 'Layer 0' and 'Layer 1' at minimum"
+        },
+        {
+          "name": "sub-agent-prompts-generated",
+          "type": "file_exists",
+          "description": ".parallel/prompts/ should contain TASK-XXX-prompt.md files"
+        },
+        {
+          "name": "pipeline-status-tracks-stages",
+          "type": "content_check",
+          "description": ".pipeline/status.md should log deep-thinker, adapter, and parallel stages"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "small-route-think-only",
+      "prompt": "Think deeply about how I should refactor my UserProfile component — it's currently 400 lines and handles both display and editing in one file. I don't need you to build anything yet, just plan it out.",
+      "expected_output": "Should assess as SMALL complexity (user explicitly said 'don't build'). Should create .deep-think/ with 3 files (OVERVIEW, IMPLEMENTATION, EDGE_CASES). Should NOT create .parallel/ or .orchestrator/. Pipeline terminates after thinking.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "complexity-assessed-as-small",
+          "type": "content_check",
+          "description": ".pipeline/status.md should contain 'SMALL' complexity"
+        },
+        {
+          "name": "deep-think-created-3-files",
+          "type": "file_exists",
+          "description": ".deep-think/ should have OVERVIEW.md, IMPLEMENTATION.md, EDGE_CASES.md"
+        },
+        {
+          "name": "no-parallel-directory",
+          "type": "file_absent",
+          "description": ".parallel/ should NOT exist — this is think-only"
+        },
+        {
+          "name": "no-orchestrator-directory",
+          "type": "file_absent",
+          "description": ".orchestrator/ should NOT exist"
+        }
+      ]
+    }
+  ]
+}

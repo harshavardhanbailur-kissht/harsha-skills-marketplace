@@ -1,0 +1,14 @@
+{
+  "name": "harsha-custom-skills",
+  "version": "1.0.0",
+  "description": "Harsha's custom skill collection: deep research, security auditing, McKinsey-grade analysis, release notes, mobile mastery, codebase documentation, workflow protection, tech stack advisory, parallel building, and web dev brainstorming.",
+  "author": {
+    "name": "Harshavardhan Bailur",
+    "email": "harshavardhan.bailur@kissht.com"
+  },
+  "keywords": [
+    "research", "security-audit", "release-notes", "mobile", "codebase-documentation",
+    "workflow", "tech-stack", "parallel-build", "web-dev", "mckinsey"
+  ],
+  "license": "MIT"
+}

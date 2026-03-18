@@ -1,0 +1,162 @@
+{
+  "feature": "Build a REST API with JWT authentication, user CRUD operations, and comprehensive tests",
+  "total_tasks": 7,
+  "total_layers": 4,
+  "estimated_cost_usd": 0.12,
+  "tasks": [
+    {
+      "task_id": "task_001",
+      "title": "Database Schema & Models",
+      "description": "Define SQLAlchemy models for User, Session, and related tables",
+      "prompt": "Create a Python module with SQLAlchemy models for a user management system.\n\nModels needed:\n- User: id, email, username, hashed_password, created_at, updated_at, is_active\n- Session: id, user_id (FK), token, expires_at, created_at\n\nInclude:\n- Base model class with common fields\n- Proper relationships between models\n- Index definitions for frequently queried fields\n- Pydantic schemas for request/response serialization\n\nOutput a single Python file with all models and schemas.",
+      "system_prompt": "You are a database engineer specializing in SQLAlchemy ORM design. Write production-ready models with proper types, constraints, and relationships.",
+      "dependencies": [],
+      "layer": 0,
+      "model": "claude-sonnet-4-5-20250929",
+      "max_tokens": 4096,
+      "estimated_output_tokens": 2500
+    },
+    {
+      "task_id": "task_002",
+      "title": "JWT Authentication Module",
+      "description": "Implement JWT token creation, validation, and refresh logic",
+      "prompt": "Create a Python module implementing JWT authentication.\n\nFunctions needed:\n- create_access_token(user_id, email) -> str\n- create_refresh_token(user_id) -> str\n- verify_token(token) -> dict (payload)\n- refresh_access_token(refresh_token) -> str\n- hash_password(password) -> str\n- verify_password(password, hashed) -> bool\n\nUse PyJWT for token operations and bcrypt for password hashing.\nInclude proper expiration handling, token type validation, and error classes.\n\nOutput a single Python file.",
+      "system_prompt": "You are a security engineer specializing in authentication systems. Write secure, production-ready authentication code.",
+      "dependencies": [],
+      "layer": 0,
+      "model": "claude-sonnet-4-5-20250929",
+      "max_tokens": 4096,
+      "estimated_output_tokens": 2000
+    },
+    {
+      "task_id": "task_003",
+      "title": "API Configuration & Error Handling",
+      "description": "Set up FastAPI app config, middleware, and standardized error handling",
+      "prompt": "Create a Python module with FastAPI application setup.\n\nInclude:\n- App factory function with CORS, logging, and exception handlers\n- Standardized error response format: {\"error\": {\"code\": str, \"message\": str, \"details\": dict}}\n- Custom exception classes: NotFoundError, ValidationError, AuthenticationError, AuthorizationError\n- Request logging middleware\n- Health check endpoint\n- Configuration class loading from environment variables\n\nOutput a single Python file.",
+      "system_prompt": "You are a backend engineer specializing in FastAPI application architecture. Write clean, well-structured application setup code.",
+      "dependencies": [],
+      "layer": 0,
+      "model": "claude-sonnet-4-5-20250929",
+      "max_tokens": 4096,
+      "estimated_output_tokens": 2000
+    },
+    {
+      "task_id": "task_004",
+      "title": "User CRUD Endpoints",
+      "description": "Implement all user management API endpoints",
+      "prompt": "Create a FastAPI router with user CRUD endpoints.\n\nContext from dependencies:\n[task_001]: {database models with User, Session, and Pydantic schemas}\n[task_002]: {JWT auth functions: create_access_token, verify_token, hash_password, verify_password}\n[task_003]: {Error classes: NotFoundError, ValidationError, AuthenticationError}\n\nEndpoints needed:\n- POST /auth/register - Create new user\n- POST /auth/login - Authenticate and return tokens\n- POST /auth/refresh - Refresh access token\n- GET /users/me - Get current user profile\n- PUT /users/me - Update current user\n- DELETE /users/me - Deactivate current user\n- GET /users/{id} - Get user by ID (admin only)\n- GET /users - List users with pagination (admin only)\n\nInclude proper request validation, authentication dependency, and error handling.\nOutput a single Python file with the router.",
+      "system_prompt": "You are a backend engineer. Use the provided models and auth module. Follow REST conventions strictly.",
+      "dependencies": ["task_001", "task_002", "task_003"],
+      "layer": 1,
+      "model": "claude-sonnet-4-5-20250929",
+      "max_tokens": 8192,
+      "estimated_output_tokens": 4000
+    },
+    {
+      "task_id": "task_005",
+      "title": "Authentication Middleware",
+      "description": "Implement FastAPI dependency for JWT-based route protection",
+      "prompt": "Create a FastAPI dependency module for authentication.\n\nContext from dependencies:\n[task_002]: {JWT functions: verify_token, TokenError}\n[task_001]: {User model and UserSchema}\n\nImplement:\n- get_current_user dependency (extracts and validates JWT from Authorization header)\n- require_admin dependency (checks user role)\n- optional_auth dependency (allows unauthenticated requests)\n\nOutput a single Python file.",
+      "system_prompt": "You are a backend engineer specializing in FastAPI middleware and dependencies.",
+      "dependencies": ["task_001", "task_002"],
+      "layer": 1,
+      "model": "claude-sonnet-4-5-20250929",
+      "max_tokens": 4096,
+      "estimated_output_tokens": 1500
+    },
+    {
+      "task_id": "task_006",
+      "title": "Integration Tests",
+      "description": "Write comprehensive pytest tests for all API endpoints",
+      "prompt": "Create a pytest test module for the REST API.\n\nContext from dependencies:\n[task_004]: {API endpoints: register, login, refresh, CRUD operations}\n[task_005]: {Auth middleware: get_current_user, require_admin}\n\nTest categories:\n1. Auth tests: register, login, invalid credentials, token refresh, expired tokens\n2. CRUD tests: create, read, update, delete user\n3. Authorization tests: admin-only endpoints, unauthorized access\n4. Edge cases: duplicate email, invalid input, pagination\n\nUse pytest fixtures for:\n- Test client (httpx.AsyncClient)\n- Test database (in-memory SQLite)\n- Authenticated user fixture\n- Admin user fixture\n\nOutput a single Python test file with 15-20 test functions.",
+      "system_prompt": "You are a QA engineer specializing in API testing with pytest. Write thorough tests that cover happy paths, error cases, and edge cases.",
+      "dependencies": ["task_004", "task_005"],
+      "layer": 2,
+      "model": "claude-sonnet-4-5-20250929",
+      "max_tokens": 8192,
+      "estimated_output_tokens": 4000
+    },
+    {
+      "task_id": "task_007",
+      "title": "API Documentation",
+      "description": "Generate OpenAPI documentation and README",
+      "prompt": "Create API documentation for the REST API.\n\nContext from dependencies:\n[task_004]: {All API endpoints with request/response formats}\n[task_001]: {Data models and schemas}\n\nProduce:\n1. A README.md with:\n   - Project overview\n   - Setup instructions (pip install, env vars, database setup)\n   - API endpoint reference table\n   - Authentication flow diagram (text-based)\n   - Example curl commands for each endpoint\n\n2. A requirements.txt with all dependencies\n\nOutput both files.",
+      "system_prompt": "You are a technical writer specializing in API documentation. Write clear, developer-friendly documentation.",
+      "dependencies": ["task_004", "task_001"],
+      "layer": 2,
+      "model": "claude-sonnet-4-5-20250929",
+      "max_tokens": 4096,
+      "estimated_output_tokens": 2500
+    }
+  ],
+  "layers": [
+    ["task_001", "task_002", "task_003"],
+    ["task_004", "task_005"],
+    ["task_006", "task_007"]
+  ],
+  "contracts": {
+    "task_001": {
+      "inputs": [],
+      "outputs": {
+        "format": "Python module",
+        "key_exports": ["User", "Session", "UserCreate", "UserResponse", "Base"],
+        "file_type": ".py"
+      },
+      "boundaries": ["Does NOT implement API routes", "Does NOT implement auth logic"]
+    },
+    "task_002": {
+      "inputs": [],
+      "outputs": {
+        "format": "Python module",
+        "key_exports": ["create_access_token", "verify_token", "hash_password", "verify_password", "TokenError"],
+        "file_type": ".py"
+      },
+      "boundaries": ["Does NOT implement database models", "Does NOT implement API routes"]
+    },
+    "task_003": {
+      "inputs": [],
+      "outputs": {
+        "format": "Python module",
+        "key_exports": ["create_app", "NotFoundError", "ValidationError", "AuthenticationError", "Settings"],
+        "file_type": ".py"
+      },
+      "boundaries": ["Does NOT implement business logic", "Does NOT implement auth"]
+    },
+    "task_004": {
+      "inputs": ["task_001 models and schemas", "task_002 auth functions", "task_003 error classes"],
+      "outputs": {
+        "format": "FastAPI router module",
+        "key_exports": ["router (APIRouter with all user endpoints)"],
+        "file_type": ".py"
+      },
+      "boundaries": ["Does NOT define models", "Does NOT implement JWT logic"]
+    },
+    "task_005": {
+      "inputs": ["task_001 User model", "task_002 verify_token"],
+      "outputs": {
+        "format": "FastAPI dependencies module",
+        "key_exports": ["get_current_user", "require_admin", "optional_auth"],
+        "file_type": ".py"
+      },
+      "boundaries": ["Does NOT implement routes", "Does NOT implement token creation"]
+    },
+    "task_006": {
+      "inputs": ["task_004 API endpoints", "task_005 auth middleware"],
+      "outputs": {
+        "format": "Pytest test module",
+        "key_exports": ["15-20 test functions"],
+        "file_type": ".py"
+      },
+      "boundaries": ["Does NOT modify source code", "Tests only"]
+    },
+    "task_007": {
+      "inputs": ["task_004 endpoints", "task_001 models"],
+      "outputs": {
+        "format": "Documentation files",
+        "key_exports": ["README.md", "requirements.txt"],
+        "file_type": ".md, .txt"
+      },
+      "boundaries": ["Documentation only", "Does NOT implement code"]
+    }
+  }
+}
