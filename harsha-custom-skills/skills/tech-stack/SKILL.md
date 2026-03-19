@@ -1,22 +1,8 @@
 ---
-name: tech-stack-advisor
-description: >
-  Comprehensive tech-stack recommendation engine that outputs the optimal, lowest-cost,
-  highest-performance stack based on project constraints. Covers frontend, backend, databases,
-  auth, hosting, mobile, payments, email, storage, monitoring, CI/CD, and more.
-
-  USE THIS SKILL WHEN:
-  - User asks "what tech stack should I use" or "recommend a stack"
-  - User is starting a new project and needs architecture guidance
-  - User asks to compare frameworks, databases, hosting, or any technology
-  - User says "what's the best database for...", "should I use X or Y"
-  - User asks about costs, pricing, free tiers, or hosting options
-  - User needs a full-stack recommendation for a SaaS, MVP, API, or mobile app
-  - User mentions: stack, framework, database, hosting, deploy, architecture, infrastructure
-  - User asks about specific tech categories: auth, payments, email, CDN, CMS, ORM, state management
-  - Even if user only asks about ONE piece (e.g., "which database?"), use this skill — the
-    answer often depends on the rest of the stack
+name: tech-stack
+description: "Recommend optimal tech stacks based on project constraints, costs, performance benchmarks, and battle-tested patterns. Use when choosing frameworks, databases, or hosting."
 ---
+
 
 # Tech Stack Advisor
 

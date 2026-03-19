@@ -1,7 +1,8 @@
 ---
-name: auditing-codebase-security
-description: Performs exhaustive multi-domain security audit of any codebase, repo, or folder. Identifies vulnerabilities across 15 security domains including OWASP Top 10, CWE Top 25, injection, XSS, authentication, cryptography, secrets, dependencies, configuration, Supabase/database security, and more. Proposes and implements ONLY non-invasive fixes preserving exact UI/UX, functionality, user flows, and API contracts. Use when asked to audit security, find vulnerabilities, harden a codebase, check for security issues, or do a non-invasive security review. Includes Supabase-specific RLS, MCP safety, and Postgres best practices for AI agents based on official Supabase Agent Skills framework.
+name: security-audit
+description: "Exhaustive multi-domain security audit across OWASP Top 10, CWE Top 25, and 15 security domains. Proposes only non-invasive fixes. Use when auditing security, finding vulnerabilities, or hardening a codebase."
 ---
+
 
 # Security Audit Orchestration
 

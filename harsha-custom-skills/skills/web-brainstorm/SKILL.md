@@ -1,8 +1,8 @@
 ---
-name: web-dev-brainstorm
-description: |
-  Comprehensive web development problem-solving, tech stack selection, and debugging skill for solo developers and APMs. Triggers on: (1) Tech stack decisions - "what framework", "React vs Vue", "which database", "best hosting", (2) Architecture - "how to structure", "folder organization", "project setup", (3) Debugging - "why isn't this working", "how to debug", "stuck on", "error with", (4) Performance - "slow app", "optimize", "improve speed", (5) Learning - "tutorial hell", "how to learn", "where to start", (6) Security - "is this secure", "authentication", "protect my app", (7) Database - "PostgreSQL vs", "Supabase vs Firebase", (8) State management - "Redux vs Zustand", "how to manage state", (9) Any web development brainstorming, decision-making, or problem-solving discussion.
+name: web-brainstorm
+description: "Web development problem-solving, tech stack decisions, debugging, and architecture brainstorming for solo developers and APMs."
 ---
+
 
 # Web Development Problem-Solving Framework
 

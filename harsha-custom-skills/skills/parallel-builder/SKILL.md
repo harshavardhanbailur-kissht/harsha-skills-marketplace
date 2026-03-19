@@ -1,15 +1,8 @@
 ---
-name: parallel-skill-builder
-description: |
-  Parallel execution orchestrator for Claude Code/Cowork. Decomposes features, epics, or PRDs
-  into parallel subtasks, engineers complete prompts for each, and launches them simultaneously
-  using the Task tool. Creates a `.parallel/` knowledge base with fully-documented plans, prompts,
-  and interface contracts — usable by Task tool subagents OR as manual chat window prompts.
-  Triggers: "build in parallel", "parallel agents", "fan-out", "multi-agent build", "decompose
-  and execute", "launch subagents", "build simultaneously", "parallelize this", or any non-trivial
-  build request with 3+ independent components. Also use when user provides a feature description,
-  epic, or PRD and wants efficient multi-agent execution.
+name: parallel-builder
+description: "Decompose features into parallel subtasks and launch simultaneous Claude subagents. Use for multi-agent builds with 3+ independent components."
 ---
+
 
 # Parallel Skill Builder
 

@@ -1,12 +1,8 @@
 ---
-name: kissht-release-notes-mastery
-description: |
-  Comprehensive release notes generation, stakeholder-specific user guide creation, and Jira automation system for Kissht/Ring fintech products (LAP LOS, UP/Ring, Saral LSQ). Transforms raw Jira ticket data into tailored, AI-generated documentation for Product Managers, QA Engineers, Developers, Training Teams, Business Analysts, Operations, and Leadership.
-
-  USE THIS SKILL WHEN the user mentions: release notes, release documentation, stakeholder guides, user guides from Jira, Kissht releases, LAP release notes, Ring release notes, ticket summaries, sprint documentation, changelog generation, release communication, training materials from releases, QA test impact notes, developer changelog, BA impact analysis, operations runbook from releases, Jira-to-documentation pipeline, automated release notes, release announcements, or when they want to generate any form of documentation from completed Jira tickets for different team roles.
-
-  Also trigger when: building release note web apps, automating Jira webhook-to-docs pipelines, creating stakeholder-filtered views of releases, generating role-based release communications, or setting up scheduled release note generation that runs automatically when tickets are marked Done in Jira.
+name: kissht-release-notes
+description: "Generate stakeholder-specific release notes from Jira tickets for Kissht/Ring fintech products. Creates tailored documentation for PMs, QA, Developers, Training, BAs, Operations, and Leadership."
 ---
+
 
 # Kissht Release Notes Mastery
 

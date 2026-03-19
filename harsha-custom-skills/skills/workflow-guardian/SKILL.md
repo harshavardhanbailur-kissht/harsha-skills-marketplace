@@ -1,25 +1,8 @@
 ---
 name: workflow-guardian
-description: >
-  Prevents Claude from breaking existing applications when adding features or modifying workflows.
-  This skill enforces a mandatory 4-phase workflow: RECONNAISSANCE (System Map generation with optional
-  sub-agents), IMPACT ANALYSIS (duplication and boundary detection), IMPLEMENTATION (with defensive guardrails),
-  and VERIFICATION (touch-point validation). It is NOT a code quality tool — it exists to preserve
-  working functionality when extending existing systems.
-
-  USE THIS SKILL WHENEVER:
-  - Adding features to an existing, working application (web apps, dashboards, internal tools)
-  - Modifying workflows in running systems (React, Vue, Angular, Next.js, Svelte, etc.)
-  - The user says "add X to my app" or "build Y on top of this codebase"
-  - Touching more than 2 existing files in a production application
-  - The codebase already has functioning routes, forms, dashboards, or data flows
-  - Building on top of existing issue trackers, CRMs, dashboards, or authenticated systems
-  - The user has reported "Claude broke my app" before
-
-  CRITICAL: This skill is for EXISTING, WORKING applications only. Use it to EXTEND existing code,
-  never to redesign or refactor unless explicitly asked. The first principle is "Match, Don't Fix."
-
+description: "Prevent breaking existing applications when adding features. Enforces reconnaissance, impact analysis, implementation, and verification phases. Use when modifying working apps."
 ---
+
 
 # Workflow Guardian: Defensive Feature Development
 

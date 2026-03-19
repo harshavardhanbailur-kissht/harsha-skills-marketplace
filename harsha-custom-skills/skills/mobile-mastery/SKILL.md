@@ -1,29 +1,8 @@
 ---
-name: mobile-app-mastery
-description: >
-  Comprehensive mobile app development skill for building production-grade iOS, Android,
-  and cross-platform applications. Covers React Native (Expo + bare), Flutter, Swift/SwiftUI,
-  Kotlin/Jetpack Compose, Kotlin Multiplatform, Capacitor/Ionic, .NET MAUI, and PWAs.
-  Includes architecture (MVVM, MVI, Clean), state management, UI/UX, animations, networking,
-  data persistence, auth, security (OWASP), testing, CI/CD, push notifications, deep linking,
-  monetization, accessibility, localization, AI/ML, AR/camera/maps, wearables/IoT, media,
-  observability, and app store publishing. Features decision trees for every choice point,
-  domain-specific priority matrices for 10 app types, pre-launch checklists (408 items),
-  62 anti-pattern detectors, code generation templates, and migration playbooks.
-
-  USE THIS SKILL WHENEVER the user mentions mobile app, iOS, Android, React Native, Flutter,
-  SwiftUI, Jetpack Compose, Kotlin Multiplatform, Expo, native app, cross-platform, hybrid app,
-  mobile UI, app store, TestFlight, Play Store, push notifications, deep linking, in-app purchases,
-  mobile testing, mobile CI/CD, mobile security, mobile performance, mobile accessibility,
-  mobile animations, mobile state management, mobile architecture, app monetization, wearable app,
-  watchOS, Wear OS, mobile AR, mobile camera, mobile maps, mobile authentication, crash reporting,
-  feature flags, server-driven UI, on-device AI, app migration, or ANY task involving building,
-  designing, reviewing, testing, deploying, or maintaining mobile applications.
-
-  Do NOT use this skill for: web-only applications with no mobile component, backend API development
-  (unless it's a mobile-specific BFF), desktop-only software, embedded systems without a mobile
-  companion, or general UI/UX reviews of non-mobile interfaces.
+name: mobile-mastery
+description: "Production-grade mobile app development covering React Native, Flutter, SwiftUI, Jetpack Compose, KMP, Capacitor, and PWAs. Use for any mobile app task."
 ---
+
 
 # Mobile App Mastery
 

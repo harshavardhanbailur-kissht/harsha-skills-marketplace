@@ -1,17 +1,8 @@
 ---
-name: "Codebase Handoff Documenter V6"
-description: |
-  Merge V2's simplicity (linear flow, no broken deps), V5's intelligence (domain detection, explicit file loading),
-  and research-analyst rigor (competing hypotheses, cross-validation, pre-mortem) into a single epistemic
-  documentation pipeline for ANY single-agent Claude context (Code, Cowork, Cline, Cursor).
-
-  Triggers: "generate a handoff doc", "document this codebase", "prepare for knowledge transfer",
-  "create architecture documentation", "epistemic analysis of codebase", "pre-handoff audit",
-  "compliance documentation (fintech/healthcare/enterprise)"
-version: "6.1"
-status: "stable"
-target_contexts: ["Claude Code", "Cowork", "Cline", "Cursor"]
+name: codebase-documenter
+description: "Epistemic codebase documentation for handoffs with confidence-tagged claims, evidence chains, and compliance-aware output. Use when documenting a codebase, preparing knowledge transfers, or creating architecture docs."
 ---
+
 
 # CORE PHILOSOPHY (10 Unified Principles)
 

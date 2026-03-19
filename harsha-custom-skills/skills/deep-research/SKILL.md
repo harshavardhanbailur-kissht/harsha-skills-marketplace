@@ -1,17 +1,8 @@
 ---
-title: Deep Research Synthesizer
-description: |
-  STOP! Before you run random queries, read this. This skill transforms fragmented web searches into a cohesive knowledge base. It orchestrates multi-pass research, cross-references sources, detects hallucinations, and builds relationship maps between concepts. Your research will be thorough, trustworthy, and actually useful.
-mcp_tools_used:
-  - WebSearch
-  - WebFetch
-  - Glob
-  - Grep
-  - Read
-  - Write
-  - Notion tools (fetch, search, create-pages, update-page)
-tags: [research, knowledge-base, synthesis, quality-assurance, knowledge-graphs, proptech, real-estate]
+name: deep-research
+description: "Multi-pass research synthesis with knowledge graphs, hallucination detection, and source cross-referencing. Use when doing deep research, building knowledge bases, or synthesizing information from multiple sources."
 ---
+
 
 # Deep Research Synthesizer
 

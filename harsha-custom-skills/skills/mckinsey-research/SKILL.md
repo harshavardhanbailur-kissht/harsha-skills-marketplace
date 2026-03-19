@@ -1,26 +1,8 @@
 ---
-name: mckinsey-grade-research-engine
-description: >
-  Consultant-grade research engine producing rigorous, decision-ready analysis by
-  combining McKinsey's Pyramid Principle and MECE decomposition with epistemic
-  research methodology, procedural debiasing, and AI-native sub-agent orchestration.
-
-  Integrates: McKinsey communication frameworks (Pyramid, SCR/SCQA, bold-bullet) +
-  CIA structured analytic techniques (ACH, Devil's Advocacy, Red Team) + PRISMA
-  audit methodology + GRADE evidence grading + Denzin triangulation + procedural
-  debiasing (empirically validated — declarative awareness alone has limited effect).
-
-  USE THIS SKILL WHEN:
-  - User wants rigorous research on ANY topic — market, technology, strategy, claims
-  - User says "deep research", "consulting-grade", "strategic analysis", "evaluate X"
-  - User needs to compare options, verify claims, or assess a technology/library
-  - Research for business strategy, product decisions, market entry, competitive positioning
-  - User asks to "analyze", "investigate", "evaluate", "compare deeply"
-  - User needs structured output with executive summary, evidence chains, confidence tags
-  - User wants fact-checking, claim verification, or information freshness assessment
-  - User mentions "thought leadership", "insight report", "competitive analysis"
-  - Research as input for skill creation, knowledge bases, or decision documents
+name: mckinsey-research
+description: "Consultant-grade research engine using McKinsey Pyramid Principle, MECE decomposition, and epistemic methodology. Use for rigorous research, strategic analysis, claim verification, or competitive positioning."
 ---
+
 
 # McKinsey-Grade Research Engine v3.0
 

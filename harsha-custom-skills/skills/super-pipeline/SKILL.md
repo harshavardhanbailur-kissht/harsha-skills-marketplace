@@ -1,30 +1,8 @@
 ---
-name: super-skill-pipeline
-description: |
-  Unified thinking-planning-execution pipeline that intelligently routes tasks through
-  up to 3 stages: deep thinking (.deep-think/), orchestration (.orchestrator/), and
-  parallel execution (.parallel/). The key innovation is a complexity gate that picks
-  the right depth — not every task needs all 3 stages. Includes adapter layers that
-  solve the handoff problem between stages by converting human-readable analysis into
-  structured execution plans.
-
-  Use this skill when: starting a complex project, building a feature that touches
-  multiple files or systems, planning before coding, when you want Claude to think
-  deeply then execute in parallel, when context window should be dedicated to thinking
-  not executing, for any task where "think first, build in parallel" would produce
-  better results than diving straight in.
-
-  Triggers: "super skill", "full pipeline", "think then build", "think and execute",
-  "deep think then parallel", "plan and build", "orchestrate this", "pipeline mode",
-  "think-plan-execute", "use the pipeline", "think deeply then build it",
-  "analyze and implement", "architect then build", "comprehensive build",
-  "multi-agent build", "parallel build with planning", "fan out", "decompose and build".
-
-  Also triggers when: user describes a complex feature requiring multiple components,
-  user wants architectural analysis before implementation, user mentions needing
-  multiple sub-agents, user wants to maximize quality by separating thinking from
-  execution, user says "don't rush" or "think about this carefully before building".
+name: super-pipeline
+description: "Think-plan-execute pipeline that routes tasks through deep thinking, orchestration, and parallel execution. Use for complex projects needing structured planning before building."
 ---
+
 
 # Super Skill Pipeline
 
