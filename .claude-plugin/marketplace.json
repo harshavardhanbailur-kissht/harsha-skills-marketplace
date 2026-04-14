@@ -1,8 +1,5 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "harsha-skills-marketplace",
-  "version": "1.3.4",
-  "description": "Custom skills for deep research, security auditing, McKinsey-grade analysis, release notes, mobile development, codebase documentation, workflow protection, tech stack advisory, parallel building, web dev brainstorming, and systematic web debugging.",
   "owner": {
     "name": "Harshavardhan Bailur",
     "email": "harshavardhan.bailur@kissht.com"
