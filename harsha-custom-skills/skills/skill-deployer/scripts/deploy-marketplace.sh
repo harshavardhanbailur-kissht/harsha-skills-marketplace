@@ -83,31 +83,90 @@ $SKILL_DESC
 Load the \`$SKILL_NAME\` skill and follow its SKILL.md workflow.
 CMD
 
-# Bump patch version in marketplace.json (repo root) and plugin.json (plugin folder)
+# Repair any unquoted argument-hint values in existing command files — YAML
+# parses a bare '<...>' as a type tag, which Claude.ai's marketplace validator
+# rejects. This is a pre-existing-repo hygiene pass; our generated command
+# files already quote correctly.
+python3 - "$PLUGIN_FOLDER" <<'PY'
+import pathlib, re, sys
+plugin_folder = sys.argv[1]
+cmd_dir = pathlib.Path(plugin_folder) / "commands"
+if cmd_dir.is_dir():
+    pat = re.compile(r'^(argument-hint:)[ \t]*(.+?)[ \t]*$', re.MULTILINE)
+    for md in sorted(cmd_dir.glob("*.md")):
+        text = md.read_text()
+        def _q(m):
+            key, val = m.group(1), m.group(2)
+            if val.startswith('"') or val.startswith("'"):
+                return m.group(0)
+            val_esc = val.replace('"', '\\"')
+            return f'{key} "{val_esc}"'
+        new = pat.sub(_q, text)
+        if new != text:
+            md.write_text(new)
+            print(f"quoted argument-hint: {md}")
+PY
+
+# Align versions across marketplace.json and plugin.json, then bump patch.
+# Previously bumped independently, which let them drift (1.2.1 vs 1.3.1 etc.).
 python3 - "$PLUGIN_FOLDER" <<'PY'
 import json, pathlib, sys
 plugin_folder = sys.argv[1]
 
-def bump_patch(v):
-    parts = v.split(".")
-    if len(parts) != 3: return v
-    try:
-        parts[2] = str(int(parts[2]) + 1)
-    except ValueError:
-        return v
-    return ".".join(parts)
+def parse(v):
+    try: return tuple(int(x) for x in v.split("."))
+    except Exception: return (0, 0, 0)
 
-for p in [
-    pathlib.Path(".claude-plugin/marketplace.json"),
-    pathlib.Path(plugin_folder) / ".claude-plugin" / "plugin.json",
-]:
-    if p.exists():
-        d = json.loads(p.read_text())
-        old = d.get("version", "")
-        if old:
-            d["version"] = bump_patch(old)
-            p.write_text(json.dumps(d, indent=2) + "\n")
-            print(f"bumped {p}: {old} -> {d['version']}")
+mp_path = pathlib.Path(".claude-plugin/marketplace.json")
+pl_path = pathlib.Path(plugin_folder) / ".claude-plugin" / "plugin.json"
+manifests = [p for p in (mp_path, pl_path) if p.exists()]
+if not manifests:
+    sys.exit(0)
+
+versions = []
+for p in manifests:
+    d = json.loads(p.read_text())
+    versions.append(parse(d.get("version", "0.0.0")))
+hi = max(versions)
+new = f"{hi[0]}.{hi[1]}.{hi[2] + 1}"
+
+for p in manifests:
+    d = json.loads(p.read_text())
+    old = d.get("version", "")
+    d["version"] = new
+    p.write_text(json.dumps(d, indent=2) + "\n")
+    print(f"bumped {p}: {old} -> {new}")
+PY
+
+# Pre-push validation: parse YAML frontmatter of every command and SKILL.md.
+# Abort if anything is malformed so we don't ship a broken marketplace.
+python3 - "$PLUGIN_FOLDER" <<'PY'
+import pathlib, re, sys
+try:
+    import yaml
+except ImportError:
+    print("NOTE: PyYAML not installed; skipping strict YAML pre-push validation.")
+    sys.exit(0)
+plugin_folder = sys.argv[1]
+root = pathlib.Path(plugin_folder)
+errors = []
+for p in list(root.glob("commands/*.md")) + list(root.glob("skills/*/SKILL.md")):
+    text = p.read_text()
+    m = re.match(r'^---\s*\n(.*?)\n---\s*\n', text, re.DOTALL)
+    if not m:
+        errors.append(f"  MISSING FRONTMATTER: {p}")
+        continue
+    try:
+        fm = yaml.safe_load(m.group(1))
+        if not isinstance(fm, dict):
+            errors.append(f"  FRONTMATTER NOT A MAPPING: {p}")
+    except yaml.YAMLError as e:
+        errors.append(f"  YAML PARSE ERROR: {p}: {e}")
+if errors:
+    print("\n".join(errors))
+    print("\nABORTING push — fix frontmatter above.")
+    sys.exit(1)
+print("frontmatter validated")
 PY
 
 # Commit + push
