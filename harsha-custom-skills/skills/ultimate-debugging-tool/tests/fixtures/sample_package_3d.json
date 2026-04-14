@@ -1,0 +1,17 @@
+{
+  "name": "3d-web-experience",
+  "version": "1.0.0",
+  "description": "A 3D web experience with Three.js",
+  "dependencies": {
+    "three": "^0.183.0",
+    "@react-three/fiber": "^9.0.0",
+    "@react-three/drei": "^9.0.0",
+    "gsap": "^3.14.0",
+    "react": "^19.0.0",
+    "detect-gpu": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.0",
+    "vitest": "^2.0.0"
+  }
+}

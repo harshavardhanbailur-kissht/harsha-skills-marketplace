@@ -1,0 +1,105 @@
+# Gas Debugger Ignore Rules Template
+# Copy this to your project's .debug-session/ignore-rules.yaml and customize
+
+rules:
+  # ============================================
+  # TESTING & DEVELOPMENT
+  # ============================================
+  
+  # V0/Development testing credentials
+  - id: "dev-testing-creds"
+    pattern: "password.*=.*['\"](?:test|1111|password|admin)['\"]"
+    reason: "Development/testing credentials - not for production"
+    categories: ["security"]
+    expires: "2025-06-01"  # Set appropriate expiry!
+    ticket: "DEV-001"
+  
+  # Test fixtures and mocks
+  - id: "test-fixtures"
+    file_glob: "tests/**"
+    categories: ["security", "quality"]
+    reason: "Test code has different security requirements"
+  
+  - id: "test-data"
+    file_glob: "**/test_*.py"
+    categories: ["security"]
+    reason: "Test files may contain intentional vulnerabilities for testing"
+  
+  # ============================================
+  # INTENTIONAL TECHNICAL DEBT
+  # ============================================
+  
+  # TODO/FIXME markers (acknowledged debt)
+  - id: "todo-markers"
+    pattern: "TODO:|FIXME:|HACK:|XXX:"
+    reason: "Intentional technical debt markers"
+    categories: ["quality"]
+  
+  # Legacy code pending migration
+  # - id: "legacy-code"
+  #   file_glob: "src/legacy/**"
+  #   reason: "Legacy code scheduled for migration"
+  #   expires: "2025-03-01"
+  #   ticket: "MIGRATE-123"
+  
+  # ============================================
+  # FRAMEWORK PATTERNS
+  # ============================================
+  
+  # Django/Flask debug mode (ensure disabled in prod!)
+  # - id: "debug-mode"
+  #   pattern: "DEBUG.*=.*True"
+  #   reason: "Debug mode - verify disabled in production"
+  #   categories: ["security"]
+  #   file_glob: "**/*settings*.py"
+  
+  # ORM queries (not raw SQL injection)
+  # - id: "orm-queries"
+  #   pattern: "\\.filter\\(|\\objects\\.get\\("
+  #   reason: "ORM queries are parameterized by default"
+  #   categories: ["security"]
+  
+  # ============================================
+  # VENDOR/THIRD-PARTY CODE
+  # ============================================
+  
+  # Vendored dependencies
+  - id: "vendor-code"
+    file_glob: "vendor/**"
+    reason: "Third-party vendored code - not our responsibility"
+    categories: ["security", "logic", "performance", "quality"]
+  
+  # Generated code
+  - id: "generated-code"
+    file_glob: "**/generated/**"
+    reason: "Auto-generated code"
+    categories: ["quality"]
+  
+  # ============================================
+  # PROJECT-SPECIFIC RULES
+  # ============================================
+  
+  # Add your custom rules below:
+  
+  # Example: Internal API that doesn't need auth
+  # - id: "internal-api"
+  #   file_glob: "src/internal/**"
+  #   pattern: "@no_auth_required"
+  #   reason: "Internal APIs run on isolated network"
+  #   categories: ["security"]
+  #   owner: "platform-team"
+
+
+# ============================================
+# RULE TEMPLATE
+# ============================================
+# Copy and customize:
+#
+#  - id: "unique-rule-id"           # Required: kebab-case identifier
+#    pattern: "regex or literal"     # Match code content
+#    file_glob: "path/pattern/**"    # Match file paths
+#    categories: ["security"]        # Limit to specific categories
+#    reason: "Why this is ignored"   # Required: explanation
+#    expires: "YYYY-MM-DD"           # Auto-expire date
+#    ticket: "JIRA-123"              # Tracking reference
+#    owner: "team-name"              # Responsible party

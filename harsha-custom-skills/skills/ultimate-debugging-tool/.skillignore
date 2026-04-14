@@ -1,0 +1,9 @@
+# Prevent research/ folder from being loaded into LLM context.
+# These files are for human reference and CI validation only.
+# Total: ~124KB — loading them wastes context tokens.
+research/
+research/**
+
+# Debug session artifacts (generated per-project, not part of the skill)
+.debug-session/
+.ultimate-debugger/

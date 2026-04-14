@@ -1,0 +1,614 @@
+{
+  "version": "1.0.0",
+  "last_validated": "2026-04-02",
+  "patterns": [
+    {
+      "id": "R-001",
+      "title": "Stale Closure in useEffect",
+      "framework": "React",
+      "min_version": "16.8",
+      "max_version": null,
+      "severity": "high",
+      "category": "hooks",
+      "symptoms": [
+        "stale data in event handler",
+        "closure captures initial value",
+        "handler always uses old state"
+      ],
+      "detection_signals": [
+        "useState",
+        "useEffect",
+        "addEventListener",
+        "dependency array"
+      ],
+      "reference_file": "react-bugs.md",
+      "safe_fix_pattern": "Add variable to dependency array OR use useRef for latest value",
+      "unsafe_patterns": [
+        "eslint-disable-next-line react-hooks/exhaustive-deps"
+      ]
+    },
+    {
+      "id": "R-002",
+      "title": "Missing useEffect Cleanup",
+      "framework": "React",
+      "min_version": "16.8",
+      "max_version": null,
+      "severity": "high",
+      "category": "lifecycle",
+      "symptoms": [
+        "memory leak warning",
+        "memory grows over time",
+        "setState called on unmounted component"
+      ],
+      "detection_signals": [
+        "useEffect",
+        "fetch",
+        "subscription",
+        "timer",
+        "addEventListener"
+      ],
+      "reference_file": "react-bugs.md",
+      "safe_fix_pattern": "Return cleanup function OR use AbortController for fetch",
+      "unsafe_patterns": [
+        "isMounted flag without aborting",
+        "missing return statement in useEffect"
+      ]
+    },
+    {
+      "id": "R-003",
+      "title": "Infinite Re-render Loop",
+      "framework": "React",
+      "min_version": "16.8",
+      "max_version": null,
+      "severity": "critical",
+      "category": "hooks",
+      "symptoms": [
+        "app freezes or crashes",
+        "Maximum update depth exceeded",
+        "frame rate drops"
+      ],
+      "detection_signals": [
+        "setState in useEffect",
+        "missing deps array",
+        "object literal in deps",
+        "array in deps"
+      ],
+      "reference_file": "react-bugs.md",
+      "safe_fix_pattern": "Fix dependency array OR use useMemo for object literals OR use functional setState",
+      "unsafe_patterns": [
+        "empty deps array with setState",
+        "inline object/array in deps"
+      ]
+    },
+    {
+      "id": "R-004",
+      "title": "Hydration Mismatch",
+      "framework": "React",
+      "min_version": "18.0",
+      "max_version": null,
+      "severity": "medium",
+      "category": "ssr",
+      "symptoms": [
+        "content flickers on page load",
+        "Hydration failed warning",
+        "FOUC (flash of unstyled content)"
+      ],
+      "detection_signals": [
+        "Date",
+        "Math.random()",
+        "window reference",
+        "localStorage",
+        "timezone"
+      ],
+      "reference_file": "react-bugs.md",
+      "safe_fix_pattern": "Use useEffect for client-only content OR suppressHydrationWarning with caution",
+      "unsafe_patterns": [
+        "suppressHydrationWarning without understanding",
+        "dynamic content in SSR without placeholder"
+      ]
+    },
+    {
+      "id": "R-005",
+      "title": "Context Value Instability",
+      "framework": "React",
+      "min_version": "16.3",
+      "max_version": null,
+      "severity": "high",
+      "category": "performance",
+      "symptoms": [
+        "all consumers re-render on every parent render",
+        "performance regression",
+        "unnecessary updates"
+      ],
+      "detection_signals": [
+        "createContext",
+        "inline object in Provider value",
+        "missing useMemo"
+      ],
+      "reference_file": "react-bugs.md",
+      "safe_fix_pattern": "Memoize context value with useMemo",
+      "unsafe_patterns": [
+        "inline object creation in provider",
+        "split context without memoization"
+      ]
+    },
+    {
+      "id": "R-006",
+      "title": "Server/Client Component Boundary Error",
+      "framework": "React",
+      "min_version": "18.0",
+      "max_version": null,
+      "severity": "high",
+      "category": "ssr",
+      "symptoms": [
+        "useState can only be used within client component",
+        "browser APIs in server component"
+      ],
+      "detection_signals": [
+        "useState without use client",
+        "hooks in default export",
+        "browser API usage"
+      ],
+      "reference_file": "react-bugs.md",
+      "safe_fix_pattern": "Mark component with 'use client' OR extract client component",
+      "unsafe_patterns": [
+        "marking entire app as use client",
+        "hooks in root server component"
+      ]
+    },
+    {
+      "id": "R-007",
+      "title": "React Compiler Compatibility Issues",
+      "framework": "React",
+      "min_version": "19.0",
+      "max_version": null,
+      "severity": "high",
+      "category": "optimization",
+      "symptoms": [
+        "memoization not working",
+        "unexpected re-renders",
+        "compiler errors"
+      ],
+      "detection_signals": [
+        "mutation in render",
+        "reassignment in render",
+        "complex closures"
+      ],
+      "reference_file": "react-bugs.md",
+      "safe_fix_pattern": "Don't mutate, create new array OR use useState OR use useMemo",
+      "unsafe_patterns": [
+        "compiler ignore directives",
+        "input mutations",
+        "reassignments in render"
+      ]
+    },
+    {
+      "id": "R-008",
+      "title": "Suspense Boundary Error Handling",
+      "framework": "React",
+      "min_version": "16.6",
+      "max_version": null,
+      "severity": "high",
+      "category": "error-handling",
+      "symptoms": [
+        "error thrown in suspended component crashes page",
+        "no error fallback shown"
+      ],
+      "detection_signals": [
+        "Suspense",
+        "lazy",
+        "missing ErrorBoundary"
+      ],
+      "reference_file": "react-bugs.md",
+      "safe_fix_pattern": "Wrap Suspense with ErrorBoundary component",
+      "unsafe_patterns": [
+        "Suspense without ErrorBoundary",
+        "try-catch for async errors"
+      ]
+    },
+    {
+      "id": "N-001",
+      "title": "Stale Cache Data",
+      "framework": "Next.js",
+      "min_version": "15.0",
+      "max_version": null,
+      "severity": "high",
+      "category": "caching",
+      "symptoms": [
+        "updated data doesn't appear",
+        "old content served after database changes",
+        "stale data persists"
+      ],
+      "detection_signals": [
+        "fetch without revalidate",
+        "no cache strategy",
+        "aggressive default caching"
+      ],
+      "reference_file": "nextjs-bugs.md",
+      "safe_fix_pattern": "Use 'use cache' (Next.js 16+) OR revalidateTag OR cache: no-store",
+      "unsafe_patterns": [
+        "relying on client-side refetch",
+        "no revalidation strategy",
+        "stale time too long"
+      ]
+    },
+    {
+      "id": "N-002",
+      "title": "Server Action Error Not Caught",
+      "framework": "Next.js",
+      "min_version": "13.0",
+      "max_version": null,
+      "severity": "high",
+      "category": "error-handling",
+      "symptoms": [
+        "Server Action throws but client doesn't show error",
+        "application appears broken",
+        "silent failures"
+      ],
+      "detection_signals": [
+        "use server without try-catch",
+        "missing error handling",
+        "no error state"
+      ],
+      "reference_file": "nextjs-bugs.md",
+      "safe_fix_pattern": "Return error state object OR use try-catch on client",
+      "unsafe_patterns": [
+        "throwing errors without handling",
+        "no error response",
+        "assuming success"
+      ]
+    },
+    {
+      "id": "N-003",
+      "title": "Environment Variable Exposed to Client",
+      "framework": "Next.js",
+      "min_version": "10.0",
+      "max_version": null,
+      "severity": "critical",
+      "category": "security",
+      "symptoms": [
+        "secret API key appears in browser DevTools",
+        "credentials leaked to client",
+        "secrets visible"
+      ],
+      "detection_signals": [
+        "NEXT_PUBLIC_ on secrets",
+        "importing server module in client",
+        "process.env in browser"
+      ],
+      "reference_file": "nextjs-bugs.md",
+      "safe_fix_pattern": "Remove NEXT_PUBLIC_ from secrets OR use server-only modules",
+      "unsafe_patterns": [
+        "NEXT_PUBLIC_ on sensitive values",
+        "server imports in client code"
+      ]
+    },
+    {
+      "id": "N-004",
+      "title": "Middleware Security Bypass (CVE-2025-29927)",
+      "framework": "Next.js",
+      "min_version": "12.0",
+      "max_version": "15.2.2",
+      "severity": "critical",
+      "category": "security",
+      "symptoms": [
+        "middleware authentication bypassed",
+        "unauthorized requests reach protected routes",
+        "security vulnerability"
+      ],
+      "detection_signals": [
+        "x-middleware-subrequest header check",
+        "missing auth validation",
+        "header-based security"
+      ],
+      "reference_file": "nextjs-bugs.md",
+      "safe_fix_pattern": "Upgrade to Next.js 15.2.3+ or validate auth before header checks",
+      "unsafe_patterns": [
+        "trusting internal headers",
+        "skipping auth for internal requests",
+        "forged header attacks"
+      ]
+    },
+    {
+      "id": "T-001",
+      "title": "Memory Leak from Undisposed Resources",
+      "framework": "Three.js",
+      "min_version": "r171",
+      "max_version": null,
+      "severity": "high",
+      "category": "memory",
+      "symptoms": [
+        "memory usage grows continuously",
+        "browser slows down over time",
+        "VRAM not freed"
+      ],
+      "detection_signals": [
+        "Geometry creation",
+        "Material creation",
+        "Texture creation",
+        "missing dispose"
+      ],
+      "reference_file": "threejs-bugs.md",
+      "safe_fix_pattern": "Dispose Geometry/Material/Texture OR use ResourceTracker pattern",
+      "unsafe_patterns": [
+        "removing objects without disposing",
+        "no cleanup on unmount"
+      ]
+    },
+    {
+      "id": "T-002",
+      "title": "Object Creation in Render Loop",
+      "framework": "Three.js",
+      "min_version": "r171",
+      "max_version": null,
+      "severity": "high",
+      "category": "performance",
+      "symptoms": [
+        "frame rate drops over time",
+        "garbage collection pauses every few seconds",
+        "jank"
+      ],
+      "detection_signals": [
+        "new Vector3 in animate",
+        "new Quaternion in loop",
+        "useFrame with new objects"
+      ],
+      "reference_file": "threejs-bugs.md",
+      "safe_fix_pattern": "Pre-allocate objects outside loop OR reuse with .set()",
+      "unsafe_patterns": [
+        "creating new Vector3/Quaternion every frame",
+        "objects created in useFrame"
+      ]
+    },
+    {
+      "id": "T-003",
+      "title": "Render Loop Running in Background Tab",
+      "framework": "Three.js",
+      "min_version": "r171",
+      "max_version": null,
+      "severity": "medium",
+      "category": "performance",
+      "symptoms": [
+        "battery drains quickly",
+        "CPU usage high even when tab hidden",
+        "wasted resources"
+      ],
+      "detection_signals": [
+        "no visibility check",
+        "requestAnimationFrame always running"
+      ],
+      "reference_file": "threejs-bugs.md",
+      "safe_fix_pattern": "Check document.hidden OR use Page Visibility API OR Canvas frameloop=demand",
+      "unsafe_patterns": [
+        "no visibility detection",
+        "focus/blur for visibility check"
+      ]
+    },
+    {
+      "id": "T-004",
+      "title": "Camera Aspect Ratio Not Updated on Resize",
+      "framework": "Three.js",
+      "min_version": "r171",
+      "max_version": null,
+      "severity": "medium",
+      "category": "rendering",
+      "symptoms": [
+        "scene stretches or squashes when window resizes",
+        "aspect ratio mismatch"
+      ],
+      "detection_signals": [
+        "no resize handler",
+        "camera.aspect never updated",
+        "missing updateProjectionMatrix"
+      ],
+      "reference_file": "threejs-bugs.md",
+      "safe_fix_pattern": "Use ResizeObserver or window resize listener + updateProjectionMatrix()",
+      "unsafe_patterns": [
+        "setSize without aspect update",
+        "no resize handler"
+      ]
+    },
+    {
+      "id": "T-005",
+      "title": "WebGL Context Loss",
+      "framework": "Three.js",
+      "min_version": "r171",
+      "max_version": null,
+      "severity": "high",
+      "category": "rendering",
+      "symptoms": [
+        "canvas goes black",
+        "WebGL context lost in console",
+        "scene doesn't recover"
+      ],
+      "detection_signals": [
+        "no context loss handler",
+        "multiple renderers",
+        "WebGL without WebGPU fallback"
+      ],
+      "reference_file": "threejs-bugs.md",
+      "safe_fix_pattern": "Use WebGPURenderer (r171+) OR add webglcontextlost/restored listeners",
+      "unsafe_patterns": [
+        "creating multiple contexts",
+        "no recovery handler",
+        "ignoring context loss"
+      ]
+    },
+    {
+      "id": "G-001",
+      "title": "GSAP Context Not Cleaned Up",
+      "framework": "GSAP",
+      "min_version": "3.12.0",
+      "max_version": null,
+      "severity": "high",
+      "category": "lifecycle",
+      "symptoms": [
+        "multiple tweens running simultaneously",
+        "animations conflict",
+        "memory grows"
+      ],
+      "detection_signals": [
+        "gsap.context() without revert",
+        "no cleanup in useEffect"
+      ],
+      "reference_file": "gsap-bugs.md",
+      "safe_fix_pattern": "Use useGSAP hook OR manually call context.revert() on unmount",
+      "unsafe_patterns": [
+        "context without cleanup",
+        "missing revert call"
+      ]
+    },
+    {
+      "id": "G-002",
+      "title": "ScrollTrigger Not Refreshed After DOM Change",
+      "framework": "GSAP",
+      "min_version": "3.12.0",
+      "max_version": null,
+      "severity": "high",
+      "category": "animation",
+      "symptoms": [
+        "scroll animations trigger at wrong position",
+        "cached dimensions used",
+        "animations skip"
+      ],
+      "detection_signals": [
+        "ScrollTrigger without refresh",
+        "DOM height changes",
+        "state changes"
+      ],
+      "reference_file": "gsap-bugs.md",
+      "safe_fix_pattern": "Call ScrollTrigger.refresh() in useEffect after DOM changes",
+      "unsafe_patterns": [
+        "refresh called too early",
+        "no refresh on DOM change"
+      ]
+    },
+    {
+      "id": "G-003",
+      "title": "Lenis + ScrollTrigger Desync",
+      "framework": "GSAP",
+      "min_version": "3.12.0",
+      "max_version": null,
+      "severity": "high",
+      "category": "animation",
+      "symptoms": [
+        "scroll animations are jerky",
+        "scrollbar doesn't match animation",
+        "animations skip"
+      ],
+      "detection_signals": [
+        "Lenis and ScrollTrigger together",
+        "no sync code",
+        "lagSmoothing not disabled"
+      ],
+      "reference_file": "gsap-bugs.md",
+      "safe_fix_pattern": "Connect Lenis to ScrollTrigger.update + disable lagSmoothing",
+      "unsafe_patterns": [
+        "both libraries without syncing",
+        "different scroll sources"
+      ]
+    },
+    {
+      "id": "G-004",
+      "title": "Conflicting Tweens",
+      "framework": "GSAP",
+      "min_version": "3.12.0",
+      "max_version": null,
+      "severity": "medium",
+      "category": "animation",
+      "symptoms": [
+        "two animations fight each other",
+        "values jump or flicker",
+        "conflicting properties"
+      ],
+      "detection_signals": [
+        "multiple gsap.to() same property",
+        "no killTweensOf",
+        "no overwrite"
+      ],
+      "reference_file": "gsap-bugs.md",
+      "safe_fix_pattern": "Kill tweens with killTweensOf() OR use overwrite: 'auto' OR use timeline",
+      "unsafe_patterns": [
+        "overlapping tweens",
+        "no conflict resolution"
+      ]
+    },
+    {
+      "id": "TS-001",
+      "title": "any Type Masking Real Bugs",
+      "framework": "TypeScript",
+      "min_version": "5.0",
+      "max_version": null,
+      "severity": "high",
+      "category": "types",
+      "symptoms": [
+        "type errors not caught until runtime",
+        "refactoring breaks code silently",
+        "no type checking"
+      ],
+      "detection_signals": [
+        "any type usage",
+        "as any casts",
+        "any in generics"
+      ],
+      "reference_file": "typescript-bugs.md",
+      "safe_fix_pattern": "Define proper types OR use type guards OR enable stricter checks",
+      "unsafe_patterns": [
+        "any type everywhere",
+        "casting with as any",
+        "avoiding type definitions"
+      ]
+    },
+    {
+      "id": "TS-002",
+      "title": "Missing Strict Null Checks",
+      "framework": "TypeScript",
+      "min_version": "5.0",
+      "max_version": null,
+      "severity": "high",
+      "category": "types",
+      "symptoms": [
+        "Cannot read property of undefined errors in production",
+        "null reference errors"
+      ],
+      "detection_signals": [
+        "strictNullChecks disabled",
+        "no optional chaining",
+        "null/undefined not handled"
+      ],
+      "reference_file": "typescript-bugs.md",
+      "safe_fix_pattern": "Enable strictNullChecks in tsconfig OR use optional chaining (?.) and nullish coalescing (??)",
+      "unsafe_patterns": [
+        "strictNullChecks false",
+        "unsafe non-null assertions !",
+        "ignoring null possibility"
+      ]
+    },
+    {
+      "id": "TS-003",
+      "title": "Incorrect Type Narrowing",
+      "framework": "TypeScript",
+      "min_version": "5.0",
+      "max_version": null,
+      "severity": "medium",
+      "category": "types",
+      "symptoms": [
+        "type logic errors",
+        "wrong code path executed",
+        "type confusion"
+      ],
+      "detection_signals": [
+        "broken type guards",
+        "union type confusion",
+        "missing discriminators"
+      ],
+      "reference_file": "typescript-bugs.md",
+      "safe_fix_pattern": "Use strong type guards OR discriminated unions OR switch statements",
+      "unsafe_patterns": [
+        "incorrect typeof checks",
+        "type assertions instead of narrowing",
+        "optional chaining vs guards"
+      ]
+    }
+  ]
+}

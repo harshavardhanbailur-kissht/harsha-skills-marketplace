@@ -1,0 +1,67 @@
+diff --git a/src/hooks/useData.ts b/src/hooks/useData.ts
+index abc1234..def5678 100644
+--- a/src/hooks/useData.ts
++++ b/src/hooks/useData.ts
+@@ -1,15 +1,35 @@
+ import { useEffect, useState } from 'react';
+
++export interface DataState<T> {
++  data: T | null;
++  loading: boolean;
++  error: Error | null;
++}
++
+-export function useData<T>(url: string) {
++export function useData<T>(url: string, options?: { retry?: number }): DataState<T> {
+   const [data, setData] = useState<T | null>(null);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState<Error | null>(null);
+
+   useEffect(() => {
+     let mounted = true;
+
+     const fetchData = async () => {
+       try {
+         setLoading(true);
++        const retryCount = options?.retry ?? 0;
++        let attempts = 0;
++        let lastError: Error | null = null;
++
++        while (attempts <= retryCount) {
++          try {
++            const response = await fetch(url);
++            if (!response.ok) {
++              throw new Error(`HTTP ${response.status}`);
++            }
++            const result = await response.json();
++            if (mounted) {
++              setData(result);
++            }
++            return;
++          } catch (e) {
++            lastError = e as Error;
++            attempts++;
++            if (attempts <= retryCount) {
++              await new Promise(resolve => setTimeout(resolve, 100 * attempts));
++            }
++          }
++        }
++        throw lastError;
+       } catch (e) {
+         if (mounted) {
+           setError(e as Error);
+         }
+       } finally {
+         if (mounted) {
+           setLoading(false);
+         }
+       }
+     };
+
+     fetchData();
+     return () => { mounted = false; };
+-  }, [url]);
++  }, [url, options?.retry]);
+
+   return { data, loading, error };
+ }

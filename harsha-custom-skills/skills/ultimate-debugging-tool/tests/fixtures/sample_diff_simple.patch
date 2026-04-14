@@ -1,0 +1,21 @@
+diff --git a/src/utils.ts b/src/utils.ts
+index abc1234..def5678 100644
+--- a/src/utils.ts
++++ b/src/utils.ts
+@@ -5,11 +5,15 @@ export function calculateTotal(items: Item[]): number {
+   let total = 0;
+   for (const item of items) {
+     total += item.price * item.quantity;
+   }
+-  return total;
++  return Math.round(total * 100) / 100;
+ }
+
+-export function formatCurrency(amount: number): string {
+-  return `$${amount.toFixed(2)}`;
++export function formatCurrency(amount: number, currency: string = 'USD'): string {
++  if (currency === 'EUR') {
++    return `€${amount.toFixed(2)}`;
++  }
++  return `$${amount.toFixed(2)}`;
+ }

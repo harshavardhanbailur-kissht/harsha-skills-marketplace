@@ -1,8 +1,8 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "harsha-skills-marketplace",
-  "version": "1.0.0",
-  "description": "Custom skills for deep research, security auditing, McKinsey-grade analysis, release notes, mobile development, codebase documentation, workflow protection, tech stack advisory, parallel building, and web dev brainstorming.",
+  "version": "1.2.0",
+  "description": "Custom skills for deep research, security auditing, McKinsey-grade analysis, release notes, mobile development, codebase documentation, workflow protection, tech stack advisory, parallel building, web dev brainstorming, and systematic web debugging.",
   "owner": {
     "name": "Harshavardhan Bailur",
     "email": "harshavardhan.bailur@kissht.com"
@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "harsha-custom-skills",
-      "description": "11 custom skills: deep research, security audit, McKinsey research, codebase documenter, release notes, workflow guardian, mobile mastery, tech stack advisor, parallel builder, super pipeline, and web brainstorm.",
+      "description": "Custom skills: deep research, security audit, McKinsey research, codebase documenter, release notes, workflow guardian, mobile mastery, tech stack advisor, parallel builder, super pipeline, web brainstorm, and ultimate-debugging-tool (systematic web debugging with CWE security detectors and race-condition protocol).",
       "source": "./harsha-custom-skills",
       "category": "development"
     }

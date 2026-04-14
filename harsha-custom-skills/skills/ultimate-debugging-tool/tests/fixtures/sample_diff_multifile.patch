@@ -1,0 +1,60 @@
+diff --git a/src/components/Button.tsx b/src/components/Button.tsx
+index abc1234..def5678 100644
+--- a/src/components/Button.tsx
++++ b/src/components/Button.tsx
+@@ -1,10 +1,15 @@
+ import React from 'react';
+
+-export interface ButtonProps {
++export interface ButtonProps {
+   label: string;
+-  onClick?: () => void;
++  onClick?: (e: React.MouseEvent) => void;
++  disabled?: boolean;
++  variant?: 'primary' | 'secondary';
+ }
+
+ export const Button: React.FC<ButtonProps> = ({ label, onClick }) => {
++  if (!label) {
++    return null;
++  }
+   return <button onClick={onClick}>{label}</button>;
+ };
+
+diff --git a/src/components/Button.test.tsx b/src/components/Button.test.tsx
+index 0000000..1111111 100644
+--- a/src/components/Button.test.tsx
++++ b/src/components/Button.test.tsx
+@@ -0,0 +1,15 @@
++import { render, screen } from '@testing-library/react';
++import { Button } from './Button';
++
++describe('Button', () => {
++  it('renders with label', () => {
++    render(<Button label="Click me" />);
++    expect(screen.getByText('Click me')).toBeInTheDocument();
++  });
++
++  it('returns null when label is empty', () => {
++    const { container } = render(<Button label="" />);
++    expect(container.firstChild).toBeNull();
++  });
++});
+
+diff --git a/src/utils/formatting.ts b/src/utils/formatting.ts
+index abc2222..def3333 100644
+--- a/src/utils/formatting.ts
++++ b/src/utils/formatting.ts
+@@ -12,7 +12,11 @@ export function truncate(text: string, maxLength: number): string {
+   return text;
+ }
+
+-export const formatDate = (date: Date) => {
++export const formatDate = (date: Date): string => {
+   const options: Intl.DateTimeFormatOptions = {
+     year: 'numeric',
+     month: 'long',
+     day: 'numeric',
+   };
+   return new Intl.DateTimeFormat('en-US', options).format(date);
+ };

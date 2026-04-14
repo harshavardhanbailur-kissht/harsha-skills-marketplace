@@ -1,0 +1,38 @@
+diff --git a/src/api/client.ts b/src/api/client.ts
+index abc1234..def5678 100644
+--- a/src/api/client.ts
++++ b/src/api/client.ts
+@@ -1,20 +1,25 @@
+ export interface ApiConfig {
+   baseUrl: string;
+   timeout: number;
+ }
+
+-export function createClient(config: ApiConfig) {
++export interface ApiClient {
++  get(path: string): Promise<any>;
++  post(path: string, data: any): Promise<any>;
++}
++
++export function createClient(config: ApiConfig): ApiClient {
+   return {
+     get: async (path: string) => {
+       const response = await fetch(`${config.baseUrl}${path}`, {
+         timeout: config.timeout,
+       });
+       return response.json();
+     },
+     post: async (path: string, data: any) => {
+       const response = await fetch(`${config.baseUrl}${path}`, {
+         method: 'POST',
+         body: JSON.stringify(data),
+         timeout: config.timeout,
+       });
+       return response.json();
+     },
+   };
+ }
+
+-export { ApiConfig as default };
++export default createClient;
++export { ApiConfig, ApiClient };
