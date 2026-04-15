@@ -1452,7 +1452,7 @@ android {
 
 **What**: API keys, tokens, and passwords in source code. Hardcoded in BuildConfig or string resources.
 
-**Detect**: `val API_KEY = "sk_live_..."` in code; git history with secrets; strings.xml containing keys.
+**Detect**: `val API_KEY = "sk_live_<REDACTED>"` in code; git history with secrets; strings.xml containing keys.
 
 **Why Bad**: Exposed in APK/IPA; visible in decompiled code; accessible to anyone with app; account compromise.
 
@@ -1460,7 +1460,7 @@ android {
 
 **Wrong**:
 ```kotlin
-const val API_KEY = "sk_live_4eC39HqLyjWDarht"
+const val API_KEY = "sk_live_<REDACTED_EXAMPLE>"
 const val STRIPE_KEY = "pk_test_..."
 
 val client = HttpClient {
@@ -1473,7 +1473,7 @@ val client = HttpClient {
 **Right**:
 ```kotlin
 // gradle.properties (git-ignored)
-STRIPE_API_KEY=sk_live_...
+STRIPE_API_KEY=sk_live_<REDACTED>
 
 // build.gradle
 android {

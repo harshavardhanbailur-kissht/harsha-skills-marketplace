@@ -840,7 +840,7 @@ grep -r "stripe\|paypal\|braintree\|adyen" --include="*.py" --include="*.js" req
 **Code Examples (Positive Match):**
 ```python
 import stripe
-stripe.api_key = "sk_live_..."
+stripe.api_key = "sk_live_<REDACTED>"
 ```
 
 **Points**: 1 each

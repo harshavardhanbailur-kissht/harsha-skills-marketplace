@@ -235,7 +235,7 @@ export async function POST(req: Request) {
 ### Secrets in Frontend
 ```typescript
 // ❌ API keys in client code
-const stripe = new Stripe('sk_live_...')  // NEVER DO THIS
+const stripe = new Stripe('sk_live_<REDACTED>')  // NEVER DO THIS
 
 // ✅ Secrets only on server
 // Use STRIPE_SECRET_KEY env var, accessed only in API routes

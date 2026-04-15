@@ -777,7 +777,7 @@ database_port = config['database']['port']
 ```python
 # src/config.py
 DATABASE_HOST = "prod-db.example.com"
-API_KEY = "sk_live_abc123xyz789"
+API_KEY = "sk_live_<REDACTED_EXAMPLE>"
 DEBUG = False
 ```
 

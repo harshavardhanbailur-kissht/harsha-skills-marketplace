@@ -105,7 +105,7 @@ changes should take this route. Don't force pipeline overhead on simple work.
 
 ## Route 2: SMALL — Think Only
 
-**Load**: `stages/deep-thinker/SKILL.md`
+**Load**: `stages/deep-thinker/STAGE.md`
 
 Follow the deep-thinker skill at the "Small" complexity level:
 - Create `.deep-think/` with 3 files: OVERVIEW, IMPLEMENTATION, EDGE_CASES
@@ -125,7 +125,7 @@ project produced 8,600+ lines across 120+ files using this pattern).
 
 ### Phase 1: Deep Thinking
 
-**Load**: `stages/deep-thinker/SKILL.md`
+**Load**: `stages/deep-thinker/STAGE.md`
 
 Run deep-thinker at "Medium" or "Complex" complexity level (6-8 files).
 The critical output for the adapter is `EXECUTION_CHECKLIST.md` — make sure
@@ -245,7 +245,7 @@ Extra emphasis on EDGE_CASES.md — the orchestrator uses it for acceptance crit
 
 ### Phase 2: Orchestrator Intake (Native — No Adapter Needed)
 
-**Load**: `stages/orchestrator/SKILL.md` — specifically Section 2
+**Load**: `stages/orchestrator/STAGE.md` — specifically Section 2
 
 The V3.1 orchestrator reads `.deep-think/` files in this order:
 1. `OVERVIEW.md` → project goal, scope, success criteria
@@ -270,7 +270,7 @@ python stages/orchestrator/scripts/init_project.py "Project Name" --goal "Goal"
 
 ### Phase 3: Orchestrator Planning + Prompt Generation
 
-**Continue with**: `stages/orchestrator/SKILL.md` — Sections 3-5
+**Continue with**: `stages/orchestrator/STAGE.md` — Sections 3-5
 
 The orchestrator:
 1. **Decomposes** into MECE tasks (Section 3) with layer assignments for parallelization
@@ -305,7 +305,7 @@ For each layer in .parallel/PLAN.md:
 
 ### Phase 5: Results Ingestion (V3.1 Section 7)
 
-**Load**: `stages/orchestrator/SKILL.md` — Section 7
+**Load**: `stages/orchestrator/STAGE.md` — Section 7
 
 After parallel execution completes, the orchestrator reads results back:
 1. Read `.parallel/reports/EXECUTION_REPORT.md` for completion status
@@ -392,8 +392,8 @@ Load these as needed — don't load everything upfront:
 | `references/pipeline-contracts.md` | When building adapters | Schema definitions for handoffs |
 | `references/adapter-thinking-compiler.md` | Route 3 Phase 2 | Converting .deep-think → .parallel (when orchestrator is SKIPPED) |
 | `references/adapter-state-extractor.md` | Rarely — fallback only | Converting .orchestrator → .parallel (V3.1 does this natively) |
-| `stages/deep-thinker/SKILL.md` | Routes 2-4, Phase 1 | Deep thinking methodology |
-| `stages/orchestrator/SKILL.md` | Route 4, Phases 2-5 | V3.1: native pipeline — reads .deep-think/, writes .parallel/ |
+| `stages/deep-thinker/STAGE.md` | Routes 2-4, Phase 1 | Deep thinking methodology |
+| `stages/orchestrator/STAGE.md` | Route 4, Phases 2-5 | V3.1: native pipeline — reads .deep-think/, writes .parallel/ |
 | `stages/parallel-builder/ARCHITECTURE.md` | Routes 3-4, execution | Parallel execution patterns |
 | `stages/parallel-builder/SKILL.md` | Routes 3-4, execution | Parallel dispatch and verification |
 

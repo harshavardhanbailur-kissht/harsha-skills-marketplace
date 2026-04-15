@@ -220,7 +220,7 @@ Admin (root)
 🔴 **CRITICAL**: API key stored in `config/third-party.js`
 ```javascript
 // Found in: config/third-party.js:15
-const apiKey = 'sk_live_abc123xyz789...';  // LEAKED
+const apiKey = 'sk_live_<REDACTED_EXAMPLE>';  // LEAKED
 ```
 - Action: Rotate API key immediately
 - Prevention: Use environment variable

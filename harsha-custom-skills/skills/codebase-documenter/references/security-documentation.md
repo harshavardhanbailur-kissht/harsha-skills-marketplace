@@ -204,7 +204,7 @@ The user input isn't sanitized in the query string."
 **Rule 1: Secrets Not in Code**
 ```python
 # WRONG
-api_key = "sk_live_abc123xyz"  # NEVER
+api_key = "sk_live_<REDACTED_EXAMPLE>"  # NEVER
 
 # RIGHT
 api_key = os.environ.get("STRIPE_API_KEY")

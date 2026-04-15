@@ -232,7 +232,7 @@ DATABASE_POOL_SIZE=20
 DATABASE_ECHO=false  # Set to true for SQL logging
 
 # Payment (Stripe)
-STRIPE_API_KEY=sk_live_...
+STRIPE_API_KEY=sk_live_<REDACTED>
 STRIPE_WEBHOOK_SECRET=whsec_...
 
 # Queue
