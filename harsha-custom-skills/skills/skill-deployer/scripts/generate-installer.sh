@@ -76,61 +76,18 @@ cd "\$CLONE_DIR"
 [[ -d "\$PLUGIN_FOLDER" ]] || { echo "ERROR: plugin folder '\$PLUGIN_FOLDER' not in repo"; exit 1; }
 
 SKILL_DEST="\$PLUGIN_FOLDER/skills/\$SKILL_NAME"
-CMD_DEST="\$PLUGIN_FOLDER/commands/\$SKILL_NAME.md"
+LEGACY_CMD="\$PLUGIN_FOLDER/commands/\$SKILL_NAME.md"
 REPLACED=0
 [[ -d "\$SKILL_DEST" ]] && { git rm -rf "\$SKILL_DEST" >/dev/null; REPLACED=1; }
-[[ -f "\$CMD_DEST" ]] && git rm "\$CMD_DEST" >/dev/null || true
+# Purge legacy sibling command file if it exists (collides with skill slug at
+# marketplace validation).
+[[ -f "\$LEGACY_CMD" ]] && git rm "\$LEGACY_CMD" >/dev/null || true
 
-mkdir -p "\$PLUGIN_FOLDER/skills" "\$PLUGIN_FOLDER/commands"
+mkdir -p "\$PLUGIN_FOLDER/skills"
 rsync -a \\
   --exclude='__pycache__' --exclude='.pytest_cache' \\
   --exclude='pytest-cache-files-*' --exclude='.DS_Store' --exclude='node_modules' \\
   "\$SRC/" "\$SKILL_DEST/"
-
-cat > "\$CMD_DEST" <<CMD
----
-description: ${SKILL_DESC//\"/\\\"}
-argument-hint: "<arguments for \$SKILL_NAME>"
----
-
-# /\$SKILL_NAME
-
-${SKILL_DESC//\`/\\\`}
-
-## Invocation
-
-\\\`\\\`\\\`
-/\$SKILL_NAME <your arguments>
-\\\`\\\`\\\`
-
-## Workflow
-
-Load the \\\`\$SKILL_NAME\\\` skill and follow its SKILL.md workflow.
-CMD
-
-# Quote any unquoted argument-hint values in existing command files.
-# YAML parses bare '<...>' as a type tag, which Claude.ai's marketplace
-# validator rejects. Our generated command files already quote correctly,
-# but pre-existing files in the repo may not.
-python3 - "\$PLUGIN_FOLDER" <<'PY'
-import pathlib, re, sys
-plugin_folder = sys.argv[1]
-cmd_dir = pathlib.Path(plugin_folder) / "commands"
-if cmd_dir.is_dir():
-    pat = re.compile(r'^(argument-hint:)[ \t]*(.+?)[ \t]*$', re.MULTILINE)
-    for md in sorted(cmd_dir.glob("*.md")):
-        text = md.read_text()
-        def _q(m):
-            key, val = m.group(1), m.group(2)
-            if val.startswith('"') or val.startswith("'"):
-                return m.group(0)
-            val_esc = val.replace('"', '\\\\"')
-            return f'{key} "{val_esc}"'
-        new = pat.sub(_q, text)
-        if new != text:
-            md.write_text(new)
-            print(f"quoted argument-hint: {md}")
-PY
 
 # Align versions across marketplace.json and plugin.json, then bump patch.
 python3 - "\$PLUGIN_FOLDER" <<'PY'
@@ -164,7 +121,7 @@ except ImportError:
 plugin_folder = sys.argv[1]
 root = pathlib.Path(plugin_folder)
 errors = []
-for p in list(root.glob("commands/*.md")) + list(root.glob("skills/*/SKILL.md")):
+for p in list(root.glob("skills/*/SKILL.md")):
     text = p.read_text()
     m = re.match(r'^---\s*\n(.*?)\n---\s*\n', text, re.DOTALL)
     if not m:

@@ -3,10 +3,11 @@
 # Usage: bash deploy-marketplace.sh <skill-folder> <repo-url> <plugin-folder>
 #
 # Clones the repo to a fresh working directory, drops the skill into
-# <plugin-folder>/skills/<skill-name>/, generates a slash command at
-# <plugin-folder>/commands/<skill-name>.md from the SKILL.md frontmatter,
-# bumps patch version in marketplace.json and <plugin-folder>/.claude-plugin/plugin.json
-# if present, commits, and pushes to origin/<default-branch>.
+# <plugin-folder>/skills/<skill-name>/, bumps patch version in marketplace.json
+# and <plugin-folder>/.claude-plugin/plugin.json if present, commits, and pushes
+# to origin/<default-branch>. Skills are invoked via the Skill tool (their
+# SKILL.md name is the slug); no sibling commands/*.md file is generated, since
+# a command name matching a skill slug collides at marketplace validation time.
 
 set -euo pipefail
 
@@ -38,20 +39,22 @@ cd "$CLONE_DIR"
 [[ -d "$PLUGIN_FOLDER" ]] || { echo "ERROR: plugin folder '$PLUGIN_FOLDER' not found in repo"; exit 1; }
 
 SKILL_DEST="$PLUGIN_FOLDER/skills/$SKILL_NAME"
-CMD_DEST="$PLUGIN_FOLDER/commands/$SKILL_NAME.md"
+LEGACY_CMD="$PLUGIN_FOLDER/commands/$SKILL_NAME.md"
 
-# Remove any existing skill + command with the same name
+# Remove any existing skill with the same name
 REPLACED=0
 if [[ -d "$SKILL_DEST" ]]; then
   git rm -rf "$SKILL_DEST" >/dev/null
   REPLACED=1
 fi
-if [[ -f "$CMD_DEST" ]]; then
-  git rm "$CMD_DEST" >/dev/null
+# Purge legacy sibling command file if it exists (collides with skill slug at
+# marketplace validation).
+if [[ -f "$LEGACY_CMD" ]]; then
+  git rm "$LEGACY_CMD" >/dev/null
 fi
 
 # Drop the new skill in
-mkdir -p "$PLUGIN_FOLDER/skills" "$PLUGIN_FOLDER/commands"
+mkdir -p "$PLUGIN_FOLDER/skills"
 rsync -a \
   --exclude='__pycache__' \
   --exclude='.pytest_cache' \
@@ -59,53 +62,6 @@ rsync -a \
   --exclude='.DS_Store' \
   --exclude='node_modules' \
   "$SKILL_PATH/" "$SKILL_DEST/"
-
-# Generate the slash command file
-ESC_DESC=$(printf '%s' "$SKILL_DESC" | sed 's/"/\\"/g')
-cat > "$CMD_DEST" <<CMD
----
-description: ${ESC_DESC:-Load the $SKILL_NAME skill}
-argument-hint: "<arguments for $SKILL_NAME>"
----
-
-# /$SKILL_NAME
-
-$SKILL_DESC
-
-## Invocation
-
-\`\`\`
-/$SKILL_NAME <your arguments>
-\`\`\`
-
-## Workflow
-
-Load the \`$SKILL_NAME\` skill and follow its SKILL.md workflow.
-CMD
-
-# Repair any unquoted argument-hint values in existing command files — YAML
-# parses a bare '<...>' as a type tag, which Claude.ai's marketplace validator
-# rejects. This is a pre-existing-repo hygiene pass; our generated command
-# files already quote correctly.
-python3 - "$PLUGIN_FOLDER" <<'PY'
-import pathlib, re, sys
-plugin_folder = sys.argv[1]
-cmd_dir = pathlib.Path(plugin_folder) / "commands"
-if cmd_dir.is_dir():
-    pat = re.compile(r'^(argument-hint:)[ \t]*(.+?)[ \t]*$', re.MULTILINE)
-    for md in sorted(cmd_dir.glob("*.md")):
-        text = md.read_text()
-        def _q(m):
-            key, val = m.group(1), m.group(2)
-            if val.startswith('"') or val.startswith("'"):
-                return m.group(0)
-            val_esc = val.replace('"', '\\"')
-            return f'{key} "{val_esc}"'
-        new = pat.sub(_q, text)
-        if new != text:
-            md.write_text(new)
-            print(f"quoted argument-hint: {md}")
-PY
 
 # Align versions across marketplace.json and plugin.json, then bump patch.
 # Previously bumped independently, which let them drift (1.2.1 vs 1.3.1 etc.).
@@ -150,7 +106,7 @@ except ImportError:
 plugin_folder = sys.argv[1]
 root = pathlib.Path(plugin_folder)
 errors = []
-for p in list(root.glob("commands/*.md")) + list(root.glob("skills/*/SKILL.md")):
+for p in list(root.glob("skills/*/SKILL.md")):
     text = p.read_text()
     m = re.match(r'^---\s*\n(.*?)\n---\s*\n', text, re.DOTALL)
     if not m:
@@ -187,7 +143,6 @@ echo "=== DONE ==="
 echo "  Skill:    $SKILL_NAME"
 echo "  Repo:     $REPO_URL"
 echo "  Path:     $PLUGIN_FOLDER/skills/$SKILL_NAME/"
-echo "  Command:  $PLUGIN_FOLDER/commands/$SKILL_NAME.md"
 echo "  Clone:    $CLONE_DIR (safe to delete)"
 echo ""
 echo "Next: reinstall the marketplace plugin in Cowork to refresh the cache:"

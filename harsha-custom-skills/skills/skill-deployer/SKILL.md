@@ -22,7 +22,7 @@ Before running the script, collect three things (use `AskUserQuestion` if any ar
 
 1. **Source skill folder** — absolute or `~`-relative path to a folder containing a `SKILL.md` at the root. Example: `~/Downloads/claude skills/ultimate-debugging-tool`.
 2. **Marketplace repo URL** — the user's plugin marketplace on GitHub. Example: `https://github.com/user/my-skills-marketplace.git`. Skip the marketplace half if the user only wants Claude Code.
-3. **Plugin folder name inside the marketplace** — most marketplaces look like `<repo>/<plugin-name>/skills/<skill-name>/`. Ask the user what their plugin sub-folder is called (e.g. `harsha-custom-skills`). If they don't know, `cd` into a fresh clone of the repo, inspect the top-level directories, and pick the one that contains `skills/` and `commands/` subfolders.
+3. **Plugin folder name inside the marketplace** — most marketplaces look like `<repo>/<plugin-name>/skills/<skill-name>/`. Ask the user what their plugin sub-folder is called (e.g. `harsha-custom-skills`). If they don't know, `cd` into a fresh clone of the repo, inspect the top-level directories, and pick the one that contains a `skills/` subfolder.
 
 If the skill already exists in the marketplace under a different name (a stub, an older version), that stub will be removed and the new one replaces it. Ask the user if they want to archive or force-replace when that happens.
 
@@ -58,7 +58,7 @@ This copies the skill into `~/.claude/skills/<skill-name>/`, archiving any exist
 bash scripts/deploy-marketplace.sh <skill-path> <repo-url> <plugin-folder>
 ```
 
-This clones the marketplace repo to a fresh `~/Downloads/<repo-name>-update-<timestamp>/`, drops the skill into `<plugin-folder>/skills/<skill-name>/`, generates a slash-command at `<plugin-folder>/commands/<skill-name>.md` from the skill's frontmatter description, bumps patch version in `marketplace.json` and `plugin.json` if they exist, commits with a descriptive message, and pushes to `origin/<default-branch>`.
+This clones the marketplace repo to a fresh `~/Downloads/<repo-name>-update-<timestamp>/`, drops the skill into `<plugin-folder>/skills/<skill-name>/`, bumps patch version in `marketplace.json` and `plugin.json` if they exist, commits with a descriptive message, and pushes to `origin/<default-branch>`. Skills are invoked through the Skill tool using their SKILL.md slug — no sibling `commands/<skill-name>.md` file is generated, since a command with the same name as a skill collides at marketplace validation time.
 
 ### Step 4 — Cowork reinstall instructions
 
@@ -71,8 +71,8 @@ The new skill appears in Cowork's skill list as `<plugin-folder>:<skill-name>`.
 
 ### Step 5 — Verify
 
-- Claude Code: quit and relaunch. `/` menu should now show `/<skill-name>` (if the marketplace step was run, or if a slash command was added manually to `~/.claude/commands/`).
-- Cowork: in the skills autocomplete, typing `/` then the skill name should show it under the plugin namespace.
+- Claude Code: quit and relaunch. The Skill tool should now list `<skill-name>` (or `<plugin>:<skill-name>` if installed via the plugin).
+- Cowork: in the skills autocomplete, typing the skill name should show it under the plugin namespace.
 
 ## Running From Inside Cowork
 
