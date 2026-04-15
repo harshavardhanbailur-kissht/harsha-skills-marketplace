@@ -105,7 +105,7 @@ changes should take this route. Don't force pipeline overhead on simple work.
 
 ## Route 2: SMALL — Think Only
 
-**Load**: `skills/deep-thinker/SKILL.md`
+**Load**: `stages/deep-thinker/SKILL.md`
 
 Follow the deep-thinker skill at the "Small" complexity level:
 - Create `.deep-think/` with 3 files: OVERVIEW, IMPLEMENTATION, EDGE_CASES
@@ -125,7 +125,7 @@ project produced 8,600+ lines across 120+ files using this pattern).
 
 ### Phase 1: Deep Thinking
 
-**Load**: `skills/deep-thinker/SKILL.md`
+**Load**: `stages/deep-thinker/SKILL.md`
 
 Run deep-thinker at "Medium" or "Complex" complexity level (6-8 files).
 The critical output for the adapter is `EXECUTION_CHECKLIST.md` — make sure
@@ -183,7 +183,7 @@ mkdir -p .parallel/{contracts,prompts,outputs,reports}
 
 ### Phase 3: Parallel Execution
 
-**Load**: `skills/parallel-builder/ARCHITECTURE.md` for execution patterns
+**Load**: `stages/parallel-builder/ARCHITECTURE.md` for execution patterns
 
 Now execute the plan. For each layer, launch all tasks simultaneously using
 the Agent tool (subagent_type: "general-purpose").
@@ -245,7 +245,7 @@ Extra emphasis on EDGE_CASES.md — the orchestrator uses it for acceptance crit
 
 ### Phase 2: Orchestrator Intake (Native — No Adapter Needed)
 
-**Load**: `skills/orchestrator/SKILL.md` — specifically Section 2
+**Load**: `stages/orchestrator/SKILL.md` — specifically Section 2
 
 The V3.1 orchestrator reads `.deep-think/` files in this order:
 1. `OVERVIEW.md` → project goal, scope, success criteria
@@ -265,12 +265,12 @@ The V3.1 orchestrator reads `.deep-think/` files in this order:
 
 Initialize with:
 ```bash
-python skills/orchestrator/scripts/init_project.py "Project Name" --goal "Goal"
+python stages/orchestrator/scripts/init_project.py "Project Name" --goal "Goal"
 ```
 
 ### Phase 3: Orchestrator Planning + Prompt Generation
 
-**Continue with**: `skills/orchestrator/SKILL.md` — Sections 3-5
+**Continue with**: `stages/orchestrator/SKILL.md` — Sections 3-5
 
 The orchestrator:
 1. **Decomposes** into MECE tasks (Section 3) with layer assignments for parallelization
@@ -291,7 +291,7 @@ If no → add more context to the prompt.
 
 ### Phase 4: Parallel Execution
 
-**Load**: `skills/parallel-builder/ARCHITECTURE.md` for execution patterns
+**Load**: `stages/parallel-builder/ARCHITECTURE.md` for execution patterns
 
 The orchestrator has already written everything to `.parallel/`. Now dispatch:
 
@@ -305,7 +305,7 @@ For each layer in .parallel/PLAN.md:
 
 ### Phase 5: Results Ingestion (V3.1 Section 7)
 
-**Load**: `skills/orchestrator/SKILL.md` — Section 7
+**Load**: `stages/orchestrator/SKILL.md` — Section 7
 
 After parallel execution completes, the orchestrator reads results back:
 1. Read `.parallel/reports/EXECUTION_REPORT.md` for completion status
@@ -322,9 +322,9 @@ After parallel execution completes, the orchestrator reads results back:
 
 For multi-day projects, the orchestrator's state persists across sessions:
 - **Resume**: Read CONTEXT.md → todo.md → state.yaml (always this order)
-- **Checkpoint**: `python skills/orchestrator/scripts/checkpoint.py create`
-- **Status**: `python skills/orchestrator/scripts/report.py`
-- **Loop detection**: If stuck, `python skills/orchestrator/scripts/detect_loops.py`
+- **Checkpoint**: `python stages/orchestrator/scripts/checkpoint.py create`
+- **Status**: `python stages/orchestrator/scripts/report.py`
+- **Loop detection**: If stuck, `python stages/orchestrator/scripts/detect_loops.py`
 
 ---
 
@@ -392,10 +392,10 @@ Load these as needed — don't load everything upfront:
 | `references/pipeline-contracts.md` | When building adapters | Schema definitions for handoffs |
 | `references/adapter-thinking-compiler.md` | Route 3 Phase 2 | Converting .deep-think → .parallel (when orchestrator is SKIPPED) |
 | `references/adapter-state-extractor.md` | Rarely — fallback only | Converting .orchestrator → .parallel (V3.1 does this natively) |
-| `skills/deep-thinker/SKILL.md` | Routes 2-4, Phase 1 | Deep thinking methodology |
-| `skills/orchestrator/SKILL.md` | Route 4, Phases 2-5 | V3.1: native pipeline — reads .deep-think/, writes .parallel/ |
-| `skills/parallel-builder/ARCHITECTURE.md` | Routes 3-4, execution | Parallel execution patterns |
-| `skills/parallel-builder/SKILL.md` | Routes 3-4, execution | Parallel dispatch and verification |
+| `stages/deep-thinker/SKILL.md` | Routes 2-4, Phase 1 | Deep thinking methodology |
+| `stages/orchestrator/SKILL.md` | Route 4, Phases 2-5 | V3.1: native pipeline — reads .deep-think/, writes .parallel/ |
+| `stages/parallel-builder/ARCHITECTURE.md` | Routes 3-4, execution | Parallel execution patterns |
+| `stages/parallel-builder/SKILL.md` | Routes 3-4, execution | Parallel dispatch and verification |
 
 ## Sub-Skill References
 

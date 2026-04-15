@@ -380,7 +380,7 @@ if (!config.firebase.apiKey) {
 **BAD:**
 ```typescript
 // src/lib/firebase.ts
-const API_KEY = import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCYrY93JMKuAol-..."; // ← Fallback!
+const API_KEY = import.meta.env.VITE_FIREBASE_API_KEY || "<YOUR_FIREBASE_API_KEY>"; // ← Fallback!
 
 // src/config.ts
 export const FOLDER_ID = "1234567890abcdef"; // ← Hardcoded instead of env
