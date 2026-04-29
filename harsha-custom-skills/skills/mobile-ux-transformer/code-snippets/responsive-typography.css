@@ -1,0 +1,272 @@
+/**
+ * Responsive Typography CSS
+ * Mobile-optimized type scale with fluid sizing
+ * 
+ * Key Rules:
+ * - 16px minimum for body (prevents iOS zoom)
+ * - Fluid scaling with clamp()
+ * - Respects user preferences
+ */
+
+/* ==========================================================================
+   CSS Custom Properties (Design Tokens)
+   ========================================================================== */
+
+:root {
+  /* Base font size (mobile) */
+  --font-size-base: 16px;
+  
+  /* Type scale */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-size-4xl: 36px;
+  --font-size-5xl: 48px;
+  
+  /* Fluid type scale (mobile → desktop) */
+  --font-size-fluid-sm: clamp(14px, 0.875rem + 0.1vw, 15px);
+  --font-size-fluid-base: clamp(16px, 1rem + 0.2vw, 18px);
+  --font-size-fluid-lg: clamp(18px, 1.125rem + 0.3vw, 22px);
+  --font-size-fluid-xl: clamp(20px, 1.25rem + 0.5vw, 28px);
+  --font-size-fluid-2xl: clamp(24px, 1.5rem + 1vw, 36px);
+  --font-size-fluid-3xl: clamp(30px, 1.875rem + 1.5vw, 48px);
+  --font-size-fluid-4xl: clamp(36px, 2.25rem + 2vw, 60px);
+  
+  /* Line heights */
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+  
+  /* Letter spacing */
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Font families */
+  --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+    Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 
+    'Liberation Mono', 'Courier New', monospace;
+}
+
+/* ==========================================================================
+   Base Typography
+   ========================================================================== */
+
+html {
+  font-size: var(--font-size-base);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-fluid-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary, #1a1a1a);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   Headings
+   ========================================================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+h1, .h1 {
+  font-size: var(--font-size-fluid-3xl);
+}
+
+h2, .h2 {
+  font-size: var(--font-size-fluid-2xl);
+}
+
+h3, .h3 {
+  font-size: var(--font-size-fluid-xl);
+}
+
+h4, .h4 {
+  font-size: var(--font-size-fluid-lg);
+}
+
+h5, .h5 {
+  font-size: var(--font-size-fluid-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+h6, .h6 {
+  font-size: var(--font-size-fluid-sm);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* ==========================================================================
+   Body Text
+   ========================================================================== */
+
+p {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+.lead {
+  font-size: var(--font-size-fluid-lg);
+  line-height: var(--line-height-relaxed);
+}
+
+.small {
+  font-size: var(--font-size-sm);
+}
+
+.caption {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary, #666);
+}
+
+/* ==========================================================================
+   Mobile-Optimized Reading
+   ========================================================================== */
+
+/* Optimal line length for readability */
+.prose {
+  max-width: 65ch; /* ~65 characters per line */
+}
+
+/* Mobile: Allow full width but maintain readability */
+@media (max-width: 640px) {
+  .prose {
+    max-width: 100%;
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-relaxed);
+  }
+}
+
+/* ==========================================================================
+   Form Typography (iOS Zoom Prevention)
+   ========================================================================== */
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: 16px; /* Prevents iOS zoom */
+  font-size: max(16px, 1rem); /* Fluid fallback */
+  line-height: var(--line-height-normal);
+}
+
+/* Placeholder text */
+::placeholder {
+  color: var(--color-text-secondary, #999);
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+
+/* Larger screens: Increase base size slightly */
+@media (min-width: 768px) {
+  :root {
+    --font-size-base: 17px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --font-size-base: 18px;
+  }
+}
+
+/* ==========================================================================
+   User Preferences
+   ========================================================================== */
+
+/* Respect system font size preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  body {
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+/* ==========================================================================
+   iOS Dynamic Type Support (for hybrid apps)
+   ========================================================================== */
+
+/* CSS env() for Dynamic Type would be used here if supported */
+/* Currently requires native implementation */
+
+/* ==========================================================================
+   Utility Classes
+   ========================================================================== */
+
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-md); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+.text-2xl { font-size: var(--font-size-2xl); }
+.text-3xl { font-size: var(--font-size-3xl); }
+.text-4xl { font-size: var(--font-size-4xl); }
+
+.font-normal { font-weight: var(--font-weight-normal); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+
+.leading-tight { line-height: var(--line-height-tight); }
+.leading-snug { line-height: var(--line-height-snug); }
+.leading-normal { line-height: var(--line-height-normal); }
+.leading-relaxed { line-height: var(--line-height-relaxed); }
+
+.tracking-tight { letter-spacing: var(--letter-spacing-tight); }
+.tracking-normal { letter-spacing: var(--letter-spacing-normal); }
+.tracking-wide { letter-spacing: var(--letter-spacing-wide); }
+
+/* Text truncation */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

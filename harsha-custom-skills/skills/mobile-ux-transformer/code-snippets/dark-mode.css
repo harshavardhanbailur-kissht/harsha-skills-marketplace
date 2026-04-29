@@ -1,0 +1,273 @@
+/**
+ * Dark Mode CSS
+ * System-aware dark mode implementation
+ */
+
+/* ==========================================================================
+   CSS Custom Properties (Light Theme - Default)
+   ========================================================================== */
+
+:root {
+  /* Backgrounds */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --bg-tertiary: #e5e5e7;
+  --bg-elevated: #ffffff;
+  
+  /* Text */
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
+  --text-inverse: #ffffff;
+  
+  /* Borders */
+  --border-default: #d2d2d7;
+  --border-strong: #c6c6c8;
+  
+  /* Interactive */
+  --accent: #007aff;
+  --accent-hover: #0056b3;
+  --accent-active: #004494;
+  
+  /* Status */
+  --success: #34c759;
+  --warning: #ff9500;
+  --error: #ff3b30;
+  --info: #5856d6;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  
+  /* Overlay */
+  --overlay: rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   Dark Theme (System Preference)
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Backgrounds */
+    --bg-primary: #000000;
+    --bg-secondary: #1c1c1e;
+    --bg-tertiary: #2c2c2e;
+    --bg-elevated: #1c1c1e;
+    
+    /* Text */
+    --text-primary: #f5f5f7;
+    --text-secondary: #98989d;
+    --text-tertiary: #6e6e73;
+    --text-inverse: #1d1d1f;
+    
+    /* Borders */
+    --border-default: #38383a;
+    --border-strong: #48484a;
+    
+    /* Interactive (slightly brighter for dark mode) */
+    --accent: #0a84ff;
+    --accent-hover: #409cff;
+    --accent-active: #0077ed;
+    
+    /* Status (adjusted for dark backgrounds) */
+    --success: #30d158;
+    --warning: #ff9f0a;
+    --error: #ff453a;
+    --info: #5e5ce6;
+    
+    /* Shadows (more subtle in dark mode) */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+    
+    /* Overlay */
+    --overlay: rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* ==========================================================================
+   Manual Theme Override (data attribute)
+   ========================================================================== */
+
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --bg-tertiary: #e5e5e7;
+  --bg-elevated: #ffffff;
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
+  --border-default: #d2d2d7;
+  --border-strong: #c6c6c8;
+  --accent: #007aff;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #000000;
+  --bg-secondary: #1c1c1e;
+  --bg-tertiary: #2c2c2e;
+  --bg-elevated: #1c1c1e;
+  --text-primary: #f5f5f7;
+  --text-secondary: #98989d;
+  --text-tertiary: #6e6e73;
+  --border-default: #38383a;
+  --border-strong: #48484a;
+  --accent: #0a84ff;
+}
+
+/* ==========================================================================
+   Base Styles Using Variables
+   ========================================================================== */
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Cards */
+.card {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Buttons */
+.button-primary {
+  background-color: var(--accent);
+  color: var(--text-inverse);
+}
+
+.button-secondary {
+  background-color: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--accent);
+}
+
+/* Inputs */
+input, textarea, select {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent);
+}
+
+/* Links */
+a {
+  color: var(--accent);
+}
+
+/* Dividers */
+hr, .divider {
+  border-color: var(--border-default);
+}
+
+/* ==========================================================================
+   Dark Mode Images
+   ========================================================================== */
+
+/* Dim images slightly in dark mode */
+@media (prefers-color-scheme: dark) {
+  img:not([src*=".svg"]) {
+    opacity: 0.9;
+  }
+}
+
+/* Provide dark mode image variants */
+.logo {
+  content: url('logo-light.svg');
+}
+
+@media (prefers-color-scheme: dark) {
+  .logo {
+    content: url('logo-dark.svg');
+  }
+}
+
+/* Or use picture element */
+/*
+<picture>
+  <source srcset="image-dark.png" media="(prefers-color-scheme: dark)">
+  <img src="image-light.png" alt="...">
+</picture>
+*/
+
+/* ==========================================================================
+   Theme Toggle Component
+   ========================================================================== */
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.theme-toggle-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.theme-toggle .sun-icon {
+  display: block;
+}
+
+.theme-toggle .moon-icon {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .theme-toggle .sun-icon {
+    display: none;
+  }
+  
+  .theme-toggle .moon-icon {
+    display: block;
+  }
+}
+
+[data-theme="dark"] .theme-toggle .sun-icon {
+  display: none;
+}
+
+[data-theme="dark"] .theme-toggle .moon-icon {
+  display: block;
+}
+
+[data-theme="light"] .theme-toggle .sun-icon {
+  display: block;
+}
+
+[data-theme="light"] .theme-toggle .moon-icon {
+  display: none;
+}
+
+/* ==========================================================================
+   Smooth Transitions
+   ========================================================================== */
+
+/* Transition colors smoothly when theme changes */
+*, *::before, *::after {
+  transition: 
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Disable transitions for prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none;
+  }
+}

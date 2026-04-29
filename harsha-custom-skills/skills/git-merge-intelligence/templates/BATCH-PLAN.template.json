@@ -1,0 +1,178 @@
+{
+  "generated_at": "2026-04-08T10:00:00Z",
+  "mode": "STANDARD",
+  "total_files": 68,
+  "total_batches": 6,
+  "our_intent": "FEATURE",
+  "their_intent": "REFACTOR",
+  "batches": [
+    {
+      "batch_id": 0,
+      "name": "Foundation (Configs & Lockfiles)",
+      "files": [
+        {
+          "path": "package.json",
+          "strategy": "MANUAL_MERGE",
+          "risk_score": 55,
+          "risk_level": "YELLOW",
+          "deep_think": false,
+          "notes": "Both branches add dependencies",
+          "status": "pending"
+        },
+        {
+          "path": "go.sum",
+          "strategy": "REGENERATE",
+          "risk_score": 85,
+          "risk_level": "GREEN",
+          "deep_think": false,
+          "notes": "Delete and run go mod tidy",
+          "status": "pending"
+        },
+        {
+          "path": "tsconfig.json",
+          "strategy": "KEEP_OURS",
+          "risk_score": 78,
+          "risk_level": "GREEN",
+          "deep_think": false,
+          "notes": "Compiler configuration from our branch",
+          "status": "pending"
+        }
+      ],
+      "batch_risk": "YELLOW",
+      "gate": "Must complete before Batch 1"
+    },
+    {
+      "batch_id": 1,
+      "name": "Types & Interfaces",
+      "files": [
+        {
+          "path": "src/types/user.ts",
+          "strategy": "MANUAL_MERGE",
+          "risk_score": 72,
+          "risk_level": "GREEN",
+          "deep_think": false,
+          "notes": "Both branches extend User interface with non-overlapping fields",
+          "status": "pending"
+        },
+        {
+          "path": "src/types/api.ts",
+          "strategy": "KEEP_BOTH",
+          "risk_score": 80,
+          "risk_level": "GREEN",
+          "deep_think": false,
+          "notes": "Additive conflict: both branches add new endpoint types",
+          "status": "pending"
+        }
+      ],
+      "batch_risk": "GREEN",
+      "gate": "Must complete before Batch 2"
+    },
+    {
+      "batch_id": 2,
+      "name": "Shared & Middleware",
+      "files": [
+        {
+          "path": "src/middleware/cors.ts",
+          "strategy": "DEEP_THINK",
+          "risk_score": 35,
+          "risk_level": "RED",
+          "deep_think": true,
+          "notes": "Cross-language dependency (TypeScript ↔ Go): affects request validation",
+          "status": "pending"
+        }
+      ],
+      "batch_risk": "YELLOW",
+      "gate": "YELLOW batch: verify before proceeding to next batch"
+    },
+    {
+      "batch_id": 3,
+      "name": "Implementations",
+      "files": [
+        {
+          "path": "src/api/billing/charge.ts",
+          "strategy": "DEEP_THINK",
+          "risk_score": 45,
+          "risk_level": "YELLOW",
+          "deep_think": true,
+          "notes": "SEMANTIC conflict: payment amount calculation changed in both branches",
+          "status": "pending"
+        },
+        {
+          "path": "src/auth/jwt-verify.ts",
+          "strategy": "DEEP_THINK",
+          "risk_score": 20,
+          "risk_level": "RED",
+          "deep_think": true,
+          "notes": "AUTH_SECURITY: structural changes to token validation and algorithm choice",
+          "status": "pending"
+        }
+      ],
+      "batch_risk": "RED",
+      "gate": "RED files: present to human with full context before resolving"
+    },
+    {
+      "batch_id": 4,
+      "name": "Tests",
+      "files": [
+        {
+          "path": "src/__tests__/user.test.ts",
+          "strategy": "MANUAL_MERGE",
+          "risk_score": 65,
+          "risk_level": "YELLOW",
+          "deep_think": false,
+          "notes": "Test cases for new user type fields",
+          "status": "pending"
+        }
+      ],
+      "batch_risk": "GREEN",
+      "gate": "Must complete before Batch 5"
+    },
+    {
+      "batch_id": 5,
+      "name": "Docs & CI",
+      "files": [
+        {
+          "path": "README.md",
+          "strategy": "KEEP_BOTH",
+          "risk_score": 90,
+          "risk_level": "GREEN",
+          "deep_think": false,
+          "notes": "Documentation additions from both branches",
+          "status": "pending"
+        }
+      ],
+      "batch_risk": "GREEN",
+      "gate": "Final batch"
+    }
+  ],
+  "deep_think_queue": [
+    {
+      "path": "src/auth/jwt-verify.ts",
+      "reasons": [
+        "Strategy: DEEP_THINK (type=AUTH_SECURITY)",
+        "Risk: RED (score=20)"
+      ],
+      "priority": 1,
+      "status": "pending"
+    },
+    {
+      "path": "src/middleware/cors.ts",
+      "reasons": [
+        "Cross-language dependency detected",
+        "Risk: RED (score=35)"
+      ],
+      "priority": 2,
+      "status": "pending"
+    },
+    {
+      "path": "src/api/billing/charge.ts",
+      "reasons": [
+        "Strategy: DEEP_THINK (type=SEMANTIC)",
+        "Risk: YELLOW (score=45)"
+      ],
+      "priority": 3,
+      "status": "pending"
+    }
+  ],
+  "cycle_warnings": []
+}

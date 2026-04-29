@@ -1,0 +1,175 @@
+GIT RERERE DEEP DIVE - COMPREHENSIVE RESEARCH
+=============================================
+
+File: git-rerere-deep-dive.md
+Size: 1,167 lines, 34 KB
+Date: April 2026
+
+RESEARCH COVERAGE:
+
+1. INTERNALS & MECHANICS
+   - How git rerere works internally (recording and reuse process)
+   - .git/rr-cache/ directory structure and file organization
+   - Hash generation and conflict identification algorithm
+   - Preimage, postimage, thisimage file formats
+   - Three-way merge verification logic
+
+2. CONFIGURATION
+   - rerere.enabled: Enable/disable functionality
+   - rerere.autoupdate: Automatic index staging
+   - rerere.cacheLocation: Custom cache location
+   - Per-repository and global configuration
+   - Garbage collection settings (gc.rerefDays, gc.refsExpireDays)
+
+3. WORKFLOW & COMMANDS
+   - First encounter: recording a resolution
+   - Second encounter: reusing the resolution
+   - git rerere status: Show tracked conflicts
+   - git rerere diff: Display resolution differences
+   - git rerere remaining: List unresolved conflicts
+   - git rerere forget: Delete cached resolutions
+   - git rerere clear: Reset temporary state
+   - git rerere gc: Prune old resolutions
+
+4. HASHING & CONFLICT IDENTIFICATION
+   - Content-based hashing mechanism (SHA-1)
+   - Hash calculation process and normalization
+   - What constitutes a "match" between conflicts
+   - Three-way merge verification
+   - Collision and uniqueness considerations
+
+5. LIMITATIONS & EDGE CASES
+   - Conflict marker detection failures
+   - Context-dependent failures (surrounding code changes)
+   - Submodule conflicts (not supported)
+   - File rename conflicts (structural conflicts)
+   - Binary file conflicts (not supported)
+   - Incorrect/incomplete resolution propagation
+   - Heuristics are not 100% guaranteed
+
+6. TEAM WORKFLOWS
+   - Sharing rr-cache across team members
+   - Central rr-cache repository approach
+   - Git-BPF integration for automatic sharing
+   - Symlinks to shared locations
+   - Team best practices and guidelines
+   - Sync cadence and code review strategies
+
+7. REBASE INTEGRATION
+   - Why rebase + rerere is powerful
+   - Solving repeated conflicts across rebases
+   - Long-lived branch pattern
+   - Rebase with dropped commits
+   - Cherry-pick with rerere
+   - Manual review requirements
+
+8. AI & MERGE INTELLIGENCE
+   - Pre-rerere checking for AI validation
+   - Conflict classification and routing
+   - Rerere cache enrichment with metadata
+   - Integration points for AI resolution
+   - Combining rerere with semantic analysis
+   - Validation layers and test integration
+
+9. PERFORMANCE
+   - Disk space usage per conflict
+   - Lookup and application performance
+   - Repository-wide implications
+   - Global rerere management
+   - Garbage collection strategies
+   - Profiling recommendations
+
+10. TROUBLESHOOTING
+    - Rerere not working (enable/configure checks)
+    - Conflicts not being recorded (encoding issues)
+    - Stale cached resolutions (cleanup)
+    - Detecting wrong cached resolutions
+    - Fixing incorrect resolutions
+    - Bulk cleanup procedures
+
+11. ADVANCED SCENARIOS
+    - Multiple conflicts in one file
+    - Same conflict in different files
+    - Partial three-way merge failure
+    - Rebase with dropped commits
+    - Interaction with merge strategies
+    - Accidental conflict marker commits
+
+12. COMPARATIVE ANALYSIS
+    - vs. Merge commit strategies
+    - vs. Manual conflict resolution
+    - vs. AI-powered merge tools
+    - Complementary approaches
+
+KEY TECHNICAL INSIGHTS:
+
+✓ Content-based identification (not file-path based)
+✓ Three-way merge verification ensures safety
+✓ Imperceptible performance overhead (<100ms)
+✓ Plain text storage for debugging transparency
+✓ SHA-1 hash collision risk is negligible
+✓ Requires manual finalization for safety
+✓ Cannot handle: submodules, renames, binary files
+✓ Works with: merge, rebase, cherry-pick, all merge strategies
+
+DESIGN PATTERNS DOCUMENTED:
+
+1. First conflict → resolve → record → future same conflict → auto-apply
+2. Multi-target merge pattern (merge to multiple branches)
+3. Long-lived branch pattern (keep branch synchronized)
+4. Rebase-focused workflow (frequent rebases)
+5. Feature branch integration (periodic syncs)
+
+AI INTEGRATION OPPORTUNITIES:
+
+1. Pre-rerere validation (confirm cached resolution before use)
+2. Semantic enrichment (store intent metadata with resolutions)
+3. Confidence scoring (rate cached resolution applicability)
+4. Test-driven validation (run tests after auto-application)
+5. Domain-aware routing (different resolution strategies per file type)
+
+SOURCES CITED (18 total):
+
+- Pro Git book (git-scm.com/book)
+- Official Git documentation (git-scm.com/docs)
+- Atlassian Blog
+- Medium articles (Christophe Porteneuve, Milan Brankovic)
+- GitHub Gists
+- Engineering blogs
+- Linux man pages
+- DEV Community
+- Graph AI Engineering Glossary
+- Git source code (GitHub)
+
+PRACTICAL COMMANDS INCLUDED:
+
+✓ Enable/configure rerere
+✓ Record resolutions
+✓ Query cached resolutions
+✓ Manage rr-cache
+✓ Troubleshoot issues
+✓ Team sharing strategies
+
+RECOMMENDED FOR:
+
+- Developers using Git with frequent merges/rebases
+- Teams building AI-powered merge tools
+- Git workflow optimization initiatives
+- Merge conflict automation projects
+- Long-lived branch management
+- Multi-target release workflows
+
+RESEARCH QUALITY:
+
+Comprehensive (1,167 lines)
+Technically detailed with code examples
+Includes practical workflows and troubleshooting
+Covers limitations and edge cases explicitly
+Authoritative sources (Pro Git, official docs, engineering blogs)
+Suitable for implementation reference
+Contains design patterns for AI integration
+
+---
+Research compiled: April 2026
+For: AI merge intelligence skill development
+Context: git-merge-intelligence project

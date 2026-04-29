@@ -1,0 +1,281 @@
+/**
+ * Touch Targets CSS
+ * Mobile-optimized touch target sizing and spacing
+ * 
+ * Standards:
+ * - WCAG 2.2 AA: 24×24px minimum
+ * - WCAG 2.2 AAA: 44×44px minimum
+ * - Apple HIG: 44×44pt
+ * - Material Design: 48×48dp
+ */
+
+/* ==========================================================================
+   Base Touch Target
+   ========================================================================== */
+
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ==========================================================================
+   Expanded Touch Area (for small visual elements)
+   ========================================================================== */
+
+.touch-target-expanded {
+  position: relative;
+}
+
+.touch-target-expanded::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* ==========================================================================
+   Icon Button (visual size differs from touch size)
+   ========================================================================== */
+
+.icon-button {
+  /* Visual appearance */
+  width: 24px;
+  height: 24px;
+  
+  /* Touch target (padding expands to 44px) */
+  padding: 10px;
+  margin: -10px; /* Compensate for padding in layout */
+  
+  /* Reset */
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  
+  /* Center icon */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-button svg {
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+
+/* Active state */
+.icon-button:active {
+  opacity: 0.7;
+}
+
+/* Focus state */
+.icon-button:focus-visible {
+  outline: 2px solid var(--color-primary, #007AFF);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   Button Sizes
+   ========================================================================== */
+
+.button {
+  min-height: 44px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+/* Large button for primary actions */
+.button--large {
+  min-height: 56px;
+  padding: 16px 32px;
+  font-size: 18px;
+}
+
+/* Small button (still meets minimum touch target) */
+.button--small {
+  min-height: 44px; /* Maintains touch target */
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+/* Full-width button */
+.button--full {
+  width: 100%;
+}
+
+/* ==========================================================================
+   Touch Target Spacing
+   ========================================================================== */
+
+.touch-group {
+  display: flex;
+  gap: 8px; /* Minimum spacing between targets */
+}
+
+.touch-group--vertical {
+  flex-direction: column;
+}
+
+/* List items with proper touch targets */
+.touch-list-item {
+  min-height: 48px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-list-item:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
+   Link Touch Targets
+   ========================================================================== */
+
+/* Inline links need expanded touch area */
+.touch-link {
+  display: inline;
+  padding: 8px 4px;
+  margin: -8px -4px;
+  text-decoration: underline;
+  color: var(--color-link, #007AFF);
+}
+
+/* Block link (wraps content) */
+.touch-link-block {
+  display: block;
+  padding: 8px;
+  margin: -8px;
+  text-decoration: none;
+  border-radius: 8px;
+}
+
+.touch-link-block:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
+   Close/Dismiss Buttons
+   ========================================================================== */
+
+.close-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 50%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.close-button:active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.close-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ==========================================================================
+   Checkbox/Radio Touch Targets
+   ========================================================================== */
+
+.checkbox-wrapper,
+.radio-wrapper {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.checkbox-wrapper input,
+.radio-wrapper input {
+  /* Hide native input */
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-custom,
+.radio-custom {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-border, #ccc);
+  border-radius: 4px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.radio-custom {
+  border-radius: 50%;
+}
+
+/* ==========================================================================
+   Validation Utility
+   ========================================================================== */
+
+/* Debug mode: highlight small touch targets */
+[data-debug-touch] *:not(svg):not(path) {
+  outline: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+[data-debug-touch] button,
+[data-debug-touch] a,
+[data-debug-touch] input,
+[data-debug-touch] [role="button"] {
+  position: relative;
+}
+
+[data-debug-touch] button::after,
+[data-debug-touch] a::after,
+[data-debug-touch] [role="button"]::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border: 2px dashed rgba(0, 255, 0, 0.5);
+  border-radius: 4px;
+  pointer-events: none;
+}

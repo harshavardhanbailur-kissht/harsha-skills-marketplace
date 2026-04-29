@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "status_values": ["pending", "resolved", "needs-human", "blocked"],
+  "initialized_at": "{ISO-8601 timestamp}",
+  "mode": "{SPRINT | STANDARD | HEAVY}",
+  "total_conflicts": 0,
+  "files": [
+    {
+      "path": "{relative/path/to/file.ext}",
+      "language": "{typescript | javascript | go | python | json | yaml | css | markdown | unknown}",
+      "conflict_type": "{ADDITIVE | MODIFY_SAME | DELETE_MODIFY | RENAME_MODIFY | SEMANTIC | CONFIG | LOCKFILE | AUTH_SECURITY}",
+      "complexity": "{TRIVIAL | MODERATE | COMPLEX | CRITICAL}",
+      "batch": 0,
+      "size_lines": 0,
+      "conflict_regions": 0,
+      "depends_on": [],
+      "depended_by": [],
+      "status": "pending",
+      "resolution_strategy": null,
+      "risk_score": null,
+      "risk_level": null,
+      "confidence": null,
+      "deep_think_required": false,
+      "notes": "",
+      "resolved_at": null,
+      "reversal_command": null
+    }
+  ],
+  "summary": {
+    "total": 0,
+    "by_type": {
+      "ADDITIVE": 0,
+      "MODIFY_SAME": 0,
+      "DELETE_MODIFY": 0,
+      "RENAME_MODIFY": 0,
+      "SEMANTIC": 0,
+      "CONFIG": 0,
+      "LOCKFILE": 0,
+      "AUTH_SECURITY": 0
+    },
+    "by_complexity": {
+      "TRIVIAL": 0,
+      "MODERATE": 0,
+      "COMPLEX": 0,
+      "CRITICAL": 0
+    },
+    "by_batch": {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    "by_language": {},
+    "dependencies_analyzed": false,
+    "deep_think_candidates": 0
+  },
+  "batch_gates": {
+    "0": { "status": "pending", "completed_at": null },
+    "1": { "status": "pending", "completed_at": null },
+    "2": { "status": "pending", "completed_at": null },
+    "3": { "status": "pending", "completed_at": null },
+    "4": { "status": "pending", "completed_at": null },
+    "5": { "status": "pending", "completed_at": null }
+  }
+}
