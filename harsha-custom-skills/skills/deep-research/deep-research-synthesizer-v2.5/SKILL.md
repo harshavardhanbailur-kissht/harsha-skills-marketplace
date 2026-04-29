@@ -1,8 +1,7 @@
 ---
-name: deep-research
 title: Deep Research Synthesizer
 description: |
-  STOP! Before you run random queries, read this. This skill transforms fragmented web searches into a cohesive knowledge base. It orchestrates multi-pass research, cross-references sources, detects hallucinations, and builds relationship maps between concepts. Your research will be thorough, trustworthy, and actually useful.
+  STOP! Before you run random queries, read this. This skill transforms fragmented web searches into a cohesive knowledge base. It orchestrates multi-pass research, cross-references sources, detects hallucinations, and builds relationship maps between concepts. Your research will be thorough, trustworthy, and actually useful. Also use when the user wants to learn about a topic deeply, study a subject progressively, or create a structured learning guide. Can accept pre-researched data and visualize it as an interactive webapp. Triggers for: learn about, study, understand, teach me, help me grasp, learning guide, progressive tutorial, knowledge exploration, visualize research, make findings interactive, turn research into webapp.
 mcp_tools_used:
   - WebSearch
   - WebFetch
@@ -11,25 +10,37 @@ mcp_tools_used:
   - Read
   - Write
   - Notion tools (fetch, search, create-pages, update-page)
-tags: [research, knowledge-base, synthesis, quality-assurance, knowledge-graphs, proptech, real-estate]
+tags: [research, knowledge-base, synthesis, quality-assurance, knowledge-graphs, proptech, real-estate, learning, progressive-guide, visualization, product-management, pm-lens, fintech, financial-technology, payments, lending, digital-banking]
 ---
 
 # Deep Research Synthesizer
 
 **Status**: Production-ready
-<<<<<<< HEAD
-**Version**: 2.5
-**Last Updated**: 2026-02-09
-=======
-**Version**: 3.1
-**Last Updated**: 2026-04-29
->>>>>>> d4293ae (deep-research v3.1: slim SKILL.md (55KB -> 22KB))
+**Version**: 3.0
+**Last Updated**: 2026-03-25
 
 ## Executive Summary
 
-The Deep Research Synthesizer transforms raw research queries into structured, verified knowledge bases. It orchestrates 6+2 phases of research, quality assurance, and synthesis, complete with relationship mapping and hallucination detection. Domain lenses (PM, FinTech, PropTech) overlay the pipeline to enrich it for specific contexts. This SKILL.md is the orchestrator — operational detail lives in `references/`.
+The Deep Research Synthesizer is a skill for transforming raw research queries into structured, verified knowledge bases. It orchestrates 6 phases of research, quality assurance, and synthesis, complete with relationship mapping and hallucination detection.
 
-<<<<<<< HEAD
+## Quick-Start Guide (Read This First)
+
+**Fastest path to a working knowledge base:**
+
+1. Tell Claude: "I want to research [your topic] deeply using the Deep Research Synthesizer"
+2. Claude runs Phases 1-3 (planning, breadth, depth) — takes 60-90 minutes
+3. Claude builds knowledge graph (Phase 3.5) and runs QA (Phase 4.5) — 20 minutes
+4. Claude assembles an interactive webapp (Phase 6) — 2 minutes
+5. Open the HTML file — explore, search, and learn
+
+**Want domain-specific research?** Add "use PM lens" or "use FinTech lens" to your request.
+
+**Already have research data?** Say "visualize this research" and provide JSON/markdown — skips to Phase 6.
+
+**Want to learn, not just research?** Say "help me understand [topic]" — activates Learning Mode with progressive difficulty tiers.
+
+---
+
 **Key improvements in v2.5**:
 - Phase 3.5: Knowledge Graph Building (relationship mapping between entries)
 - Phase 4.5: Research Quality Assurance (fact-checking and verification)
@@ -42,6 +53,56 @@ The Deep Research Synthesizer transforms raw research queries into structured, v
 - **NEW: BM25F Search Algorithm** — replaces basic TF-IDF with field-weighted BM25F scoring, trigram fuzzy matching, faceted filtering
 - **NEW: Advanced Search Algorithms Reference** — complete client-side search engine with autocomplete, facets, and performance benchmarks
 - **NEW: PropTech Web App Template** — map views (Leaflet), property cards, market segment filters, region-based visualization, D3 knowledge graph with PropTech-specific UI/UX
+
+**Key improvements in v2.5.1** (Learning Mode + Visualization Entry):
+- **NEW: Learning Mode** — dependency-ordered output with topological sort, three learning tiers (Foundation/Intermediate/Advanced), PM-specific framing for product management topics
+- **NEW: Visualization-Only Entry Point** — accepts pre-researched data (from McKinsey Research skill or other sources) and jumps directly to graph building + webapp assembly, skipping Phases 1-3
+- **NEW: Learning Path View** — webapp toggle between Explore Mode (knowledge graph) and Learning Path Mode (linear progressive view with dependency arrows)
+- **NEW: Learning Tier Badges** — visual indicators on knowledge cards showing Foundation/Intermediate/Advanced difficulty
+- **UPDATED: build_knowledge_app.py** — new `--learning-mode` and `--visualization-only` flags
+
+## Entry Points
+
+The skill supports two entry points into the pipeline. The **standard entry** runs the full 6+2 phases. The **visualization entry** accepts pre-researched data and skips directly to graph building and webapp assembly.
+
+### Standard Entry (default): Full Research Pipeline
+
+**Phases**: 1 → 2 → 3 → 3.5 → 4 → 4.5 → 5 → 6
+
+**Use when**: Starting research from scratch on a new topic. No prior research exists.
+
+**Activation**: Default behavior. Any research request that doesn't match visualization entry triggers.
+
+### Visualization Entry: Pre-Researched Data → Webapp
+
+**Phases**: 3.5 → 5 (light) → 6
+
+**Use when**: Research data already exists — from McKinsey Research skill output, uploaded documents, a previous research session, or any structured findings the user provides.
+
+**Activation triggers** (user says any of):
+- "visualize", "turn into webapp", "make interactive", "build knowledge graph from this"
+- "I already have the research, just build the webapp"
+- "here are my findings, make them explorable"
+- "take this McKinsey output and build a knowledge app"
+- User provides structured claims/findings as input (JSON, markdown with citations, structured report)
+
+**Input formats accepted**:
+- **JSON claims array**: `[{"title": "...", "content": "...", "confidence": "HIGH", "source": "..."}]`
+- **Markdown with inline citations**: Standard markdown with `[Source](URL)` citations — parsed into entries
+- **Structured report sections**: Headings become entry titles, content under each heading becomes entry content
+- **McKinsey Research skill output**: The `research-synthesis.md` or JSON output from McKinsey Research v3.0
+
+**Processing for visualization entry**:
+1. Parse input into knowledge entry format (see `references/knowledge-ingestion.md` → "Ingesting Pre-Researched Data")
+2. Build knowledge graph (Phase 3.5) — detect relationships, assign clusters
+3. Light QA (Phase 5) — validate structure, check for missing fields, assign confidence scores if not provided (default: 0.7/MEDIUM)
+4. Assemble webapp (Phase 6) — full interactive webapp with D3.js graph, search, filtering
+
+**What's skipped**: Phases 1-3 (planning, breadth search, depth search) and Phase 4 (source deep-dive) are entirely skipped. The assumption is that the input data has already been researched and verified.
+
+**Quality note**: Since Phases 1-4 are skipped, the visualization entry trusts the input data's quality. If the input has low-quality claims, the webapp will reflect that. For rigorous research, use the standard entry.
+
+---
 
 ## The 6+2 Phase Research Pipeline
 
@@ -219,8 +280,8 @@ Entry 2: Dyeing Industry Impact
    - Edge color = relationship type
 
 **Metrics**:
-- Graph density target: 0.15-0.35 (too high = everything related to everything; too low = fragmented)
-- Avg connections per entry: 3-7
+- Avg connections per entry: 3-7 (primary metric — use this to assess graph quality)
+- Graph density: Varies by KB size. For 30-50 entries target 0.08-0.20; for 100+ entries target 0.03-0.10. (Density = edges / (n*(n-1)/2). Density drops naturally as KB grows because not everything connects.)
 - Orphan count: <10% of total entries (flag for review)
 - Clustering coefficient: Shows local clustering
 
@@ -250,6 +311,45 @@ Entry 2: Dyeing Industry Impact
   ]
 }
 ```
+
+---
+
+### Phase 3.5 Enhancement: Learning Mode
+
+When the user's intent signals **learning** (not just research), activate learning mode to reorder and reframe the output for progressive understanding.
+
+**Learning mode activation** (detect ANY of these in user query):
+- Keywords: "understand", "learn", "study", "help me grasp", "explain", "how does X work", "teach me", "guide me through", "walk me through", "I want to know about", "deep dive into", "master"
+- Phrasing: Questions starting with "What is...", "How do...", "Why does..."
+
+**Research mode (default, no reordering)** — detect these instead:
+- Keywords: "research", "analyze", "compare", "investigate", "find out about", "what's the state of", "landscape", "competitive analysis"
+
+**When learning mode is active, Phase 3.5 adds these steps**:
+
+1. **Topological sort** on dependency edges to determine prerequisite ordering
+2. **Assign learning tiers** (Foundation / Intermediate / Advanced) based on dependency in-degree
+3. **Detect PM topic** — if PM keywords found in query or entries, apply PM context framing
+4. **Reorder assembly output** to follow dependency chain (foundations first, advanced last)
+5. **Apply progressive difficulty framing** — accessible language for foundations, technical precision for advanced
+
+→ **Full algorithm details**: See `references/knowledge-graph-builder.md` → "Learning Mode: Dependency-Ordered Output"
+
+**PM-topic detection keywords**: product management, sprint, OKR, roadmap, discovery, prioritization, stakeholder, user story, A/B test, funnel, retention, JTBD, backlog, MVP, PLG, north star metric, agile, scrum, kanban, user research, persona, PMF, churn, PRD
+
+**When PM topic detected, each entry gets additional framing**:
+- "How This Applies in PM Work" section
+- "When to Use This" / "When NOT to Use This" guidance
+- "Real-World PM Scenario" example
+- Cross-references to related PM frameworks
+
+**Impact on Phase 6 (Assembly)**:
+- Webapp sidebar follows dependency order (not alphabetical)
+- Learning tier badges (🟢 Foundation / 🟡 Intermediate / 🔴 Advanced) on each entry
+- "Learning Path" view toggle alongside "Explore Mode" (knowledge graph)
+- Learning Path shows linear progression with connecting arrows between prerequisites
+
+**Important**: Learning mode is ADDITIVE. Standard research mode works exactly as before. Learning mode only activates when learning intent is detected, and only adds reordering + framing on top of the existing pipeline.
 
 ---
 
@@ -521,63 +621,10 @@ Recommendations:
 - If export corrupted: Regenerate from source JSON
 
 ---
-=======
-## Quick-Start Guide (Read This First)
-
-**Fastest path to a working knowledge base:**
-
-1. Tell Claude: "I want to research [your topic] deeply using the Deep Research Synthesizer"
-2. Claude runs Phases 1-3 (planning, breadth, depth) — takes 60-90 minutes
-3. Claude builds knowledge graph (Phase 3.5) and runs QA (Phase 4.5) — 20 minutes
-4. Claude assembles an interactive webapp (Phase 6) — 2 minutes
-5. Open the HTML file — explore, search, and learn
-
-**Want domain-specific research?** Add "use PM lens" or "use FinTech lens" to your request.
-
-**Already have research data?** Say "visualize this research" and provide JSON/markdown — skips to Phase 6.
-
-**Want to learn, not just research?** Say "help me understand [topic]" — activates Learning Mode with progressive difficulty tiers.
-
-## Entry Points
-
-The skill supports two entry points into the pipeline.
-
-**Standard Entry (default): Full Research Pipeline.** Phases 1 → 2 → 3 → 3.5 → 4 → 4.5 → 5 → 6. Use when starting research from scratch on a new topic — no prior research exists. Activates by default.
-
-**Visualization Entry: Pre-Researched Data → Webapp.** Phases 3.5 → 5 (light) → 6. Use when research data already exists from McKinsey Research output, uploaded documents, a previous research session, or any structured findings the user provides. Triggers: "visualize", "turn into webapp", "make interactive", "build knowledge graph from this", "I already have the research, just build the webapp", or the user provides structured claims/findings as input (JSON, markdown with citations, structured report).
-
-Accepted input formats: JSON claims array (`[{"title": "...", "content": "...", "confidence": "HIGH", "source": "..."}]`), markdown with inline `[Source](URL)` citations, structured report sections (headings become entry titles), or McKinsey Research v3.0 output (`research-synthesis.md` or its JSON).
-
-For ingestion details, see `references/knowledge-ingestion.md` → "Ingesting Pre-Researched Data". Visualization entry trusts the input data's quality — for rigorous research, use the standard entry.
-
-## The 6+2 Phase Research Pipeline
-
-The full per-phase mechanics, examples, metrics, and failure-recovery paths live in `references/phase-pipeline.md`. The TLDR:
-
-| Phase | Goal | Time Budget | Key Output |
-|------|------|------------|-----------|
-| 1. Research Planning | Turn topic into 5-10 targeted queries | 15-30 min | Query plan with diverse angles |
-| 2. Breadth Search | Map the landscape; surface themes & controversies | 30-60 min | Topic map (5-10 themes, 25-50 sources scanned) |
-| 3. Depth Research | Deep-dive each theme; extract knowledge entries | 60-180 min | Knowledge entries with authority tiers |
-| 3.5. Knowledge Graph Building | Map relationships between entries | 30-60 min | Graph (nodes, edges, clusters) |
-| 3.5.x. Learning Mode (optional) | Topological sort + tiering for progressive learning | +10-20 min | Dependency-ordered output, tier badges |
-| 4. Source Deep-Dive | Trace claims to primary sources; verify stats | 60-120 min | Evidence chains with authority documentation |
-| 4.5. Quality Assurance | Score entries 0-50; catch hallucinations & contradictions | 30-60 min | Pass/fail decisions, contradictions log |
-| 5. KB Assembly & Ingestion | Deduplicate, normalize metadata, ingest | 30-60 min | Ingestion report with gaps identified |
-| 6. Visualization & Discovery | D3 graph, search, faceted filtering | 20-60 min | Interactive webapp |
-
-→ **Full per-phase spec, examples, metrics, failure recovery**: `references/phase-pipeline.md`
-→ **Worked example flowing through all phases (AI in Healthcare 2025)**: `references/worked-example-ai-healthcare.md`
-
-**Cross-phase rules**:
-- Don't skip Phase 3.5 — even at condensed 10-min form, the graph catches gaps and contradictions.
-- Don't publish before Phase 4.5 — QA gates publication.
-- Phase 4 (claim-level) and Phase 4.5 (entry-level) are different — both required.
->>>>>>> d4293ae (deep-research v3.1: slim SKILL.md (55KB -> 22KB))
 
 ## Sub-Agent Scaling Guidance
 
-When research scope is large (100+ entries expected), distribute work across multiple agents.
+When research scope is large (100+ entries expected), distribute work across multiple agents:
 
 **Agent Pool Formula**:
 - Entries per agent: 15-25 per Phase 3
@@ -616,35 +663,45 @@ Phase 5 (Agent A, D): Deduplicate, ingest
 Phase 6 (Agent A): Publish, visualize
 ```
 
-**Communication Protocol**: Shared JSON file for passing data between phases; explicit handoff checklist (what must be complete before next phase); conflict resolution by vote or escalation to Phase Lead. Full prompts are in `references/sub-agent-orchestration.md` and `references/prompt-templates.md`.
+**Communication Protocol**:
+- Shared JSON file for passing data between phases
+- Explicit handoff checklist (what must be complete before next phase)
+- Conflict resolution: If agents disagree on theme categorization, vote or escalate to Phase Lead
+
+---
 
 ## Performance Budgets
 
-**Small research** (5-10 entries): 4-6 hours. Phase 1: 20 min. Phase 2: 30 min. Phase 3: 90 min. Phase 3.5: 15 min. Phase 4: 30 min. Phase 4.5: 20 min. Phase 5: 15 min. Phase 6: 10 min.
+**Small research** (5-10 entries): 4-6 hours
+- Phase 1: 20 min
+- Phase 2: 30 min
+- Phase 3: 90 min
+- Phase 3.5: 15 min
+- Phase 4: 30 min
+- Phase 4.5: 20 min
+- Phase 5: 15 min
+- Phase 6: 10 min
 
-**Medium research** (20-50 entries): 8-12 hours. Phases 1-2: 1 hour. Phase 3: 3 hours. Phase 3.5: 30 min. Phase 4: 1 hour. Phase 4.5: 45 min. Phase 5: 45 min. Phase 6: 30 min.
+**Medium research** (20-50 entries): 8-12 hours
+- Phases 1-2: 1 hour
+- Phase 3: 3 hours
+- Phase 3.5: 30 min
+- Phase 4: 1 hour
+- Phase 4.5: 45 min
+- Phase 5: 45 min
+- Phase 6: 30 min
 
-**Large research** (100+ entries): 20-40 hours. Use sub-agent scaling. Expect 4-6 weeks with careful coordination. Budget extra time for conflict resolution.
+**Large research** (100+ entries): 20-40 hours
+- Use sub-agent scaling
+- Expect 4-6 weeks with careful coordination
+- Budget extra time for conflict resolution
 
-## Domain Lens System
-
-Domain lenses are **overlays** on the standard pipeline. They enrich research with domain-specific query angles, metadata fields, quality bars, and webapp views — without replacing phases.
-
-| Lens | Activation | Reference |
-|------|-----------|-----------|
-| **PropTech** | Auto-detect on PropTech keywords (legacy), or explicit | `references/domain-proptech.md` |
-| **Product Management** | Explicit only ("PM lens", "PM mode") | `references/domain-pm.md` |
-| **FinTech** | Explicit only ("FinTech lens", "FinTech mode") | `references/domain-fintech.md` |
-
-→ **How lenses modify each phase, PM/FinTech/PropTech quick references, and how to add new lenses**: `references/domain-lens-system.md`
+---
 
 ## Reference Files
 
 | File | Read When | Purpose |
 |------|----------|---------|
-| `references/phase-pipeline.md` | While operating any phase | Full per-phase mechanics: process, metrics, failure recovery, examples for Phases 1, 2, 3, 3.5, 3.5-Learning Mode, 4, 4.5, 5, 6 |
-| `references/worked-example-ai-healthcare.md` | When you want to see the pipeline run end-to-end | "AI in Healthcare 2025" topic flowing through every phase with sample queries, entries, graph JSON, evidence chains, QA scores, ingestion report |
-| `references/domain-lens-system.md` | Before activating any domain lens, or when adding a new one | Architecture, how lenses overlay each phase, PM/FinTech/PropTech quick references, plugin guide |
 | `references/sonnet-45-prompting-bible.md` | Before launching ANY sub-agent, or when user asks for prompt optimization | The definitive Sonnet 4.5 prompting guide — 10 golden rules, XML patterns, extended thinking, output schemas, domain-specific templates, prompt chaining, anti-patterns |
 | `references/sub-agent-orchestration.md` | When spawning research agents (Phase 3-4) | Multi-pass research architecture, parallel dispatch patterns, optimal agent count formula, result collation, error handling, quality scoring |
 | `references/knowledge-ingestion.md` | When processing user inputs (Phase 5) | File type detection, PDF/DOCX/XLSX/CSV/URL/Notion/code parsing, data normalization, metadata extraction, batch processing, error recovery |
@@ -653,21 +710,16 @@ Domain lenses are **overlays** on the standard pipeline. They enrich research wi
 | `references/knowledge-graph-builder.md` | During Phase 3.5 graph building | 6 relationship types, detection algorithm, D3.js force-directed specs, cluster detection, graph metrics (centrality, orphans, bridges), export formats |
 | `references/prompt-templates.md` | When crafting sub-agent prompts | 8 complete XML-structured prompts: file reader, web researcher, gap analyzer, synthesizer, categorizer, verifier, topic deep-diver, graph builder |
 | `references/search-engine-reference.md` | When customizing or debugging the web app search | TF-IDF algorithm, field-weighted scoring, trigram fuzzy matching, inverted index structure, full search pipeline, performance characteristics |
-<<<<<<< HEAD
-| `references/domain-proptech.md` | When PropTech mode is triggered | PropTech market taxonomy, data sources (ATTOM, CoreLogic, Knight Frank), 4-pass research architecture, India deep-dive, PropTech confidence tiers, anti-patterns |
-=======
->>>>>>> d4293ae (deep-research v3.1: slim SKILL.md (55KB -> 22KB))
-| `references/advanced-search-algorithms.md` | When implementing or tuning BM25F search | BM25F scoring with field weights, trigram fuzzy matching, faceted search, ranking pipeline, autocomplete trie, performance benchmarks |
 | `references/domain-proptech.md` | When PropTech lens is activated | PropTech market taxonomy, data sources (ATTOM, CoreLogic, Knight Frank), 4-pass research architecture, India deep-dive, PropTech confidence tiers, anti-patterns |
-| `references/domain-pm.md` | When PM lens is activated | 10 PM research dimensions, PM metadata fields, PM actionability scoring, PM Executive Summary template, PM Dashboard webapp view, stakeholder tagging, dimension coverage targets |
-| `references/domain-fintech.md` | When FinTech lens is activated | 10 FinTech research dimensions, FinTech metadata fields, viability scoring, geography tagging, market taxonomy (11 segments), India Stack deep-dive, regulatory timeline, validated market size data |
+| `references/domain-pm.md` | When PM lens is activated (user says "PM lens", "PM mode", etc.) | 10 PM research dimensions, PM metadata fields, PM actionability scoring, PM Executive Summary template, PM Dashboard webapp view, stakeholder tagging, dimension coverage targets |
+| `references/domain-fintech.md` | When FinTech lens is activated (user says "FinTech lens", "FinTech mode", etc.) | 10 FinTech research dimensions, FinTech metadata fields, viability scoring, geography tagging, market taxonomy (11 segments), India Stack deep-dive, regulatory timeline, validated market size data |
+| `references/advanced-search-algorithms.md` | When implementing or tuning BM25F search | BM25F scoring with field weights, trigram fuzzy matching, faceted search, ranking pipeline, autocomplete trie, performance benchmarks |
 
 ## Templates
 
 | Template | Purpose |
 |----------|---------|
-| `templates/web-app-shell.html` | Production-grade interactive web app with TF-IDF search, D3 knowledge graph, analytics dashboard, faceted filtering, dark/light mode, responsive design |
-| `templates/proptech-web-app-shell.html` | PropTech variant with Leaflet map views, property cards, market segment filters |
+| `templates/web-app-shell.html` | Production-grade interactive web app with TF-IDF search, D3 knowledge graph, analytics dashboard, faceted filtering, dark/light mode, responsive design (2,565 lines) |
 | `templates/knowledge-entry.md` | JSON schema for knowledge entries with confidence decision tree, source attribution guide, tag taxonomy, 3 complete examples |
 | `templates/research-synthesis.md` | Multi-agent research collation report template with quality metrics, conflict resolution log, before/after comparison |
 
@@ -675,32 +727,89 @@ Domain lenses are **overlays** on the standard pipeline. They enrich research wi
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/build_knowledge_app.py` | Assembles knowledge JSON into final HTML — validates entries, enriches metadata, generates graph data, calculates statistics, replaces template placeholders (593 lines) |
+| `scripts/build_knowledge_app.py` | Assembles knowledge JSON into final HTML — validates entries, enriches metadata, generates graph data, calculates statistics, replaces template placeholders. Supports `--learning-mode` (topological sort + tier assignment), `--visualization-only` (pre-researched data input), `--pm-lens` (PM dimension tagging + actionability scoring), and `--fintech-lens` (FinTech dimension tagging + viability scoring + geography inference) flags |
+
+---
 
 ## Anti-Patterns & What NOT to Do
 
-1. **Skipping Phase 3.5 (Knowledge Graph Building).** Wrong: "We'll build relationships after publishing." Right: Build graph before final QA. Why: Relationships help detect gaps and contradictions.
-2. **Insufficient Phase 2.** Wrong: 5-10 total sources. Right: 25-50 sources (quick scan), extract 5-10 key themes. Why: Premature depth misses important angles.
-3. **Trusting all sources equally.** Wrong: Citing a random blog as authoritatively as an academic paper. Right: Tier sources, weight authority in final summary. Why: Quality varies wildly.
-4. **Not verifying statistics.** Wrong: "The internet says 87%, so we'll use it." Right: Trace the stat to the original source, verify methodology. Why: Stats get distorted through re-citation chains.
-5. **Over-parsing during Phase 3.** Wrong: Creating 5 entries from one comprehensive source. Right: 1-2 entries per source max. Why: Dilutes signal, creates near-duplicates.
-6. **Ignoring contradictions.** Wrong: Keep only entries that agree with your hypothesis. Right: Document both sides with evidence chains. Why: Bias ruins credibility; balanced coverage is better.
-7. **Treating Phase 4.5 as optional.** Wrong: "QA can happen after publishing." Right: QA must gate entry into the knowledge base. Why: Low-quality entries undermine the entire base.
-8. **Not documenting gaps.** Wrong: Assume silence means the topic is unimportant. Right: Explicitly list what you didn't find. Why: Gaps inform future research priorities.
+### 1. **Skipping Phase 3.5 (Knowledge Graph Building)**
+- **Wrong**: "We'll build relationships after publishing"
+- **Right**: Build graph before final QA (Phase 3.5 before Phase 4.5)
+- **Why**: Relationships help detect gaps and contradictions
+
+### 2. **Insufficient Phase 2**
+- **Wrong**: 5-10 total sources for Phase 2
+- **Right**: 25-50 sources (quick scan), extract 5-10 key themes
+- **Why**: Premature depth misses important angles
+
+### 3. **Trusting All Sources Equally**
+- **Wrong**: Citing a random blog as authoritatively as academic paper
+- **Right**: Tier sources, weight authority in final summary
+- **Why**: Quality varies wildly; authority matters
+
+### 4. **Not Verifying Statistics**
+- **Wrong**: "The internet says 87%, so we'll use it"
+- **Right**: Trace the stat to original source, verify methodology
+- **Why**: Stats get distorted through re-citation chains
+
+### 5. **Over-Parsing During Phase 3**
+- **Wrong**: Creating 5 entries from one comprehensive source
+- **Right**: 1-2 entries per source max
+- **Why**: Dilutes signal, creates near-duplicates
+
+### 6. **Ignoring Contradictions**
+- **Wrong**: Keep only entry that agrees with your hypothesis
+- **Right**: Document both sides with evidence chains
+- **Why**: Bias ruins credibility; balanced coverage is better
+
+### 7. **Phase 4.5 as Optional**
+- **Wrong**: "QA can happen after publishing"
+- **Right**: QA must gate entry into knowledge base
+- **Why**: Low-quality entries undermine entire base
+
+### 8. **Not Documenting Gaps**
+- **Wrong**: Assume silence means topic is unimportant
+- **Right**: Explicitly list what you didn't find
+- **Why**: Gaps inform future research priorities
+
+---
 
 ## Testing & Validation Guidance
 
-Before publishing your knowledge base, run these checks.
+**Before publishing your knowledge base**:
 
-**Smoke Test (10 min)**: All entries have titles. All entries have sources with URLs. All URLs resolve (test 10 random). No duplicate entries. Knowledge graph has <10% orphans. QA pass rate ≥80%.
+### Smoke Test (10 min)
+- [ ] All entries have titles
+- [ ] All entries have sources with URLs
+- [ ] All URLs resolve (test 10 random)
+- [ ] No duplicate entries
+- [ ] Knowledge graph has <10% orphans
+- [ ] QA pass rate ≥80%
 
-**Content Test (30 min)**: Pick a random entry. Read it fully. Cross-check 3 claims in cited sources. Verify each claim appears in its cited source. Repeat for 5 random entries. If >1 claim fails, return to Phase 4.
+### Content Test (30 min)
+- [ ] Pick a random entry
+- [ ] Read it fully
+- [ ] Cross-check 3 claims in cited sources
+- [ ] Verify the claim appears in cited source
+- [ ] Repeat for 5 random entries
+- [ ] If >1 claim fails: Return to Phase 4
 
-**Relationship Test (15 min)**: Pick a random entry. Follow "related entries" to 3 neighbors. Do the relationships make sense? Can you navigate from topic A to topic B through related entries? Are isolated clusters obvious (expected)? Repeat for 3 different entries.
+### Relationship Test (15 min)
+- [ ] Pick a random entry
+- [ ] Follow "related entries" to 3 neighbors
+- [ ] Do the relationships make sense?
+- [ ] Can you navigate from topic A to topic B through related entries?
+- [ ] Are isolated clusters obvious? (expected)
+- [ ] Repeat for 3 different entries
 
-**User Test (optional, 30 min)**: Ask a non-researcher to find 3 facts about the topic. Can they find them easily? Do search results make sense? Do they encounter confusing contradictions? Do they get lost or find entry navigation intuitive?
+### User Test (optional, 30 min)
+- [ ] Ask a non-researcher to find 3 facts about the topic
+- [ ] Can they find them easily?
+- [ ] Do search results make sense?
+- [ ] Do they encounter confusing contradictions?
+- [ ] Do they get lost or find entry navigation intuitive?
 
-<<<<<<< HEAD
 ### Confidence Calibration (15 min)
 - [ ] Count HIGH, MEDIUM, LOW, UNKNOWN entries
 - [ ] Are HIGH entries truly well-sourced?
@@ -851,139 +960,175 @@ Confidence: HIGH (22), MEDIUM (8), LOW (4)
 
 ---
 
-## Domain Detection: PropTech Mode
+## Domain Lens System
 
-When the skill detects PropTech-related queries, it automatically switches to a specialized research pipeline with deeper research, better prompts, and a PropTech-specific UI.
+Domain lenses are **overlays** on the standard 6+2 phase pipeline. They enrich research with domain-specific query angles, metadata fields, quality bars, and webapp views — without replacing the core pipeline.
 
-**→ Read `references/domain-proptech.md` for the complete PropTech domain profile**
-**→ Read `references/advanced-search-algorithms.md` for BM25F search implementation**
-**→ Use `templates/proptech-web-app-shell.html` instead of the generic web app template**
-
-### Trigger Detection
-
-The skill enters PropTech mode when the query contains ANY of these signals:
-
-**Keywords:** proptech, property tech, real estate tech, realty, mortgage, lending, property management, smart building, construction tech, contech, property valuation, AVM, appraisal, listing platform, MLS, brokerage, RERA, real estate regulatory, tenant management, facility management, co-living, co-working, fractional ownership, REIT
-
-**Company Names:** Zillow, Opendoor, Compass, Redfin, NoBroker, Housing.com, Square Yards, 99acres, Rightmove, Zoopla, Matterport, CoStar, Reonomy, Side, Divvy Homes, Bilt Rewards, ServiceTitan
-
-**Phrases:** "property data", "real estate market", "housing market", "rental market", "commercial real estate", "CRE", "residential real estate", "smart home", "digital twin building", "real estate investment"
-
-### What Changes in PropTech Mode
-
-| Aspect | Generic Mode | PropTech Mode |
-|--------|-------------|---------------|
-| **Research depth** | 3-pass (breadth → depth → verify) | 4-pass (landscape → segment deep-dive → verify → competitive intel) |
-| **Sub-agent count** | 3-15 based on scope | 8-25+ (more agents for market segmentation) |
-| **Data sources** | General web search | PropTech-specific: ATTOM, CoreLogic, Knight Frank, CREDAI, PropTech List |
-| **Confidence tiers** | Generic 4-tier | PropTech 5-tier with industry-specific authority rules |
-| **Web app template** | `web-app-shell.html` | `proptech-web-app-shell.html` — map views, property cards, market filters |
-| **Search algorithm** | TF-IDF | BM25F with PropTech field weights (property_type=3.0, market_segment=2.5) |
-| **UI/UX** | Generic knowledge cards | PropTech cards with property type icons, region flags, stage badges |
-| **Facets** | Category, confidence, tags | + Property type, market segment, region, authority tier, company stage |
-| **Visualization** | D3 graph only | D3 graph + Leaflet map with regional markers |
-
-### PropTech Sub-Agent Dispatch (Enhanced)
-
-PropTech research uses a 4-pass architecture instead of the standard 3-pass:
+### Architecture
 
 ```
-PASS 1: LANDSCAPE (8 agents)
-├── Agent 1: Market size + growth data (2025-2030 projections)
-├── Agent 2: Key players by segment (FinTech, Marketplace, Management, etc.)
-├── Agent 3: Recent funding rounds + M&A (last 12 months)
-├── Agent 4: Technology trends (AI, digital twins, IoT)
-├── Agent 5: Regulatory updates (RERA, RBI, HUD, TCPA)
-├── Agent 6: India market specifics (NoBroker, Housing.com, RERA landscape)
-├── Agent 7: US/UK market comparison
-└── Agent 8: Customer/user insights + adoption patterns
-
-PASS 2: SEGMENT DEEP-DIVE (10-15 agents)
-├── One agent per market segment (FinTech, Marketplace, Management, SmartBuilding, ConTech, Data, ESG, InsurTech)
-├── Each uses segment-specific data sources and query templates
-└── Follows evidence chains to primary sources (Tier 1-2 only)
-
-PASS 3: VERIFICATION + COMPETITIVE INTELLIGENCE (5 agents)
-├── Agent V1: Verify market size claims (cross-reference 3+ sources)
-├── Agent V2: Validate company funding/valuation claims
-├── Agent V3: Fact-check regulatory claims (RERA, RBI)
-├── Agent V4: Cross-reference India-specific data
-└── Agent V5: Competitive positioning accuracy
-
-PASS 4: SYNTHESIS + GAP FILL (3 agents)
-├── Agent S1: Merge all passes into unified knowledge base
-├── Agent S2: Generate comparative analysis (India vs US vs UK)
-└── Agent S3: Identify remaining gaps, generate follow-up research plan
+Standard Pipeline (always runs):  Phase 1 → 2 → 3 → 3.5 → 4 → 4.5 → 5 → 6
+                                    ↑       ↑       ↑              ↑       ↑
+Domain Lens (overlay):          Queries  Tags   Metadata        QA+     Views
 ```
 
-### PropTech Research Quality Bar
+Each domain lens is a separate reference file loaded only when activated. The SKILL.md stays lean; domain logic lives in `references/domain-*.md`.
 
-PropTech research has a HIGHER quality bar than generic research:
-- **Minimum source authority:** Tier 2+ for market sizing claims
-- **Cross-reference requirement:** Key claims must appear in 3+ independent sources (not 2)
-- **Recency requirement:** Market data must be from 2024+ (PropTech moves fast)
-- **Geographic specificity:** Must distinguish US vs India vs UK market data
-- **Regulatory accuracy:** RERA/RBI claims must cite specific regulations or official sources
+### Available Domain Lenses
+
+| Lens | Activation | Reference File | What It Does |
+|------|-----------|----------------|-------------|
+| **PropTech** | Auto-detect on PropTech keywords, OR user explicitly requests. (Note: PropTech retains auto-detect for backward compatibility with v2.5. New lenses should use explicit-trigger only.) | `references/domain-proptech.md` | PropTech market taxonomy, property type facets, geographic specificity, regulatory accuracy, Leaflet map view |
+| **Product Management** | User explicitly requests ("PM lens", "PM mode", "through a PM perspective") | `references/domain-pm.md` | 10 PM dimensions overlay, PM Dashboard view, Executive Summary, actionability scoring, stakeholder tagging |
+| **FinTech** | User explicitly requests ("FinTech lens", "FinTech mode", "through a FinTech perspective") | `references/domain-fintech.md` | 10 FinTech dimensions overlay (Regulatory, Payment Rails, Trust/Security, Unit Economics, Acquisition, Embedded Finance, Credit Risk, Inclusion, Cross-Border, Funding), FinTech Dashboard view, viability scoring, geography tagging, regulatory timeline |
+
+### How Lenses Modify the Pipeline
+
+Lenses do NOT replace phases. They modify what happens WITHIN each phase:
+
+- **Phase 1**: Add domain-specific queries (PM lens adds 10-15 extra queries across 10 dimensions)
+- **Phase 2**: Tag entries with domain dimensions (PM tags entries as "competitive", "market_size", etc.)
+- **Phase 3**: Add domain metadata fields per entry (PM adds `pm_actionability`, `pm_so_what`, `pm_who_cares`)
+- **Phase 3.5**: Add domain relationship types (PM adds "competes-with", "enables", "blocks")
+- **Phase 4.5**: Add domain QA dimension (PM adds "PM Actionability" 0-10 score)
+- **Phase 5**: Generate domain executive summary (PM generates structured PM Executive Summary)
+- **Phase 6**: Add domain webapp view (PM adds PM Dashboard organized by 10 dimensions)
+
+### PM Lens Quick Reference
+
+When PM lens is active, read `references/domain-pm.md` for the complete specification. Key features:
+
+**10 PM Research Dimensions** — every entry gets tagged:
+1. Opportunity Landscape (pain points, unmet needs)
+2. Competitive Positioning (who else, white space)
+3. Market Size & Addressability (TAM/SAM/SOM)
+4. Customer Segments & Value (who, what value)
+5. Metrics & Measurement (North Star, KPIs)
+6. Go-to-Market Strategy (channels, adoption)
+7. Solution Patterns (what exists, UX patterns)
+8. Validation & Experimentation (assumptions, failure modes)
+9. Business Model & Unit Economics (pricing, LTV/CAC)
+10. Strategic Context & Constraints (regulatory, dependencies)
+
+**PM-specific outputs**:
+- PM Dimension Coverage Matrix (after Phase 2 — shows research gaps)
+- PM Executive Summary (after Phase 5 — structured opportunity/market/competition brief)
+- PM Dashboard webapp view (Phase 6 — entries organized by dimension, actionability-sorted)
+- Stakeholder filter (filter entries by who needs to see them)
+
+**PM Actionability scoring** (0-10, added to QA):
+- 10: Directly changes a build/ship/kill decision
+- 6-7: Informs strategy with concrete data
+- 2-3: Background context only
+
+### FinTech Lens Quick Reference
+
+When FinTech lens is active, read `references/domain-fintech.md` for the complete specification. Key features:
+
+**10 FinTech Research Dimensions** — every entry gets tagged:
+1. Regulatory & Compliance Architecture (licenses, RBI/FCA/OCC, compliance frameworks)
+2. Payment Rails & Infrastructure Integration (UPI, SWIFT, card networks, real-time payments)
+3. Trust, Security & Identity Architecture (eKYC, fraud prevention, PCI-DSS, Aadhaar)
+4. Unit Economics & Financial Modeling (revenue models, margins, CAC/LTV, break-even)
+5. Customer Acquisition & Retention Economics (onboarding, trust barriers, retention curves)
+6. Embedded Finance & Platform Strategy (BaaS, B2B2C, API-first distribution)
+7. Credit Risk & Underwriting Models (scoring, alternative data, NPA, FLDG)
+8. Financial Inclusion & Impact (unbanked, Tier 2-4, microfinance, gender gap)
+9. Cross-Border & Multi-Currency Strategy (remittance, FX, corridors, stablecoins)
+10. Funding Structure & Capital Strategy (venture, co-lending, securitization, warehouse)
+
+**FinTech-specific outputs**:
+- FinTech Dimension Coverage Matrix (after Phase 2 — shows research gaps)
+- FinTech Executive Summary (after Phase 5 — opportunity/regulation/unit economics/risk brief)
+- FinTech Dashboard webapp view (Phase 6 — entries by dimension, viability-sorted)
+- Geography filter (filter entries by India/US/EU/Global)
+- Regulatory timeline (entries sorted chronologically by compliance deadlines)
+- Stakeholder filter (filter by Compliance, Product, Risk, Finance)
+
+**FinTech Viability scoring** (0-10, added to QA):
+- 10: Directly determines build/kill decision with regulatory or economic data
+- 6-7: Informs product strategy with concrete benchmarks
+- 2-3: Background context only
+
+**Validated market data included**:
+- Global FinTech market: $300-400B (2025), CAGR 16-18% (cross-validated 3 sources)
+- India FinTech market: $142-155B (2025) (cross-validated 3 sources)
+- 11-segment market taxonomy with key players (global + India)
+- India Stack infrastructure data (UPI, Aadhaar, Account Aggregator, OCEN)
+- Regulatory timeline with specific circular numbers and effective dates
+
+### PropTech Lens Quick Reference
+
+When PropTech lens is active, read `references/domain-proptech.md` for the complete specification. Key features:
+- 4-pass research architecture (Landscape → Segment → Verify → Synthesis)
+- PropTech-specific data sources (ATTOM, CoreLogic, Knight Frank, CREDAI)
+- 5-tier confidence with industry-specific authority rules
+- Geographic specificity (US vs India vs UK)
+- Market data recency requirement (2024+)
+- PropTech webapp template with Leaflet map views, property cards, market segment filters
+
+### Adding New Domain Lenses
+
+To add a new domain (e.g., Healthcare, EdTech, Cybersecurity):
+1. Create `references/domain-<name>.md` following the structure of `domain-pm.md`
+2. Define: activation triggers, dimension taxonomy, query enrichment, metadata fields, quality bar, webapp views
+3. Add entry to the "Available Domain Lenses" table above
+4. Add a `<Name>LensProcessor` class to `scripts/build_knowledge_app.py` (inherit from `BaseLensProcessor`) and a `--<name>-lens` CLI flag
+5. No other files need modification — the core pipeline is domain-agnostic
 
 ---
-=======
-**Confidence Calibration (15 min)**: Count HIGH, MEDIUM, LOW, UNKNOWN entries. Are HIGH entries truly well-sourced? Are LOW entries marked clearly as uncertain? Does confidence level match quality? Adjust if miscalibrated.
->>>>>>> d4293ae (deep-research v3.1: slim SKILL.md (55KB -> 22KB))
 
 ## FAQ & Troubleshooting
 
-**Q: How many sources should Phase 2 scan?** A: 25-50 minimum. Each source gets 5-10 seconds of attention. Goal is theme identification, not depth.
+**Q: How many sources should Phase 2 scan?**
+A: 25-50 minimum. Each source gets 5-10 seconds of attention. Goal is theme identification, not depth.
 
-**Q: What if a topic has conflicting expert opinions?** A: Document both. Include entries from both sides with evidence chains. Note in QA which has stronger authority.
+**Q: What if a topic has conflicting expert opinions?**
+A: Document both. Include entries from both sides with evidence chains. Note in QA which has stronger authority.
 
-**Q: Can I skip Phase 3.5 (Knowledge Graph)?** A: Technically yes, but DON'T. Graph building catches gaps and contradictions you'll miss otherwise. Do Phase 3.5 at minimum at condensed form (10 min).
+**Q: Can I skip Phase 3.5 (Knowledge Graph)?**
+A: Technically yes, but DON'T. Graph building catches gaps and contradictions you'll miss otherwise. Do Phase 3.5 at minimum at condensed form (10 min).
 
-**Q: How do I know when Phase 3 research is "done"?** A: When you're seeing repeated findings across new sources (diminishing returns) AND the knowledge graph is >80% connected (low orphan rate).
+**Q: How do I know when Phase 3 research is "done"?**
+A: When you're seeing repeated findings across new sources (diminishing returns) AND knowledge graph is >80% connected (low orphan rate).
 
-<<<<<<< HEAD
 **Q: What's the difference between MEDIUM and LOW confidence?**
-A: MEDIUM = multiple sources agree but some weakness (old data, limited scope, moderate authority). LOW = conflicting sources or single weak source.
-=======
-**Q: What's the difference between MEDIUM and LOW confidence?** A: See the canonical confidence definitions in `templates/knowledge-entry.md` for the complete source-based framework. Quick reference: MEDIUM = 1-2 Tier 2 OR 3+ Tier 3 sources agreeing (with minor weakness like age or limited scope). LOW = conflicting Tier 1-2 sources with no clear winner, OR only Tier 3-4 sources available, OR >3 years old with limitations.
->>>>>>> d4293ae (deep-research v3.1: slim SKILL.md (55KB -> 22KB))
+A: See the canonical confidence definitions in `templates/knowledge-entry.md` for the complete source-based framework. Quick reference: MEDIUM = 1-2 Tier 2 OR 3+ Tier 3 sources agreeing (with minor weakness like age or limited scope). LOW = conflicting Tier 1-2 sources with no clear winner, OR only Tier 3-4 sources available, OR >3 years old with limitations.
 
-**Q: Can I publish before Phase 4.5 QA?** A: No. QA gates publication. Publishing without QA will undermine credibility as bad entries surface.
+**Q: Can I publish before Phase 4.5 QA?**
+A: No. QA gates publication. Publishing without QA will undermine credibility as bad entries surface.
 
-**Q: How do I handle paywalled sources?** A: Try WebFetch tool (sometimes works even for paywalled content). If not accessible, mark as UNKNOWN. Never guess content.
+**Q: How do I handle paywalled sources?**
+A: Try WebFetch tool (sometimes works even for paywalled content). If not accessible, mark as UNKNOWN. Never guess content.
+
+---
 
 ## Version History
 
-<<<<<<< HEAD
-=======
-**v3.1** (Apr 2026) — SKILL.md slimming
-- **REFACTOR**: Extracted phase pipeline detail (517 lines), worked example (140 lines), and domain lens architecture (117 lines) from SKILL.md into dedicated reference files (`phase-pipeline.md`, `worked-example-ai-healthcare.md`, `domain-lens-system.md`).
-- **REFACTOR**: Removed duplicated "Key improvements in v2.5/v2.5.1" block from Quick-Start Guide (content already lived in Version History).
-- **NO BEHAVIOR CHANGE**: All operational guidance preserved verbatim in references; SKILL.md now acts purely as an orchestrator.
-- **RESULT**: SKILL.md ~3x smaller, easier to scan, and follows the pattern of keeping operational detail in `references/`.
-
 **v3.0** (Mar 2026) — Domain Lens Architecture + PM Lens + FinTech Lens
 - **BREAKING: Domain Lens System**: Replaced hardcoded PropTech mode with extensible domain lens architecture. Lenses are overlays on the standard pipeline, not replacements. Each lens lives in `references/domain-*.md` and modifies phases without replacing them.
-- **NEW: Product Management Lens** (`references/domain-pm.md`): 10 PM research dimensions. Adds PM metadata fields per entry. Generates PM Executive Summary. Adds PM Dashboard webapp view with dimension cards, actionability sorting, and stakeholder filter. User-triggered only.
-- **NEW: FinTech Lens** (`references/domain-fintech.md`): 10 FinTech research dimensions. Adds FinTech metadata fields per entry. FinTech market taxonomy (11 segments), validated market size data, India Stack infrastructure deep-dive, regulatory timeline. User-triggered only.
-- **UPDATED: PropTech Lens**: Migrated to domain lens system. Behavior unchanged, architecture improved.
-- **NEW: Domain Lens Plugin Guide**: Any new domain can be added by creating a single `references/domain-*.md` file and adding one table row.
-- **FIX: Graph density metrics**: Targets now self-consistent: avg connections 3-7 per node for knowledge bases with 30-100 entries.
+- **NEW: Product Management Lens** (`references/domain-pm.md`): 10 PM research dimensions (Opportunity, Competitive, Market Size, Segments, Metrics, GTM, Solutions, Validation, Business Model, Strategic Context). Adds PM metadata fields per entry (`pm_actionability`, `pm_so_what`, `pm_who_cares`, `pm_dimensions`). Generates PM Executive Summary. Adds PM Dashboard webapp view with dimension cards, actionability sorting, and stakeholder filter. User-triggered only — never auto-detects.
+- **NEW: FinTech Lens** (`references/domain-fintech.md`): 10 FinTech research dimensions (Regulatory & Compliance, Payment Rails, Trust/Security/Identity, Unit Economics, Customer Acquisition, Embedded Finance, Credit Risk, Financial Inclusion, Cross-Border, Funding & Capital). Adds FinTech metadata fields per entry (`ft_viability`, `ft_so_what`, `ft_who_cares`, `ft_dimensions`, `ft_geography`). FinTech market taxonomy (11 segments), validated market size data (cross-referenced 3+ sources), India Stack infrastructure deep-dive, regulatory timeline. User-triggered only — never auto-detects.
+- **UPDATED: PropTech Lens**: Migrated to domain lens system. Behavior unchanged, architecture improved. Still auto-detects on PropTech keywords. Full spec remains in `references/domain-proptech.md`.
+- **NEW: Domain Lens Plugin Guide**: Any new domain can be added by creating a single `references/domain-*.md` file and adding one table row. No pipeline changes needed.
+- **FIX: Graph density metrics**: Corrected density calculation example. Targets now self-consistent: avg connections 3-7 per node for knowledge bases with 30-100 entries.
 
 **v2.5.1** (Mar 2026)
 - **Learning Mode**: Dependency-ordered output with topological sort on knowledge graph dependency edges
 - **Three Learning Tiers**: Foundation (no prerequisites), Intermediate (1-2 prerequisites), Advanced (3+ prerequisites)
 - **PM Context Framing**: Auto-detects PM topics and adds "How This Applies in PM Work", "When to Use", "Real-World PM Scenario" sections
-- **Visualization-Only Entry Point**: Accepts pre-researched data and skips directly to Phase 3.5 → 5 → 6
-- **Learning Path View**: New webapp view toggle showing entries in topological order
+- **Visualization-Only Entry Point**: Accepts pre-researched data (JSON claims, markdown, structured reports) and skips directly to Phase 3.5 → 5 → 6
+- **Learning Path View**: New webapp view toggle showing entries in topological order with connecting arrows and tier badges
 - **build_knowledge_app.py**: New `--learning-mode` and `--visualization-only` CLI flags
+- **Pre-Researched Data Ingestion**: New section in knowledge-ingestion.md for parsing McKinsey Research output and other structured findings
 
->>>>>>> d4293ae (deep-research v3.1: slim SKILL.md (55KB -> 22KB))
 **v2.5** (Feb 2026)
-- **PropTech Domain Mode**: Auto-detects PropTech/real-estate queries
-- **BM25F Search Algorithm**: Field-weighted scoring, trigram fuzzy matching
+- **PropTech Domain Mode**: Auto-detects PropTech/real-estate queries and switches to specialized pipeline
+- **BM25F Search Algorithm**: Replaces basic TF-IDF with field-weighted scoring, trigram fuzzy matching
 - **PropTech Web App Template**: Leaflet.js map views, property cards, market segment filters
 - **5 PropTech Sub-Agent Templates**: Market Researcher, Regulatory Analyst, Tech Stack Analyst, India Specialist, Competitive Intelligence
 - **Advanced Search Algorithms Reference**: Complete client-side search engine with autocomplete, facets, performance benchmarks
+- **PropTech Domain Profile**: Market taxonomy, data sources, 4-pass research architecture, India deep-dive
 
 **v2.0** (Feb 2026)
 - Added Phase 3.5: Knowledge Graph Building
@@ -998,6 +1143,8 @@ A: MEDIUM = multiple sources agree but some weakness (old data, limited scope, m
 - Basic quality checks
 - Simple entry structure
 
+---
+
 ## Contributing & Feedback
 
 Found an issue? Have a better pattern? Questions about phases?
@@ -1007,10 +1154,6 @@ Found an issue? Have a better pattern? Questions about phases?
 
 ---
 
-<<<<<<< HEAD
-**Last Updated**: 2026-02-09
-=======
-**Last Updated**: 2026-04-29
->>>>>>> d4293ae (deep-research v3.1: slim SKILL.md (55KB -> 22KB))
+**Last Updated**: 2026-03-25
 **Maintainer**: Research Quality Team
 **Status**: Production - Use with confidence

@@ -1,0 +1,2991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Premium Knowledge Base - Interactive Research Synthesis Platform">
+    <title>Knowledge Base - Deep Research Synthesizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <style>
+        /* ========================================
+           CSS CUSTOM PROPERTIES & ROOT VARIABLES
+           ======================================== */
+        :root {
+            /* Light theme colors */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --accent-light: #eff6ff;
+
+            /* Confidence badge colors */
+            --confidence-verified: #059669;
+            --confidence-high: #2563eb;
+            --confidence-medium: #d97706;
+            --confidence-low: #ea580c;
+            --confidence-unknown: #6b7280;
+
+            /* Category colors */
+            --category-ai: #8b5cf6;
+            --category-web: #06b6d4;
+            --category-security: #dc2626;
+            --category-database: #f59e0b;
+            --category-devops: #10b981;
+
+            /* Semantic colors */
+            --success: #059669;
+            --warning: #d97706;
+            --error: #dc2626;
+            --info: #3b82f6;
+
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+
+            /* Border radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+            /* Transitions */
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Typography */
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+        }
+
+        /* Dark theme */
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --accent-light: #1e3a8a;
+        }
+
+        /* ========================================
+           RESET & GLOBAL STYLES
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color var(--transition-base),
+                        color var(--transition-base);
+        }
+
+        /* ========================================
+           LAYOUT STRUCTURE
+           ======================================== */
+        #app {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto auto 1fr auto;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            grid-column: 1 / -1;
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            min-width: max-content;
+        }
+
+        .header-search {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .dashboard-section {
+            grid-column: 1 / -1;
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-base);
+        }
+
+        .dashboard-section.open {
+            max-height: 300px;
+        }
+
+        .dashboard-content {
+            padding: var(--spacing-lg);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 0;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        sidebar {
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--text-muted) transparent;
+        }
+
+        sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        sidebar::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 3px;
+        }
+
+        sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            sidebar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                width: 250px;
+                transform: translateX(-100%);
+                transition: transform var(--transition-base);
+                z-index: 50;
+                border-right: 1px solid var(--border);
+            }
+
+            sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-lg);
+        }
+
+        footer {
+            grid-column: 1 / -1;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: var(--spacing-md) var(--spacing-lg);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ========================================
+           HEADER COMPONENTS
+           ======================================== */
+        .search-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: border-color var(--transition-fast),
+                        box-shadow var(--transition-fast);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            margin-top: -1px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+
+        .search-suggestions.visible {
+            display: block;
+        }
+
+        .search-suggestion-item {
+            padding: var(--spacing-sm) var(--spacing-md);
+            cursor: pointer;
+            transition: background-color var(--transition-fast);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .search-suggestion-item:hover,
+        .search-suggestion-item.highlighted {
+            background-color: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: var(--spacing-sm);
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xs);
+        }
+
+        .view-toggle button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background-color: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background-color var(--transition-fast),
+                        color var(--transition-fast);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .view-toggle button.active {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color var(--transition-fast),
+                        border-color var(--transition-fast),
+                        color var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .btn:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent);
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            transition: background-color var(--transition-fast),
+                        color var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--accent);
+        }
+
+        /* ========================================
+           SIDEBAR COMPONENTS
+           ======================================== */
+        .sidebar-section {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-md);
+            letter-spacing: 0.05em;
+        }
+
+        .category-tree {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .category-item {
+            cursor: pointer;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            transition: background-color var(--transition-fast),
+                        color var(--transition-fast);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .category-item:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--accent);
+        }
+
+        .category-item.active {
+            background-color: var(--accent-light);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .category-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background-color: var(--bg-tertiary);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+        }
+
+        .confidence-filters {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .confidence-checkbox {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            transition: background-color var(--transition-fast);
+        }
+
+        .confidence-checkbox:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .confidence-checkbox input[type="checkbox"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent);
+        }
+
+        .confidence-label {
+            flex: 1;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .confidence-badge-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background-color: var(--bg-tertiary);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+        }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+
+        .tag-item {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: background-color var(--transition-fast),
+                        color var(--transition-fast),
+                        transform var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .tag-item:hover {
+            background-color: var(--accent);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .tag-item.active {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        /* ========================================
+           ACTIVE FILTERS BAR
+           ======================================== */
+        .active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .active-filters.empty {
+            display: none;
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background-color: var(--accent-light);
+            color: var(--accent);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+        }
+
+        .filter-chip button {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            transition: transform var(--transition-fast);
+        }
+
+        .filter-chip button:hover {
+            transform: scale(1.2);
+        }
+
+        .reset-filters-btn {
+            padding: var(--spacing-xs) var(--spacing-md);
+            background-color: var(--error);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color var(--transition-fast);
+        }
+
+        .reset-filters-btn:hover {
+            background-color: #b91c1c;
+        }
+
+        /* ========================================
+           DASHBOARD COMPONENTS
+           ======================================== */
+        .dashboard-toggle {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background-color: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: background-color var(--transition-fast);
+        }
+
+        .dashboard-toggle:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        .stat-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .chart-container {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+        }
+
+        .chart-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .bar-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .bar-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 80px;
+            font-weight: 500;
+        }
+
+        .bar-fill {
+            flex: 1;
+            height: 24px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+            border-radius: var(--radius-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-value {
+            position: absolute;
+            right: var(--spacing-sm);
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* ========================================
+           CONTENT GRID & CARDS
+           ======================================== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        @media (max-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .knowledge-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            cursor: pointer;
+            transition: box-shadow var(--transition-fast),
+                        border-color var(--transition-fast),
+                        transform var(--transition-fast);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            position: relative;
+        }
+
+        .knowledge-card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: var(--spacing-md);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+            align-items: flex-end;
+        }
+
+        .confidence-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        /* ========================================
+           LEARNING TIER BADGES
+           ======================================== */
+        .learning-tier-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-md);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        .tier-foundation {
+            background-color: rgba(5, 150, 105, 0.15);
+            color: #059669;
+        }
+
+        .tier-intermediate {
+            background-color: rgba(217, 119, 6, 0.15);
+            color: #d97706;
+        }
+
+        .tier-advanced {
+            background-color: rgba(220, 38, 38, 0.15);
+            color: #dc2626;
+        }
+
+        .tier-icon::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 2px; }
+        .tier-foundation .tier-icon::before { background-color: #059669; }
+        .tier-intermediate .tier-icon::before { background-color: #d97706; }
+        .tier-advanced .tier-icon::before { background-color: #dc2626; }
+
+        /* ========================================
+           LEARNING PATH VIEW
+           ======================================== */
+        .learning-path-view {
+            display: none;
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+        }
+
+        .learning-path-view.visible {
+            display: block;
+        }
+
+        .learning-tier-section {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .learning-tier-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .learning-tier-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .learning-tier-header .tier-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .learning-path-entry {
+            position: relative;
+            margin-left: 24px;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-left: 3px solid var(--border);
+            margin-bottom: var(--spacing-md);
+            background: var(--bg-secondary);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            cursor: pointer;
+            transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .learning-path-entry:hover {
+            background: var(--bg-tertiary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .learning-path-entry.tier-foundation { border-left-color: #059669; }
+        .learning-path-entry.tier-intermediate { border-left-color: #d97706; }
+        .learning-path-entry.tier-advanced { border-left-color: #dc2626; }
+
+        .learning-path-entry::before {
+            content: '';
+            position: absolute;
+            left: -9px;
+            top: 18px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 3px solid var(--bg-primary);
+        }
+
+        .learning-path-entry.tier-foundation::before { background-color: #059669; }
+        .learning-path-entry.tier-intermediate::before { background-color: #d97706; }
+        .learning-path-entry.tier-advanced::before { background-color: #dc2626; }
+
+        .learning-path-entry .entry-number {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .learning-path-entry .entry-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .learning-path-entry .entry-prereqs {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .learning-path-entry .entry-summary {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: var(--spacing-sm);
+            display: none;
+        }
+
+        .learning-path-entry.expanded .entry-summary {
+            display: block;
+        }
+
+        /* Learning Mode Sidebar Override */
+        .sidebar-learning-nav .learning-nav-tier {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .sidebar-learning-nav .tier-section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .confidence-verified {
+            background-color: rgba(5, 150, 105, 0.15);
+            color: var(--confidence-verified);
+        }
+
+        .confidence-high {
+            background-color: rgba(37, 99, 235, 0.15);
+            color: var(--confidence-high);
+        }
+
+        .confidence-medium {
+            background-color: rgba(217, 119, 6, 0.15);
+            color: var(--confidence-medium);
+        }
+
+        .confidence-low {
+            background-color: rgba(234, 88, 12, 0.15);
+            color: var(--confidence-low);
+        }
+
+        .confidence-unknown {
+            background-color: rgba(107, 114, 128, 0.15);
+            color: var(--confidence-unknown);
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+        }
+
+        .card-tag {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background-color var(--transition-fast),
+                        color var(--transition-fast);
+        }
+
+        .card-tag:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .card-summary {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .card-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-base);
+        }
+
+        .card-content.expanded {
+            max-height: 500px;
+        }
+
+        .card-content-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding: var(--spacing-md);
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            border-left: 3px solid var(--accent);
+        }
+
+        .card-content-text mark {
+            background-color: rgba(251, 191, 36, 0.3);
+            color: inherit;
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+        }
+
+        .card-gaps {
+            padding: var(--spacing-md);
+            background-color: rgba(217, 119, 6, 0.1);
+            border-left: 3px solid var(--confidence-medium);
+            border-radius: var(--radius-md);
+        }
+
+        .card-gaps-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--confidence-medium);
+            text-transform: uppercase;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .card-gaps-list {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .card-gaps-list li {
+            margin-left: var(--spacing-lg);
+        }
+
+        .card-footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--border);
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .card-btn {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background-color: var(--bg-tertiary);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background-color var(--transition-fast),
+                        color var(--transition-fast);
+        }
+
+        .card-btn:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .expand-btn::after {
+            content: '▼';
+            display: inline-block;
+            margin-left: var(--spacing-xs);
+            transition: transform var(--transition-base);
+        }
+
+        .expand-btn.expanded::after {
+            transform: rotate(180deg);
+        }
+
+        .card-related {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+
+        .related-link {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background-color: var(--accent-light);
+            color: var(--accent);
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background-color var(--transition-fast),
+                        color var(--transition-fast);
+        }
+
+        .related-link:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .card-source {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .card-source a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        .card-source a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* ========================================
+           GRAPH VIEW
+           ======================================== */
+        #graph-container {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            display: none;
+        }
+
+        #graph-container.visible {
+            display: block;
+        }
+
+        .graph-tooltip {
+            position: absolute;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-lg);
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 200px;
+            font-size: 0.875rem;
+        }
+
+        .graph-tooltip-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .graph-tooltip-summary {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        /* ========================================
+           TABLE VIEW
+           ======================================== */
+        .table-view {
+            display: none;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .table-view.visible {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        thead {
+            background-color: var(--bg-secondary);
+            border-bottom: 2px solid var(--border);
+        }
+
+        th {
+            padding: var(--spacing-md);
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            user-select: none;
+            transition: background-color var(--transition-fast);
+        }
+
+        th:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        th.sortable::after {
+            content: ' ⇅';
+            opacity: 0.5;
+            transition: opacity var(--transition-fast);
+        }
+
+        th.sorted::after {
+            opacity: 1;
+        }
+
+        td {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        tbody tr:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-confidence {
+            font-weight: 600;
+        }
+
+        /* ========================================
+           PAGINATION
+           ======================================== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+
+        .pagination button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background-color var(--transition-fast),
+                        border-color var(--transition-fast);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .page-number {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background-color: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background-color var(--transition-fast),
+                        border-color var(--transition-fast);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .pagination .page-number:hover {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .pagination .page-number.active {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* ========================================
+           MOBILE MENU
+           ======================================== */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: var(--spacing-sm);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .mobile-menu-toggle span {
+                width: 24px;
+                height: 2px;
+                background-color: var(--text-primary);
+                border-radius: 1px;
+                transition: transform var(--transition-base),
+                            opacity var(--transition-base);
+            }
+
+            .mobile-menu-toggle.open span:nth-child(1) {
+                transform: rotate(45deg) translate(8px, 8px);
+            }
+
+            .mobile-menu-toggle.open span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .mobile-menu-toggle.open span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -7px);
+            }
+        }
+
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+        }
+
+        .sidebar-backdrop.visible {
+            display: block;
+        }
+
+        /* ========================================
+           SEARCH RESULTS & STATUS
+           ======================================== */
+        .search-status {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .empty-state-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* ========================================
+           SCROLLBAR STYLING
+           ======================================== */
+        .content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-area::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .content-area::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 4px;
+        }
+
+        .content-area::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* ========================================
+           ANIMATIONS
+           ======================================== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .knowledge-card {
+            animation: fadeIn var(--transition-base);
+        }
+
+        /* ========================================
+           PRINT STYLES
+           ======================================== */
+        @media print {
+            header,
+            .sidebar-backdrop,
+            sidebar,
+            .pagination,
+            .card-actions,
+            .view-toggle,
+            .header-controls,
+            footer,
+            .analytics-dashboard {
+                display: none;
+            }
+
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .knowledge-card {
+                page-break-inside: avoid;
+                border: 1px solid #ccc;
+            }
+
+            .card-content {
+                max-height: none;
+            }
+        }
+
+        /* ========================================
+           ACCESSIBILITY
+           ======================================== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        button:focus-visible,
+        input:focus-visible,
+        a:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        [aria-live] {
+            position: relative;
+        }
+
+        /* ========================================
+           RESPONSIVE ADJUSTMENTS
+           ======================================== */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            header h1 {
+                font-size: 1.25rem;
+            }
+
+            .header-search {
+                max-width: none;
+            }
+
+            .header-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+
+            .cards-grid {
+                gap: var(--spacing-md);
+            }
+
+            .knowledge-card {
+                padding: var(--spacing-md);
+            }
+
+            .card-meta {
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>📚 Knowledge Base</h1>
+            <div class="header-search">
+                <div class="search-container">
+                    <input
+                        type="text"
+                        id="search-input"
+                        class="search-input"
+                        placeholder="Search knowledge... (Ctrl+K)"
+                        aria-label="Search knowledge base"
+                    >
+                    <div id="search-suggestions" class="search-suggestions" role="listbox"></div>
+                </div>
+            </div>
+            <div class="header-controls">
+                <button class="dashboard-toggle" id="dashboard-toggle" aria-label="Toggle analytics dashboard">
+                    📊 Stats
+                </button>
+                <div class="view-toggle" role="tablist">
+                    <button class="view-btn active" data-view="cards" role="tab" aria-selected="true" aria-label="Card view">Cards</button>
+                    <button class="view-btn" data-view="graph" role="tab" aria-selected="false" aria-label="Graph view">Graph</button>
+                    <button class="view-btn" data-view="table" role="tab" aria-selected="false" aria-label="Table view">Table</button>
+                    <button class="view-btn" data-view="learning-path" role="tab" aria-selected="false" aria-label="Learning path view" id="learning-path-btn" style="display:none;">Learning Path</button>
+                </div>
+                <button class="btn-icon" id="theme-toggle" aria-label="Toggle dark mode">
+                    🌙
+                </button>
+            </div>
+        </header>
+
+        <div class="dashboard-section" id="dashboard">
+            <div class="dashboard-content">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Total Entries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-verified">0</div>
+                    <div class="stat-label">Verified</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-coverage">0%</div>
+                    <div class="stat-label">Coverage Score</div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Categories</div>
+                    <div class="bar-chart" id="category-chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Confidence Distribution</div>
+                    <div class="bar-chart" id="confidence-chart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Top Tags</div>
+                    <div class="bar-chart" id="tags-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-container">
+            <sidebar id="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Categories</div>
+                    <div class="category-tree" id="category-filter"></div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Confidence</div>
+                    <div class="confidence-filters" id="confidence-filter"></div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Tags</div>
+                    <div class="tag-cloud" id="tag-cloud"></div>
+                </div>
+            </sidebar>
+
+            <main>
+                <div class="content-area">
+                    <div class="active-filters empty" id="active-filters"></div>
+
+                    <div class="search-status" aria-live="polite" aria-atomic="true" id="search-status"></div>
+
+                    <div id="cards-view" class="cards-view visible">
+                        <div class="cards-grid" id="cards-grid"></div>
+                        <div class="pagination" id="pagination"></div>
+                    </div>
+
+                    <div id="graph-view" class="graph-view">
+                        <div id="graph-container"></div>
+                    </div>
+
+                    <div id="table-view" class="table-view">
+                        <table id="knowledge-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-sort="title">Title</th>
+                                    <th class="sortable" data-sort="category">Category</th>
+                                    <th class="sortable" data-sort="confidence">Confidence</th>
+                                    <th class="sortable" data-sort="tags">Tags</th>
+                                    <th class="sortable" data-sort="date_processed">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Learning Path View (visible only in learning mode) -->
+                    <div id="learning-path-view" class="learning-path-view">
+                        <div id="learning-path-content"></div>
+                    </div>
+
+                    <div class="empty-state" id="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div class="empty-state-title">No Entries Found</div>
+                        <div class="empty-state-text">Try adjusting your search or filters</div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <footer>
+            <span id="footer-info">Loading...</span>
+            <button class="btn" id="export-btn">📥 Export JSON</button>
+        </footer>
+    </div>
+
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <script>
+        // ========================================
+        // APPLICATION STATE & CONFIGURATION
+        // ========================================
+        const CONFIG = {
+            ITEMS_PER_PAGE: 20,
+            SEARCH_DEBOUNCE_MS: 300,
+            RECENT_SEARCHES_MAX: 10,
+            TF_IDF_FIELD_WEIGHTS: {
+                title: 3,
+                tags: 2,
+                category: 2,
+                subcategory: 1.5,
+                content: 1,
+                summary: 1
+            },
+            FUZZY_MAX_EDIT_DISTANCE: 2
+        };
+
+        // Sample fallback data
+        const SAMPLE_DATA = [
+            {
+                id: "ai-001",
+                title: "Machine Learning Model Evaluation Metrics",
+                category: "AI & Machine Learning",
+                subcategory: "Model Validation",
+                content: "Comprehensive guide to evaluating machine learning models including accuracy, precision, recall, F1-score, ROC-AUC, and confusion matrices. Key metrics for classification tasks and cross-validation strategies.",
+                summary: "Essential ML evaluation metrics explained with practical examples",
+                source: "https://example.com/ml-metrics",
+                confidence: "HIGH",
+                tags: ["machine-learning", "evaluation", "metrics", "classification"],
+                related: ["ai-002", "web-001"],
+                gaps: ["Need examples with imbalanced datasets", "Performance on production data"],
+                date_processed: "2024-01-15"
+            },
+            {
+                id: "ai-002",
+                title: "Neural Network Architecture Best Practices",
+                category: "AI & Machine Learning",
+                subcategory: "Deep Learning",
+                content: "Best practices for designing neural network architectures, including layer selection, activation functions, regularization techniques, and hyperparameter tuning strategies for optimal performance.",
+                summary: "Design patterns and techniques for building effective deep learning models",
+                source: "https://example.com/nn-architecture",
+                confidence: "VERIFIED",
+                tags: ["deep-learning", "neural-networks", "architecture", "optimization"],
+                related: ["ai-001"],
+                gaps: [],
+                date_processed: "2024-01-14"
+            },
+            {
+                id: "web-001",
+                title: "Modern Frontend Framework Comparison",
+                category: "Web Development",
+                subcategory: "JavaScript Frameworks",
+                content: "Detailed comparison of React, Vue, Angular, and Svelte including performance benchmarks, learning curve, ecosystem maturity, and ideal use cases. Analysis based on production deployments.",
+                summary: "Framework selection guide with performance metrics and trade-offs",
+                source: null,
+                confidence: "HIGH",
+                tags: ["react", "vue", "angular", "frontend", "performance"],
+                related: ["web-002"],
+                gaps: ["Comparison with emerging frameworks like Solid.js"],
+                date_processed: "2024-01-13"
+            },
+            {
+                id: "sec-001",
+                title: "API Security Best Practices",
+                category: "Security",
+                subcategory: "Web Security",
+                content: "Complete guide to securing REST APIs including authentication (JWT, OAuth2), rate limiting, CORS configuration, input validation, and protection against common vulnerabilities like SQL injection and XSS attacks.",
+                summary: "Security hardening strategies for production APIs",
+                source: "https://example.com/api-security",
+                confidence: "VERIFIED",
+                tags: ["security", "api", "authentication", "oauth2", "jwt"],
+                related: ["web-002", "db-001"],
+                gaps: [],
+                date_processed: "2024-01-12"
+            },
+            {
+                id: "db-001",
+                title: "Database Indexing and Query Optimization",
+                category: "Database",
+                subcategory: "Performance",
+                content: "Advanced techniques for optimizing database queries including index types (B-tree, hash, bitmap), query planning, execution analysis, and partitioning strategies for large-scale data management.",
+                summary: "Database performance optimization techniques",
+                source: null,
+                confidence: "MEDIUM",
+                tags: ["database", "optimization", "indexing", "performance", "sql"],
+                related: ["sec-001"],
+                gaps: ["Examples with NoSQL databases", "Distributed database optimization"],
+                date_processed: "2024-01-11"
+            }
+        ];
+
+        const STATE = {
+            data: [],
+            filteredData: [],
+            currentPage: 1,
+            searchQuery: '',
+            searchIndex: null,
+            recentSearches: [],
+            activeFilters: {
+                confidence: [],
+                categories: [],
+                tags: []
+            },
+            currentView: 'cards',
+            isDarkMode: false,
+            selectedCard: null,
+            searchStats: { count: 0, time: 0 },
+            learningModeActive: false
+        };
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            initializeData();
+            initializeTheme();
+            buildSearchIndex();
+            renderUI();
+            attachEventListeners();
+            updateDashboard();
+            loadRecentSearches();
+            initLearningMode();
+        });
+
+        function initializeData() {
+            const placeholder = '__KNOWLEDGE_DATA_PLACEHOLDER__';
+            try {
+                const dataStr = `${placeholder}`;
+                if (!dataStr.includes('__KNOWLEDGE_DATA_PLACEHOLDER__')) {
+                    STATE.data = JSON.parse(dataStr);
+                } else {
+                    STATE.data = SAMPLE_DATA;
+                }
+            } catch (e) {
+                STATE.data = SAMPLE_DATA;
+            }
+            STATE.filteredData = [...STATE.data];
+
+            // Load graph data for learning mode support
+            const graphPlaceholder = '__GRAPH_DATA__';
+            try {
+                const graphStr = `${graphPlaceholder}`;
+                if (!graphStr.includes('__GRAPH_DATA__')) {
+                    window.__GRAPH_DATA__ = JSON.parse(graphStr);
+                } else {
+                    window.__GRAPH_DATA__ = {};
+                }
+            } catch (e) {
+                window.__GRAPH_DATA__ = {};
+            }
+        }
+
+        function initializeTheme() {
+            const saved = localStorage.getItem('kb-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDark = saved ? saved === 'dark' : prefersDark;
+
+            STATE.isDarkMode = isDark;
+            setTheme(isDark);
+        }
+
+        function setTheme(isDark) {
+            STATE.isDarkMode = isDark;
+            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            localStorage.setItem('kb-theme', isDark ? 'dark' : 'light');
+            const btn = document.getElementById('theme-toggle');
+            btn.textContent = isDark ? '☀️' : '🌙';
+        }
+
+        // ========================================
+        // SEARCH ENGINE - TF-IDF IMPLEMENTATION
+        // ========================================
+        function buildSearchIndex() {
+            STATE.searchIndex = {
+                invertedIndex: {},
+                documents: STATE.data,
+                documentFrequency: {},
+                documentLength: {}
+            };
+
+            // Build inverted index
+            STATE.data.forEach((doc, docId) => {
+                const texts = [
+                    (doc.title || '').toLowerCase(),
+                    (doc.content || '').toLowerCase(),
+                    (doc.summary || '').toLowerCase(),
+                    ((doc.tags || []).join(' ')).toLowerCase(),
+                    (doc.category || '').toLowerCase(),
+                    (doc.subcategory || '').toLowerCase()
+                ].join(' ');
+
+                const tokens = tokenize(texts);
+                STATE.searchIndex.documentLength[docId] = tokens.length;
+
+                tokens.forEach(token => {
+                    if (!STATE.searchIndex.invertedIndex[token]) {
+                        STATE.searchIndex.invertedIndex[token] = [];
+                    }
+                    const postingList = STATE.searchIndex.invertedIndex[token];
+                    if (!postingList.find(p => p.docId === docId)) {
+                        postingList.push({ docId, count: 0 });
+                    }
+                    postingList.find(p => p.docId === docId).count++;
+                });
+            });
+
+            // Calculate document frequency
+            Object.keys(STATE.searchIndex.invertedIndex).forEach(term => {
+                STATE.searchIndex.documentFrequency[term] = STATE.searchIndex.invertedIndex[term].length;
+            });
+        }
+
+        function tokenize(text) {
+            return text.toLowerCase()
+                .replace(/[^\w\s]/g, ' ')
+                .split(/\s+/)
+                .filter(t => t.length > 1);
+        }
+
+        function calculateTFIDF(query, documents) {
+            const queryTerms = tokenize(query);
+            const results = [];
+
+            documents.forEach((doc, docId) => {
+                let score = 0;
+                let matchedTerms = new Set();
+
+                queryTerms.forEach(term => {
+                    const fuzzyMatches = fuzzySearch(term, Object.keys(STATE.searchIndex.invertedIndex));
+
+                    fuzzyMatches.forEach(matchedTerm => {
+                        const postingList = STATE.searchIndex.invertedIndex[matchedTerm];
+                        const posting = postingList.find(p => p.docId === docId);
+
+                        if (posting) {
+                            const tf = posting.count / (STATE.searchIndex.documentLength[docId] || 1);
+                            const idf = Math.log(STATE.data.length / (STATE.searchIndex.documentFrequency[matchedTerm] || 1));
+                            const fieldBoost = calculateFieldBoost(matchedTerm, doc);
+
+                            score += tf * idf * fieldBoost;
+                            matchedTerms.add(matchedTerm);
+                        }
+                    });
+                });
+
+                if (score > 0) {
+                    results.push({
+                        doc,
+                        score,
+                        matchedTerms: Array.from(matchedTerms)
+                    });
+                }
+            });
+
+            return results.sort((a, b) => b.score - a.score);
+        }
+
+        function calculateFieldBoost(term, doc) {
+            let boost = 1;
+
+            if (doc.title && doc.title.toLowerCase().includes(term)) boost *= CONFIG.TF_IDF_FIELD_WEIGHTS.title;
+            else if ((doc.tags || []).some(t => t.toLowerCase().includes(term))) boost *= CONFIG.TF_IDF_FIELD_WEIGHTS.tags;
+            else if (doc.category && doc.category.toLowerCase().includes(term)) boost *= CONFIG.TF_IDF_FIELD_WEIGHTS.category;
+            else if (doc.subcategory && doc.subcategory.toLowerCase().includes(term)) boost *= CONFIG.TF_IDF_FIELD_WEIGHTS.subcategory;
+            else if (doc.summary && doc.summary.toLowerCase().includes(term)) boost *= CONFIG.TF_IDF_FIELD_WEIGHTS.summary;
+            else if (doc.content && doc.content.toLowerCase().includes(term)) boost *= CONFIG.TF_IDF_FIELD_WEIGHTS.content;
+
+            return boost;
+        }
+
+        function fuzzySearch(query, terms) {
+            const matches = [];
+
+            terms.forEach(term => {
+                if (term.includes(query)) {
+                    matches.push(term);
+                } else if (levenshteinDistance(query, term) <= CONFIG.FUZZY_MAX_EDIT_DISTANCE) {
+                    matches.push(term);
+                }
+            });
+
+            return matches.length > 0 ? matches : [];
+        }
+
+        function levenshteinDistance(a, b) {
+            const matrix = [];
+
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+
+            return matrix[b.length][a.length];
+        }
+
+        let searchTimeout;
+        function performSearch(query) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const startTime = performance.now();
+
+                STATE.searchQuery = query;
+                STATE.currentPage = 1;
+
+                if (!query.trim()) {
+                    STATE.filteredData = [...STATE.data];
+                } else {
+                    const results = calculateTFIDF(query, STATE.data);
+                    STATE.filteredData = results.map(r => r.doc);
+
+                    if (query.trim()) {
+                        if (!STATE.recentSearches.includes(query)) {
+                            STATE.recentSearches.unshift(query);
+                            STATE.recentSearches = STATE.recentSearches.slice(0, CONFIG.RECENT_SEARCHES_MAX);
+                            localStorage.setItem('kb-recent-searches', JSON.stringify(STATE.recentSearches));
+                        }
+                    }
+                }
+
+                applyFilters();
+
+                const endTime = performance.now();
+                STATE.searchStats = {
+                    count: STATE.filteredData.length,
+                    time: Math.round(endTime - startTime)
+                };
+
+                renderCards();
+                updateSearchStatus();
+            }, CONFIG.SEARCH_DEBOUNCE_MS);
+        }
+
+        function updateSearchStatus() {
+            const status = document.getElementById('search-status');
+            const term = STATE.searchQuery ? ` "${STATE.searchQuery}"` : '';
+            status.textContent = `Found ${STATE.searchStats.count} results${term} in ${STATE.searchStats.time}ms`;
+            status.setAttribute('aria-live', 'polite');
+        }
+
+        function updateSearchSuggestions(query) {
+            const container = document.getElementById('search-suggestions');
+
+            if (!query.trim()) {
+                container.classList.remove('visible');
+                return;
+            }
+
+            const terms = Object.keys(STATE.searchIndex.invertedIndex);
+            const suggestions = terms
+                .filter(t => t.startsWith(query.toLowerCase()))
+                .slice(0, 5);
+
+            if (suggestions.length === 0) {
+                container.classList.remove('visible');
+                return;
+            }
+
+            container.innerHTML = suggestions.map((s, idx) =>
+                `<div class="search-suggestion-item" data-suggestion="${s}">${s}</div>`
+            ).join('');
+
+            container.classList.add('visible');
+
+            container.querySelectorAll('.search-suggestion-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.getElementById('search-input').value = item.dataset.suggestion;
+                    performSearch(item.dataset.suggestion);
+                    container.classList.remove('visible');
+                });
+            });
+        }
+
+        // ========================================
+        // FILTERING & FACETED SEARCH
+        // ========================================
+        function applyFilters() {
+            let filtered = [...STATE.data];
+
+            // Apply search filter
+            if (STATE.searchQuery.trim()) {
+                const results = calculateTFIDF(STATE.searchQuery, filtered);
+                filtered = results.map(r => r.doc);
+            }
+
+            // Apply confidence filter
+            if (STATE.activeFilters.confidence.length > 0) {
+                filtered = filtered.filter(item =>
+                    STATE.activeFilters.confidence.includes(item.confidence)
+                );
+            }
+
+            // Apply category filter (tier-aware in learning mode)
+            if (STATE.activeFilters.categories.length > 0) {
+                if (STATE.learningModeActive) {
+                    // In learning mode, category filters are tier names
+                    filtered = filtered.filter(item =>
+                        STATE.activeFilters.categories.includes(item.learning_tier) ||
+                        STATE.activeFilters.categories.includes(item.category)
+                    );
+                } else {
+                    filtered = filtered.filter(item =>
+                        STATE.activeFilters.categories.includes(item.category)
+                    );
+                }
+            }
+
+            // Apply tags filter (AND logic)
+            if (STATE.activeFilters.tags.length > 0) {
+                filtered = filtered.filter(item => {
+                    const itemTags = item.tags || [];
+                    return STATE.activeFilters.tags.every(tag =>
+                        itemTags.includes(tag)
+                    );
+                });
+            }
+
+            STATE.filteredData = filtered;
+            STATE.currentPage = 1;
+        }
+
+        function updateActiveFiltersDisplay() {
+            const container = document.getElementById('active-filters');
+            const filters = [];
+
+            STATE.activeFilters.confidence.forEach(conf => {
+                filters.push({ type: 'confidence', value: conf });
+            });
+
+            STATE.activeFilters.categories.forEach(cat => {
+                filters.push({ type: 'category', value: cat });
+            });
+
+            STATE.activeFilters.tags.forEach(tag => {
+                filters.push({ type: 'tag', value: tag });
+            });
+
+            if (filters.length === 0) {
+                container.classList.add('empty');
+                return;
+            }
+
+            container.classList.remove('empty');
+            container.innerHTML = filters.map(f => `
+                <div class="filter-chip">
+                    <span>${f.value}</span>
+                    <button aria-label="Remove ${f.value} filter" data-filter-type="${f.type}" data-filter-value="${f.value}">✕</button>
+                </div>
+            `).join('') + `<button class="reset-filters-btn">Reset All</button>`;
+
+            container.querySelectorAll('.filter-chip button').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const type = btn.dataset.filterType;
+                    const value = btn.dataset.filterValue;
+
+                    STATE.activeFilters[type + 's'] = STATE.activeFilters[type + 's'].filter(v => v !== value);
+
+                    updateAllFilters();
+                });
+            });
+
+            container.querySelector('.reset-filters-btn').addEventListener('click', () => {
+                STATE.activeFilters = { confidence: [], categories: [], tags: [] };
+                updateAllFilters();
+            });
+        }
+
+        function updateAllFilters() {
+            applyFilters();
+            renderCards();
+            renderSidebar();
+            updateActiveFiltersDisplay();
+            updateSearchStatus();
+        }
+
+        // ========================================
+        // UI RENDERING
+        // ========================================
+        function renderUI() {
+            renderSidebar();
+            renderCards();
+            updateFooter();
+        }
+
+        function renderSidebar() {
+            const categoryFilter = document.getElementById('category-filter');
+
+            // Learning mode: render tier-based navigation instead of alphabetical categories
+            if (STATE.learningModeActive) {
+                const tierOrder = ['foundation', 'intermediate', 'advanced'];
+                const tierLabels = {
+                    'foundation': 'Foundation',
+                    'intermediate': 'Intermediate',
+                    'advanced': 'Advanced'
+                };
+                const tierIcons = {
+                    'foundation': '&#9679;',   // filled circle
+                    'intermediate': '&#9670;', // diamond
+                    'advanced': '&#9733;'      // star
+                };
+
+                // Group entries by learning tier
+                const tierGroups = {};
+                tierOrder.forEach(t => { tierGroups[t] = []; });
+                const uncategorized = [];
+
+                STATE.data.forEach(item => {
+                    const tier = item.learning_tier;
+                    if (tier && tierGroups[tier]) {
+                        tierGroups[tier].push(item);
+                    } else {
+                        uncategorized.push(item);
+                    }
+                });
+
+                let html = '<div class="learning-tier-nav">';
+                tierOrder.forEach(tier => {
+                    const items = tierGroups[tier];
+                    if (items.length === 0) return;
+
+                    const isActive = STATE.activeFilters.categories.includes(tier);
+                    html += `
+                        <div class="tier-group">
+                            <div class="tier-header category-item ${isActive ? 'active' : ''}" data-category="${tier}">
+                                <span>${tierIcons[tier]} ${tierLabels[tier]}</span>
+                                <span class="category-count">${items.length}</span>
+                            </div>
+                            <div class="tier-entries" style="padding-left: 12px; font-size: 0.85rem;">
+                                ${items.slice(0, 8).map(item => `
+                                    <div class="tier-entry-link" data-entry-id="${item.id}"
+                                         style="padding: 3px 6px; cursor: pointer; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                         title="${item.title}">
+                                        ${item.learning_order != null ? (item.learning_order + 1) + '. ' : ''}${item.title}
+                                    </div>
+                                `).join('')}
+                                ${items.length > 8 ? `<div style="padding: 3px 6px; opacity: 0.5; font-style: italic;">+${items.length - 8} more</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (uncategorized.length > 0) {
+                    html += `
+                        <div class="tier-group">
+                            <div class="tier-header category-item" data-category="uncategorized">
+                                <span>Uncategorized</span>
+                                <span class="category-count">${uncategorized.length}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                html += '</div>';
+                categoryFilter.innerHTML = html;
+
+                // Tier header click → filter by tier
+                categoryFilter.querySelectorAll('.tier-header.category-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const cat = item.dataset.category;
+                        const idx = STATE.activeFilters.categories.indexOf(cat);
+                        if (idx > -1) {
+                            STATE.activeFilters.categories.splice(idx, 1);
+                        } else {
+                            STATE.activeFilters.categories.push(cat);
+                        }
+                        updateAllFilters();
+                    });
+                });
+
+                // Entry link click → scroll to / highlight that card
+                categoryFilter.querySelectorAll('.tier-entry-link').forEach(link => {
+                    link.addEventListener('click', () => {
+                        const entryId = link.dataset.entryId;
+                        // Switch to cards view and scroll to the entry
+                        const btn = document.querySelector('[data-view="cards"]');
+                        if (btn) btn.click();
+                        setTimeout(() => {
+                            const card = document.querySelector(`[data-entry-id="${entryId}"]`);
+                            if (card) {
+                                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                card.style.outline = '2px solid var(--accent-primary, #3b82f6)';
+                                setTimeout(() => { card.style.outline = ''; }, 2000);
+                            }
+                        }, 100);
+                    });
+                });
+
+            } else {
+                // Standard mode: alphabetical category navigation
+                const categories = {};
+                STATE.data.forEach(item => {
+                    if (!categories[item.category]) {
+                        categories[item.category] = 0;
+                    }
+                    categories[item.category]++;
+                });
+
+                categoryFilter.innerHTML = Object.keys(categories)
+                    .sort()
+                    .map(cat => {
+                        const isActive = STATE.activeFilters.categories.includes(cat);
+                        return `
+                            <div class="category-item ${isActive ? 'active' : ''}" data-category="${cat}">
+                                <span>${cat}</span>
+                                <span class="category-count">${categories[cat]}</span>
+                            </div>
+                        `;
+                    })
+                    .join('');
+
+                categoryFilter.querySelectorAll('.category-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const cat = item.dataset.category;
+                        const idx = STATE.activeFilters.categories.indexOf(cat);
+
+                        if (idx > -1) {
+                            STATE.activeFilters.categories.splice(idx, 1);
+                        } else {
+                            STATE.activeFilters.categories.push(cat);
+                        }
+
+                        updateAllFilters();
+                    });
+                });
+            } // end else (standard mode)
+
+            // Confidence filters
+            const confidenceLevels = ['VERIFIED', 'HIGH', 'MEDIUM', 'LOW', 'UNKNOWN'];
+            const confidenceFilter = document.getElementById('confidence-filter');
+
+            const confidenceCounts = {};
+            confidenceLevels.forEach(level => {
+                confidenceCounts[level] = STATE.data.filter(item => item.confidence === level).length;
+            });
+
+            confidenceFilter.innerHTML = confidenceLevels
+                .map(level => `
+                    <label class="confidence-checkbox">
+                        <input type="checkbox" data-confidence="${level}"
+                            ${STATE.activeFilters.confidence.includes(level) ? 'checked' : ''}>
+                        <span class="confidence-label">${level}</span>
+                        <span class="confidence-badge-count">${confidenceCounts[level]}</span>
+                    </label>
+                `)
+                .join('');
+
+            confidenceFilter.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const level = checkbox.dataset.confidence;
+                    const idx = STATE.activeFilters.confidence.indexOf(level);
+
+                    if (checkbox.checked && idx === -1) {
+                        STATE.activeFilters.confidence.push(level);
+                    } else if (!checkbox.checked && idx > -1) {
+                        STATE.activeFilters.confidence.splice(idx, 1);
+                    }
+
+                    updateAllFilters();
+                });
+            });
+
+            // Tags
+            const tagCounts = {};
+            STATE.data.forEach(item => {
+                (item.tags || []).forEach(tag => {
+                    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                });
+            });
+
+            const tagCloud = document.getElementById('tag-cloud');
+            tagCloud.innerHTML = Object.keys(tagCounts)
+                .sort((a, b) => tagCounts[b] - tagCounts[a])
+                .map(tag => {
+                    const isActive = STATE.activeFilters.tags.includes(tag);
+                    const size = Math.log(tagCounts[tag] + 1) * 0.5;
+                    return `
+                        <div class="tag-item ${isActive ? 'active' : ''}" data-tag="${tag}"
+                            style="font-size: ${0.75 + size}rem; opacity: ${0.6 + (size * 0.2)}">
+                            ${tag} (${tagCounts[tag]})
+                        </div>
+                    `;
+                })
+                .join('');
+
+            tagCloud.querySelectorAll('.tag-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const tag = item.dataset.tag;
+                    const idx = STATE.activeFilters.tags.indexOf(tag);
+
+                    if (idx > -1) {
+                        STATE.activeFilters.tags.splice(idx, 1);
+                    } else {
+                        STATE.activeFilters.tags.push(tag);
+                    }
+
+                    updateAllFilters();
+                });
+            });
+        }
+
+        function renderCards() {
+            const container = document.getElementById('cards-grid');
+            const emptyState = document.getElementById('empty-state');
+            const cardsView = document.getElementById('cards-view');
+
+            if (STATE.filteredData.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = (STATE.currentView === 'cards') ? 'block' : 'none';
+                renderPagination();
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            const startIdx = (STATE.currentPage - 1) * CONFIG.ITEMS_PER_PAGE;
+            const endIdx = startIdx + CONFIG.ITEMS_PER_PAGE;
+            const pageItems = STATE.filteredData.slice(startIdx, endIdx);
+
+            container.innerHTML = pageItems.map(item => `
+                <div class="knowledge-card" data-id="${item.id}">
+                    <div class="card-header">
+                        <h3 class="card-title">${escapeHtml(item.title)}</h3>
+                        <div class="card-meta">
+                            ${item.learning_tier ? `<span class="learning-tier-badge tier-${item.learning_tier}"><span class="tier-icon"></span>${item.tier_label || item.learning_tier}</span>` : ''}
+                            <span class="confidence-badge confidence-${item.confidence.toLowerCase()}">${item.confidence}</span>
+                        </div>
+                    </div>
+
+                    <div class="card-tags">
+                        <span class="card-tag">${item.category}</span>
+                        ${item.subcategory ? `<span class="card-tag">${item.subcategory}</span>` : ''}
+                    </div>
+
+                    <p class="card-summary">${escapeHtml(item.summary)}</p>
+
+                    <div class="card-content" data-card-id="${item.id}">
+                        <div class="card-content-text">${escapeHtml(item.content)}</div>
+
+                        ${item.gaps && item.gaps.length > 0 ? `
+                            <div class="card-gaps">
+                                <div class="card-gaps-title">Knowledge Gaps</div>
+                                <ul class="card-gaps-list">
+                                    ${item.gaps.map(g => `<li>${escapeHtml(g)}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="card-actions">
+                            <button class="card-btn expand-btn" data-card-id="${item.id}">Expand</button>
+                            <button class="card-btn" data-copy-id="${item.id}" title="Copy to clipboard">📋 Copy</button>
+                        </div>
+                        <div class="card-source">
+                            ${item.source ? `<a href="${item.source}" target="_blank" rel="noopener noreferrer">Source</a>` : ''}
+                        </div>
+                    </div>
+
+                    ${item.tags && item.tags.length > 0 ? `
+                        <div class="card-tags">
+                            ${item.tags.map(tag => `<span class="card-tag" data-filter-tag="${tag}">${tag}</span>`).join('')}
+                        </div>
+                    ` : ''}
+
+                    ${item.related && item.related.length > 0 ? `
+                        <div style="border-top: 1px solid var(--border); padding-top: var(--spacing-md);">
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: var(--spacing-sm); text-transform: uppercase; font-weight: 600;">Related</div>
+                            <div class="card-related">
+                                ${item.related.map(relId => {
+                                    const relItem = STATE.data.find(d => d.id === relId);
+                                    return relItem ? `<span class="related-link" data-scroll-id="${relId}">${relItem.title}</span>` : '';
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+
+            // Attach expand handlers
+            container.querySelectorAll('.expand-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const cardId = btn.dataset.cardId;
+                    const contentDiv = container.querySelector(`[data-card-id="${cardId}"]`);
+                    contentDiv.classList.toggle('expanded');
+                    btn.classList.toggle('expanded');
+                    btn.textContent = contentDiv.classList.contains('expanded') ? 'Collapse' : 'Expand';
+                });
+            });
+
+            // Attach copy handlers
+            container.querySelectorAll('[data-copy-id]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const itemId = btn.dataset.copyId;
+                    const item = STATE.data.find(d => d.id === itemId);
+                    if (item) {
+                        const text = `${item.title}\n${item.summary}\n\n${item.content}`;
+                        navigator.clipboard.writeText(text).then(() => {
+                            const originalText = btn.textContent;
+                            btn.textContent = '✓ Copied';
+                            setTimeout(() => { btn.textContent = originalText; }, 2000);
+                        });
+                    }
+                });
+            });
+
+            // Attach tag filter handlers
+            container.querySelectorAll('[data-filter-tag]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const tag = btn.dataset.filterTag;
+                    const idx = STATE.activeFilters.tags.indexOf(tag);
+
+                    if (idx > -1) {
+                        STATE.activeFilters.tags.splice(idx, 1);
+                    } else {
+                        STATE.activeFilters.tags.push(tag);
+                    }
+
+                    updateAllFilters();
+                });
+            });
+
+            // Attach related link handlers
+            container.querySelectorAll('[data-scroll-id]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const targetId = link.dataset.scrollId;
+                    const targetCard = container.querySelector(`[data-id="${targetId}"]`);
+                    if (targetCard) {
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            });
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const container = document.getElementById('pagination');
+            const totalPages = Math.ceil(STATE.filteredData.length / CONFIG.ITEMS_PER_PAGE);
+
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = `<button ${STATE.currentPage === 1 ? 'disabled' : ''}>← Previous</button>`;
+
+            for (let i = Math.max(1, STATE.currentPage - 2); i <= Math.min(totalPages, STATE.currentPage + 2); i++) {
+                html += `<button class="page-number ${i === STATE.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+
+            html += `<button ${STATE.currentPage === totalPages ? 'disabled' : ''}>Next →</button>`;
+
+            container.innerHTML = html;
+
+            container.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.textContent.includes('Previous')) {
+                        STATE.currentPage = Math.max(1, STATE.currentPage - 1);
+                    } else if (btn.textContent.includes('Next')) {
+                        STATE.currentPage = Math.min(totalPages, STATE.currentPage + 1);
+                    } else {
+                        STATE.currentPage = parseInt(btn.dataset.page);
+                    }
+                    renderCards();
+                    document.querySelector('.content-area').scrollTop = 0;
+                });
+            });
+        }
+
+        function renderGraphView() {
+            const container = document.getElementById('graph-container');
+            container.innerHTML = '';
+
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            const nodes = STATE.filteredData.map(item => ({
+                id: item.id,
+                title: item.title,
+                category: item.category,
+                summary: item.summary,
+                relatedCount: (item.related || []).length
+            }));
+
+            const links = [];
+            STATE.filteredData.forEach(item => {
+                (item.related || []).forEach(relId => {
+                    if (STATE.filteredData.find(d => d.id === relId)) {
+                        links.push({ source: item.id, target: relId });
+                    }
+                });
+            });
+
+            if (nodes.length === 0) {
+                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-secondary);">No data to visualize</div>';
+                return;
+            }
+
+            const svg = d3.select(container).append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            const simulation = d3.forceSimulation(nodes)
+                .force('link', d3.forceLink(links).id(d => d.id).distance(80))
+                .force('charge', d3.forceManyBody().strength(-300))
+                .force('collide', d3.forceCollide().radius(d => Math.sqrt(d.relatedCount) * 10 + 20))
+                .force('center', d3.forceCenter(width / 2, height / 2));
+
+            const g = svg.append('g');
+
+            const link = g.selectAll('line')
+                .data(links)
+                .enter()
+                .append('line')
+                .attr('stroke', 'var(--border)')
+                .attr('stroke-width', 1.5)
+                .attr('opacity', 0.6);
+
+            const nodeGroup = g.selectAll('.node-group')
+                .data(nodes)
+                .enter()
+                .append('g')
+                .attr('class', 'node-group')
+                .style('cursor', 'pointer');
+
+            const circle = nodeGroup.append('circle')
+                .attr('r', d => Math.sqrt(d.relatedCount) * 10 + 15)
+                .attr('fill', d => {
+                    const categoryColor = {
+                        'AI & Machine Learning': 'var(--category-ai)',
+                        'Web Development': 'var(--category-web)',
+                        'Security': 'var(--category-security)',
+                        'Database': 'var(--category-database)',
+                        'DevOps': 'var(--category-devops)'
+                    };
+                    return categoryColor[d.category] || 'var(--accent)';
+                })
+                .attr('opacity', 0.8);
+
+            const text = nodeGroup.append('text')
+                .text(d => d.title.length > 20 ? d.title.substring(0, 20) + '...' : d.title)
+                .attr('text-anchor', 'middle')
+                .attr('dy', '0.3em')
+                .style('font-size', '11px')
+                .style('fill', 'white')
+                .style('font-weight', 'bold')
+                .style('pointer-events', 'none');
+
+            nodeGroup.on('mouseenter', function(event, d) {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'graph-tooltip';
+                tooltip.innerHTML = `
+                    <div class="graph-tooltip-title">${d.title}</div>
+                    <div class="graph-tooltip-summary">${d.summary.substring(0, 100)}...</div>
+                `;
+                document.body.appendChild(tooltip);
+
+                const rect = tooltip.getBoundingClientRect();
+                tooltip.style.left = (event.pageX + 10) + 'px';
+                tooltip.style.top = (event.pageY - rect.height - 10) + 'px';
+
+                d3.select(this).select('circle').attr('opacity', 1);
+
+                nodeGroup.on('mouseleave', function() {
+                    if (tooltip.parentNode) {
+                        tooltip.parentNode.removeChild(tooltip);
+                    }
+                    d3.select(this).select('circle').attr('opacity', 0.8);
+                });
+            });
+
+            nodeGroup.on('click', function(event, d) {
+                const card = document.querySelector(`[data-id="${d.id}"]`);
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+
+            svg.on('wheel', function(event) {
+                event.preventDefault();
+                const scale = event.deltaY > 0 ? 0.9 : 1.1;
+                g.attr('transform', `scale(${scale})`);
+            });
+
+            simulation.on('tick', () => {
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+
+                nodeGroup
+                    .attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+        }
+
+        function renderTableView() {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = STATE.filteredData.map(item => `
+                <tr>
+                    <td>${escapeHtml(item.title)}</td>
+                    <td>${item.category}</td>
+                    <td class="table-confidence"><span class="confidence-badge confidence-${item.confidence.toLowerCase()}">${item.confidence}</span></td>
+                    <td>${(item.tags || []).join(', ')}</td>
+                    <td>${item.date_processed}</td>
+                </tr>
+            `).join('');
+
+            tbody.querySelectorAll('tr').forEach(row => {
+                row.addEventListener('click', () => {
+                    const title = row.querySelector('td').textContent;
+                    const item = STATE.filteredData.find(d => d.title === title);
+                    if (item) {
+                        const card = document.querySelector(`[data-id="${item.id}"]`);
+                        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            });
+        }
+
+        function updateDashboard() {
+            // Stats
+            document.getElementById('stat-total').textContent = STATE.data.length;
+            const verified = STATE.data.filter(d => d.confidence === 'VERIFIED').length;
+            document.getElementById('stat-verified').textContent = verified;
+            const highQuality = STATE.data.filter(d => ['VERIFIED', 'HIGH'].includes(d.confidence)).length;
+            const coverage = Math.round((highQuality / STATE.data.length) * 100);
+            document.getElementById('stat-coverage').textContent = coverage + '%';
+
+            // Category chart
+            const categories = {};
+            STATE.data.forEach(item => {
+                categories[item.category] = (categories[item.category] || 0) + 1;
+            });
+
+            const maxCat = Math.max(...Object.values(categories));
+            const categoryChart = document.getElementById('category-chart');
+            categoryChart.innerHTML = Object.entries(categories)
+                .map(([cat, count]) => `
+                    <div class="bar-item">
+                        <div class="bar-label">${cat}</div>
+                        <div class="bar-fill" style="width: ${(count / maxCat) * 100}%">
+                            <span class="bar-value">${count}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+            // Confidence chart
+            const confidenceLevels = { VERIFIED: 0, HIGH: 0, MEDIUM: 0, LOW: 0, UNKNOWN: 0 };
+            STATE.data.forEach(item => {
+                confidenceLevels[item.confidence]++;
+            });
+
+            const total = STATE.data.length;
+            const confidenceChart = document.getElementById('confidence-chart');
+            confidenceChart.innerHTML = Object.entries(confidenceLevels)
+                .map(([level, count]) => `
+                    <div class="bar-item">
+                        <div class="bar-label">${level}</div>
+                        <div class="bar-fill" style="width: ${(count / total) * 100}%; background: linear-gradient(90deg, var(--confidence-${level.toLowerCase()}), var(--confidence-${level.toLowerCase()}));">
+                            <span class="bar-value">${Math.round((count / total) * 100)}%</span>
+                        </div>
+                    </div>
+                `).join('');
+
+            // Top tags
+            const tagCounts = {};
+            STATE.data.forEach(item => {
+                (item.tags || []).forEach(tag => {
+                    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                });
+            });
+
+            const topTags = Object.entries(tagCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const maxTags = Math.max(...topTags.map(t => t[1]));
+            const tagsChart = document.getElementById('tags-chart');
+            tagsChart.innerHTML = topTags
+                .map(([tag, count]) => `
+                    <div class="bar-item">
+                        <div class="bar-label">${tag}</div>
+                        <div class="bar-fill" style="width: ${(count / maxTags) * 100}%">
+                            <span class="bar-value">${count}</span>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function updateFooter() {
+            const now = new Date().toLocaleDateString();
+            document.getElementById('footer-info').textContent =
+                `Generated ${now} | ${STATE.data.length} entries`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+        function attachEventListeners() {
+            // Search
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (e) => {
+                updateSearchSuggestions(e.target.value);
+                performSearch(e.target.value);
+            });
+
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchInput.value = '';
+                    performSearch('');
+                }
+            });
+
+            // Theme toggle
+            document.getElementById('theme-toggle').addEventListener('click', () => {
+                setTheme(!STATE.isDarkMode);
+            });
+
+            // Dashboard toggle
+            document.getElementById('dashboard-toggle').addEventListener('click', () => {
+                document.getElementById('dashboard').classList.toggle('open');
+            });
+
+            // View toggle — single authoritative handler for ALL views including learning-path
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    STATE.currentView = btn.dataset.view;
+
+                    // Hide ALL views consistently using style.display
+                    const allViews = ['cards-view', 'graph-view', 'table-view', 'learning-path-view'];
+                    allViews.forEach(viewId => {
+                        const el = document.getElementById(viewId);
+                        if (el) el.style.display = 'none';
+                    });
+
+                    if (STATE.currentView === 'cards') {
+                        document.getElementById('cards-view').style.display = 'block';
+                    } else if (STATE.currentView === 'graph') {
+                        document.getElementById('graph-view').style.display = 'block';
+                        renderGraphView();
+                    } else if (STATE.currentView === 'table') {
+                        document.getElementById('table-view').style.display = 'block';
+                        renderTableView();
+                    } else if (STATE.currentView === 'learning-path') {
+                        document.getElementById('learning-path-view').style.display = 'block';
+                        renderLearningPath();
+                    }
+                });
+            });
+
+            // Export
+            document.getElementById('export-btn').addEventListener('click', () => {
+                const dataStr = JSON.stringify(STATE.filteredData, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `knowledge-base-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            // Mobile menu
+            const mobileToggle = document.querySelector('.mobile-menu-toggle');
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', () => {
+                    const sidebar = document.getElementById('sidebar');
+                    const backdrop = document.getElementById('sidebar-backdrop');
+                    sidebar.classList.toggle('open');
+                    backdrop.classList.toggle('visible');
+                    mobileToggle.classList.toggle('open');
+                });
+            }
+
+            const backdrop = document.getElementById('sidebar-backdrop');
+            if (backdrop) {
+                backdrop.addEventListener('click', () => {
+                    document.getElementById('sidebar').classList.remove('open');
+                    backdrop.classList.remove('visible');
+                    document.querySelector('.mobile-menu-toggle').classList.remove('open');
+                });
+            }
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    document.getElementById('search-input').focus();
+                }
+
+                if (!['input', 'textarea'].includes(document.activeElement.tagName.toLowerCase())) {
+                    if (e.key === '1') STATE.currentPage = 1;
+                    if (e.key === '2') STATE.currentPage = 1;
+                    if (e.key === '3') STATE.currentPage = 1;
+                }
+            });
+        }
+
+        function loadRecentSearches() {
+            const saved = localStorage.getItem('kb-recent-searches');
+            if (saved) {
+                try {
+                    STATE.recentSearches = JSON.parse(saved);
+                } catch (e) {
+                    STATE.recentSearches = [];
+                }
+            }
+        }
+
+        // ========================================
+        // LEARNING MODE SUPPORT
+        // ========================================
+
+        /**
+         * Detect if learning mode should be active based on entry metadata.
+         * Learning mode is activated by build_knowledge_app.py --learning-mode flag,
+         * which sets learning_tier on each entry node.
+         */
+        function initLearningMode() {
+            const hasLearningTiers = STATE.data.some(item => item.learning_tier);
+            if (!hasLearningTiers) return;
+
+            STATE.learningModeActive = true;
+
+            // Show Learning Path button (the generic view-toggle handler already
+            // covers the 'learning-path' data-view, so no extra listener needed)
+            const lpBtn = document.getElementById('learning-path-btn');
+            if (lpBtn) lpBtn.style.display = '';
+
+            // Re-render sidebar with learning-mode tier navigation
+            renderSidebar();
+        }
+
+        /**
+         * Topological sort on dependency edges to determine learning order.
+         */
+        function topologicalSortEntries(entries, graphData) {
+            if (!graphData || !graphData.edges) return entries.map(e => e.id);
+
+            const depEdges = graphData.edges.filter(e => e.type === 'dependency');
+            if (depEdges.length === 0) return entries.map(e => e.id);
+
+            const inDegree = {};
+            const adjList = {};
+            entries.forEach(n => { inDegree[n.id] = 0; adjList[n.id] = []; });
+
+            depEdges.forEach(e => {
+                const src = typeof e.target === 'object' ? e.target.id : e.target;
+                const tgt = typeof e.source === 'object' ? e.source.id : e.source;
+                if (adjList[src]) adjList[src].push(tgt);
+                if (inDegree[tgt] !== undefined) inDegree[tgt]++;
+            });
+
+            const queue = [];
+            const sorted = [];
+            for (const nodeId in inDegree) {
+                if (inDegree[nodeId] === 0) queue.push(nodeId);
+            }
+            while (queue.length > 0) {
+                const current = queue.shift();
+                sorted.push(current);
+                for (const neighbor of (adjList[current] || [])) {
+                    inDegree[neighbor]--;
+                    if (inDegree[neighbor] === 0) queue.push(neighbor);
+                }
+            }
+            // Append any remaining (cycle members)
+            const sortedSet = new Set(sorted);
+            entries.forEach(n => { if (!sortedSet.has(n.id)) sorted.push(n.id); });
+
+            return sorted;
+        }
+
+        /**
+         * Render the Learning Path view — entries ordered by dependency with tier grouping.
+         */
+        function renderLearningPath() {
+            const container = document.getElementById('learning-path-content');
+            if (!container) return;
+
+            const graphData = window.__GRAPH_DATA__ || {};
+            const sortedIds = topologicalSortEntries(STATE.data, graphData);
+
+            // Group by tier, maintaining topological order
+            const tiers = {
+                foundation: { label: 'Foundation', icon: '🟢', color: '#059669', entries: [] },
+                intermediate: { label: 'Intermediate', icon: '🟡', color: '#d97706', entries: [] },
+                advanced: { label: 'Advanced', icon: '🔴', color: '#dc2626', entries: [] }
+            };
+
+            let counter = 1;
+            sortedIds.forEach(id => {
+                const entry = STATE.data.find(e => e.id === id);
+                if (!entry) return;
+                const tier = entry.learning_tier || 'foundation';
+                if (tiers[tier]) {
+                    tiers[tier].entries.push({ ...entry, learningOrder: counter++ });
+                }
+            });
+
+            let html = '';
+            for (const [tierKey, tier] of Object.entries(tiers)) {
+                if (tier.entries.length === 0) continue;
+                html += `
+                    <div class="learning-tier-section">
+                        <div class="learning-tier-header">
+                            <span class="learning-tier-badge tier-${tierKey}"><span class="tier-icon"></span>${tier.label}</span>
+                            <h3>${tier.label} Concepts</h3>
+                            <span class="tier-count">${tier.entries.length} entries</span>
+                        </div>
+                `;
+
+                tier.entries.forEach(entry => {
+                    // Find prerequisites
+                    const depEdges = (graphData.edges || []).filter(e => {
+                        const src = typeof e.source === 'object' ? e.source.id : e.source;
+                        return src === entry.id && e.type === 'dependency';
+                    });
+                    const prereqs = depEdges.map(e => {
+                        const tgtId = typeof e.target === 'object' ? e.target.id : e.target;
+                        const prereq = STATE.data.find(d => d.id === tgtId);
+                        return prereq ? prereq.title : tgtId;
+                    });
+
+                    html += `
+                        <div class="learning-path-entry tier-${tierKey}" data-entry-id="${entry.id}" onclick="this.classList.toggle('expanded')">
+                            <div class="entry-number">Step ${entry.learningOrder}</div>
+                            <div class="entry-title">${escapeHtml(entry.title)}</div>
+                            ${prereqs.length > 0 ? `<div class="entry-prereqs">Builds on: ${prereqs.map(p => escapeHtml(p)).join(', ')}</div>` : ''}
+                            <div class="entry-summary">${escapeHtml(entry.summary || entry.content.substring(0, 200) + '...')}</div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+            }
+
+            container.innerHTML = html || '<p style="color:var(--text-muted);">No learning path data available. Rebuild with --learning-mode flag.</p>';
+        }
+
+    </script>
+</body>
+</html>

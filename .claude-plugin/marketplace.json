@@ -9,7 +9,8 @@
       "name": "harsha-custom-skills",
       "description": "Custom skills: deep research, security audit, McKinsey research, codebase documenter, release notes, workflow guardian, mobile mastery, tech stack advisor, parallel builder, super pipeline, web brainstorm, and ultimate-debugging-tool (systematic web debugging with CWE security detectors and race-condition protocol).",
       "source": "./harsha-custom-skills",
-      "category": "development"
+      "category": "development",
+      "version": "1.4.4"
     }
   ]
 }
