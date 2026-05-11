@@ -1,5 +1,5 @@
 ---
-name: think-with-me
+name: cowork-think-with-me
 description: "Socratic thinking partner that resists producing artifacts until the option space is exhaustively explored. Forces divergent thinking, axis-based enumeration, opinionated ranking, and context-rich decision documentation. Use when making product decisions, designing features, choosing architectures, or any decision where exploring all options matters more than shipping the first viable one. Triggers: think with me, explore options, before we build, let's think about, what are all the options, option space, decision space."
 ---
 

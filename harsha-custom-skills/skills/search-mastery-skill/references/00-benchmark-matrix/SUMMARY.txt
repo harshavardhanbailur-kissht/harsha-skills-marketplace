@@ -1,0 +1,173 @@
+================================================================================
+COMPREHENSIVE SEARCH & RETRIEVAL BENCHMARK MATRIX
+Created: March 1, 2026
+Location: references/00-benchmark-matrix/
+================================================================================
+
+DOCUMENT CONTENTS (17 Sections, 1,500+ Lines)
+
+1. Retrieval Approaches Head-to-Head
+   - Master comparison table (7 approaches)
+   - Covers: MS MARCO MRR@10, BEIR NDCG@10, latency, index size, cost
+   - Baseline (BM25): 0.222 MRR@10 → SOTA: 0.50+ MRR@10 (RankGPT-4)
+
+2. Embedding Model Comparison (MTEB 2025-2026)
+   - 10 major models compared
+   - Includes: Cohere-v4 (65.2), OpenAI text-3-large (64.6), Qwen3-8B (70.58)
+   - OSS options: BGE-M3 (63.0), E5-mistral, multilingual-e5-large
+   - Cost: $0.02-0.13 per million tokens
+
+3. Reranker Comparison
+   - 8 rerankers benchmarked (BM25 through RankGPT-4)
+   - Jina-v3 achieves 61.94 NDCG@10 with 0.6B parameters
+   - Reranking ROI: +0.05-0.08 MRR@10 for +15-50ms latency
+
+4. Search Engine Comparison
+   - 9 engines: Elasticsearch, Meilisearch, Typesense, Qdrant, Weaviate, 
+     Pinecone, pgvector, Vespa, Redis
+   - Throughput: 1K-100K QPS depending on engine
+   - Latency: 1-200ms p99 (Redis fastest, Elasticsearch slowest)
+   - Pricing: $0-2000+/month depending on scale
+
+5. Client-Side Library Comparison
+   - 6 libraries: Fuse.js, MiniSearch, FlexSearch, Orama, Pagefind, Lunr.js
+   - FlexSearch fastest (1-5ms), Fuse.js most balanced
+   - All work on <100K documents efficiently
+
+6. Visual Document Retrieval (ColPali)
+   - ViDoRe v3: 26K pages, 3K queries, 6 languages
+   - ColPali-3.5B achieves ~0.68 NDCG@5
+   - Use case: Scanned documents, PDFs, mixed text/image layouts
+
+7. RAG Retrieval Comparison
+   - CRAG benchmark: 4,409 questions across 5 domains
+   - Naive RAG: 44% accuracy
+   - Advanced RAG: 52% accuracy
+   - SOTA (CRAG framework): 63% accuracy
+   - Agentic RAG: 68% accuracy (cost prohibitive)
+
+8. Quality-Cost-Latency Tradeoff Matrix
+   - 4 tiers defined with example stacks:
+     * Tier 1 (Basic): $0.01-0.05/1M queries, 48-50% quality
+     * Tier 2 (Good): $0.05-0.15/1M queries, 52-54% quality
+     * Tier 3 (Excellent): $0.15-0.40/1M queries, 54-57% quality
+     * Tier 4 (SOTA): $0.30-1.00+/1M queries, 57%+ quality
+
+9. When to Use What (Decision Summary)
+   - Decision tree for approach selection
+   - Scenario matrix (MVP, Startup, Growth, Scale, Enterprise)
+   - Language-specific recommendations
+   - Document type recommendations
+
+10. Benchmark Sources & Methodology
+    - Citations: MS MARCO, BEIR, MTEB, ViDoRe v3, CRAG, FRAMES
+    - Data freshness status for each benchmark
+    - Interpretation guidelines for metric averaging
+
+11. Cost Calculator Examples
+    - Example 1: Customer support chatbot (10K q/day, $500/mo budget)
+    - Example 2: Enterprise legal search (1M q/month, $5K/mo budget)
+    - Example 3: Consumer mobile app (100M q/month, $50K/mo budget)
+
+12. Implementation Checklist
+    - Pre-implementation validation steps
+    - Benchmarking workflow (BM25 → Dense → Hybrid → Reranker)
+    - Go-live readiness criteria
+
+13. Cross-References
+    - Links to 10 deeper reference materials
+    - Organized by topic
+
+14. Quick Reference by Role
+    - Product Managers: Section 8, 9
+    - ML Engineers: Sections 1-7, 10
+    - Infrastructure Teams: Section 4, 9, 12
+    - Startups: Section 9 (MVP)
+    - Enterprises: Section 9 (Enterprise), 10
+
+15. Frequently Asked Questions
+    - "Should I wait for newer models?"
+    - "Is Cohere worth 5x the cost of BGE-M3?"
+    - "What's the latency breakdown?"
+    - "Self-hosted or managed?"
+    - "Do I need a cross-encoder reranker?"
+
+16. Recommended Reading
+    - Seminal papers with arXiv links
+    - Live leaderboards (MTEB, MS MARCO, BEIR, ViDoRe)
+    - Industry articles from 2025-2026
+
+17. Contributing & Updates
+    - How to report inaccuracies
+    - Update schedule (quarterly)
+
+================================================================================
+KEY BENCHMARK NUMBERS AT A GLANCE
+
+RETRIEVAL QUALITY (MRR@10 on MS MARCO)
+- BM25 (Baseline)                   0.222
+- Dense (E5-large)                  0.367
+- SPLADE v3                         0.400
+- ColBERT v2                        0.397
+- Hybrid RRF                        0.390
+- Hybrid + Reranker                 0.450+
+- RankGPT-4                         0.500+
+
+EMBEDDING MODELS (MTEB 2026)
+- Cohere embed-v4                   65.2 ($0.12/1M tokens)
+- OpenAI text-3-large               64.6 ($0.13/1M tokens)
+- Qwen3-8B                          70.58 (free, OSS, multilingual)
+- BGE-M3                            63.0 (free, OSS, 100+ languages)
+- E5-mistral-7b                     62 (free, OSS)
+
+SEARCH ENGINE LATENCY (p99)
+- Fastest: Redis (1-10ms), Typesense (5-30ms), Vespa (10-50ms)
+- Medium: Pinecone (30-80ms), Qdrant (20-100ms)
+- Slowest: Elasticsearch (50-200ms), Weaviate (50-150ms)
+
+RAG SYSTEM ACCURACY (CRAG Benchmark)
+- Naive RAG                         44%
+- Advanced RAG                      52%
+- Self-RAG                          58%
+- CRAG Framework                    63%
+- Agentic RAG                       68%
+
+COST PER 1 MILLION QUERIES
+- Tier 1 (BM25)                     $0.001
+- Tier 2 (Dense)                    $0.05-0.10
+- Tier 3 (Hybrid+Reranker)          $0.15-0.40
+- Tier 4 (RankGPT-4)                $5-10+
+
+================================================================================
+HOW TO USE THIS MATRIX
+
+1. QUICK LOOKUP: Find your specific question in the "Quick Navigation" table
+2. DETAILED ANALYSIS: Read the relevant section (each 1-3 pages)
+3. IMPLEMENTATION: Cross-reference with "When to Use What" section
+4. COST ESTIMATION: Use Section 11 calculator examples as templates
+5. VALIDATION: Check Section 10 methodology to understand data quality
+
+THIS IS THE SINGLE SOURCE OF TRUTH FOR:
+- Comparing retrieval approaches with real benchmarks
+- Choosing embedding models for your task
+- Estimating RAG system costs
+- Understanding quality-cost tradeoffs
+- Validating architecture decisions
+- Selecting between commercial vs open-source options
+
+================================================================================
+DATA SOURCES & FRESHNESS
+
+✓ MS MARCO (Feb 2024) - Archived, stable baseline
+✓ BEIR (Feb 2025) - Updated quarterly
+✓ MTEB (Feb 2026) - Leaderboard updated monthly
+✓ ViDoRe v3 (Jan 2026) - Semi-annual updates
+✓ CRAG (Jul 2024) - Annual updates
+✓ FRAMES (Dec 2025) - Semi-annual updates
+
+All pricing current as of March 2026; verify with providers for latest rates.
+
+================================================================================
+Next Update: June 2026 (MTEB Q2 refresh, new model releases)
+Document Version: 1.2.0
+License: CC BY-SA 4.0
