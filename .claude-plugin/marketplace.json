@@ -7,10 +7,10 @@
   "plugins": [
     {
       "name": "harsha-custom-skills",
-      "description": "Custom skills: deep research, security audit, McKinsey research, codebase documenter, release notes, workflow guardian, mobile mastery, tech stack advisor, parallel builder, super pipeline, web brainstorm, and ultimate-debugging-tool (systematic web debugging with CWE security detectors and race-condition protocol).",
+      "description": "30 production skills covering the full build pipeline: brainstorm, research, planning, design, build, ship, and quality. Includes deep-research, search-mastery-skill, prd-mastery, decompose-prd, deep-thinker-v4, design-philosophy-replication, parallel-builder, skill-deployer, codebase-documenter, kissht-release-notes, safe-refactor, security-audit, ultimate-debugging-tool, performance-debugger, workflow-guardian, git-merge-intelligence, cowork-think-with-me, cowork-prompting-mastery, and 12 more.",
       "source": "./harsha-custom-skills",
       "category": "development",
-      "version": "1.4.7"
+      "version": "1.4.8"
     }
   ]
 }
