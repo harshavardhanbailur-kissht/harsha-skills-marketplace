@@ -4,13 +4,17 @@
     "name": "Harshavardhan Bailur",
     "email": "harshavardhan.bailur@kissht.com"
   },
+  "metadata": {
+    "lastModified": "2026-05-12T02:00:00+05:30",
+    "buildId": "1.4.9-cache-buster"
+  },
   "plugins": [
     {
       "name": "harsha-custom-skills",
       "description": "30 production skills covering the full build pipeline: brainstorm, research, planning, design, build, ship, and quality. Includes deep-research, search-mastery-skill, prd-mastery, decompose-prd, deep-thinker-v4, design-philosophy-replication, parallel-builder, skill-deployer, codebase-documenter, kissht-release-notes, safe-refactor, security-audit, ultimate-debugging-tool, performance-debugger, workflow-guardian, git-merge-intelligence, cowork-think-with-me, cowork-prompting-mastery, and 12 more.",
       "source": "./harsha-custom-skills",
       "category": "development",
-      "version": "1.4.8"
+      "version": "1.4.9"
     }
   ]
 }
