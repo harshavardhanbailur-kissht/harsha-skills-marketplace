@@ -335,4 +335,4 @@ The skill runs 16 universal gates (U1 to U16) plus type-specific gates (WC1-8, B
 
 These three force re-engagement — the skill announces the hard-stop reason and re-enters the relevant phase. Other failures route back to the relevant Phase 4 question category.
 
-See `.deep-think/09-output-schema.md` for the full gate enumeration.
+Full gate enumeration is preserved in the skill author's design notes at `../lap-jira-uniform-ticket-design/deep-think/09-output-schema.md` (not loaded at runtime).

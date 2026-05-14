@@ -11,7 +11,7 @@
 | Code | Full name | Stage(s) owned | Reports to | Notes |
 |---|---|---|---|---|
 | **SM** | Sales Manager | Lead Generation, Sourcing | BM | Originates leads in LSQ; uploads login docs. Does not raise queries — receives them. |
-| **RM** | Relationship Manager (Sales) | Lead handling | SM / BM | Field-facing sales contact. <!-- TODO: confirm with PM whether RM is a distinct system role or alias for SM in LSQ panel --> |
+| **RM** | Relationship Manager (Sales) | Lead handling | SM / BM | Field-facing sales contact. *(Note: distinctness vs SM at panel level is unverified — see `pending-validation.md` §V1.)* |
 | **BM** | Branch Manager | Branch oversight | SM (regional) / NSM | Receives queries; does not own a stage. |
 | **NSM** | National Sales Manager | `Rate Approval Pending` | (top of Sales hierarchy) | Approves rate deviations only. |
 
@@ -50,7 +50,7 @@ Sales rarely raises queries; they receive them. Sales sections in tickets / rele
 | Code | Full name | Notes |
 |---|---|---|
 | **Financier Reviewer** | (no abbreviation in panel) | Stage owner of `Financier Review`. Lender-side. |
-| **Auditor** | KYC / VCIP Auditor | Reviews Video KYC submissions. Issues Soft Reject / Hard Reject (LAP-2048). <!-- TODO: confirm with PM whether First and Second Auditor are distinct roles in panel --> |
+| **Auditor** | KYC / VCIP Auditor | Reviews Video KYC submissions. Issues Soft Reject / Hard Reject (LAP-2048). *(Note: LAP-2048 references First Auditor + Second Auditor — whether these are distinct panel roles or sequential reviews by the same role is unverified — see `pending-validation.md` §V2.)* |
 | **Vendor (Legal / Technical / RCU / FI)** | — | External verification vendors. Receive queries from BCPA. |
 | **CPA User** | (LAP-1812 verbiage) | **Maps to BCPA (Branch CPA)** verbatim — confirmed by PM. Skill auto-rewrites `CPA User` → `BCPA` in drafts. See [`lap-glossary.md`](./lap-glossary.md) §1 Roles. |
 

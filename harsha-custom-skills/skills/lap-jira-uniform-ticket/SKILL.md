@@ -7,13 +7,14 @@ description: |
   (b) the resulting ticket can be lifted directly into the kissht-field-release-notes
   skill to produce a Relook-style or Renach-style operator release note in one pass,
   and (c) downstream consumers (BA, QA, Dev, Ops) can read any LAP ticket cold and
-  understand it without re-asking the PM. Auto-searches the LAP Jira project and the
-  LAP Confluence space for related tickets BEFORE asking the PM, classifies the ticket
-  into one of 5 types (Workflow Change, Branching Outcome, Simple Change, Reference
-  Data, Mixed), then asks 9-17 type-trimmed MUST questions before drafting. Never
-  assumes. Blocks on undefined glossary terms. Outputs either markdown for the PM to
-  paste or pushes directly via createJiraIssue.
-version: 1.0.1
+  understand it without re-asking the PM. If the Atlassian MCP is connected, auto-searches
+  the LAP Jira project and the LAP Confluence space for related tickets BEFORE asking
+  the PM; otherwise falls back to asking the PM directly. Classifies the ticket into one
+  of 5 types (Workflow Change, Branching Outcome, Simple Change, Reference Data, Mixed),
+  then asks 9-17 type-trimmed MUST questions before drafting. Never assumes. Blocks on
+  undefined glossary terms. **v1.0.1 beta — markdown output only**; push-to-Jira via
+  createJiraIssue planned for v1.1 once the Atlassian MCP integration is bundled.
+version: 1.0.2
 author: Harshavardhan Bailur
 references:
   - kissht-field-release-notes (downstream consumer — every ticket from this skill
@@ -85,7 +86,7 @@ Every LAP ticket is classified into exactly one of five types. The type determin
 | **RD** | Reference Data | Dropdown / matrix / config / slab change; no flow change | Pattern A (matrix-only) | LAP-2052, LAP-2242 |
 | **MX** | Mixed | WC signals AND BO signals fire simultaneously | Pattern A with embedded Cases | LAP-2048 |
 
-Full per-type taxonomy with conditional trimming rules: `.deep-think/02-ticket-type-taxonomy.md`. PM-readable summary: `reference/PATTERN.md` §"Per-Type Variations".
+PM-readable summary: `reference/PATTERN.md` §"Per-Type Variations". (Skill author's architectural notes are quarantined out of the active skill folder at `../lap-jira-uniform-ticket-design/deep-think/`; not loaded at runtime.)
 
 ### Why no sixth "Trivial" type
 
@@ -120,23 +121,24 @@ Every session runs Phase 0 through Phase 8 in order. No phase is skippable excep
 
 ### Phase 0 — Activate & Set Destination
 
-Skill loads. Two opening questions before anything else:
+Skill loads. One opening question before anything else:
 
 - **D1.** "Quick orientation — is this a new feature, a tweak to an existing feature, a config / dropdown change, or something else?" (Used to seed type detection.)
-- **D2.** "When we're done — should I produce clean markdown for you to paste into Jira, OR push the ticket directly into LAP via createJiraIssue and give you the LAP-XXXX key back?" (Locks output destination for the session.)
 
-If PM picks "push directly", skill asks for the target Sprint and Fix Version at Phase 8 (not now — keep Phase 0 light).
+**v1.0.1 beta:** output destination is markdown-only. PM gets a clean ticket body in chat at Phase 8 to paste into Jira manually. Push-to-Jira via `createJiraIssue` is planned for v1.1 once the Atlassian MCP integration is bundled into the plugin (see §11 References).
 
-### Phase 1 — Auto-Search (Jira + Confluence)
+### Phase 1 — Auto-Search (Jira + Confluence) — CONDITIONAL on Atlassian MCP
 
-Skill runs two queries in parallel BEFORE asking the PM about related tickets:
+**If the Atlassian MCP is connected** (skill detects via tool availability check), skill runs two queries in parallel BEFORE asking the PM about related tickets:
 
 - JQL on `project = LAP` filtered by keywords extracted from PM's Phase 0 answer + any title/topic the PM has mentioned. ORDER BY updated DESC. Top 10 candidates pulled.
 - CQL on the LAP Confluence space (`https://kissht.atlassian.net/wiki/spaces/LAP`) with the same keywords. Top 5 pages pulled.
 
 Both searches fail-graceful: if Confluence is slow or unauthorised, skill proceeds with Jira-only and notes it.
 
-Phase 1 produces a candidate list saved internally — no PM interaction yet.
+**If the Atlassian MCP is NOT connected** (no Jira/Confluence tools available), skill skips the auto-search entirely and tells the PM at Phase 2: *"I can't auto-search Jira or Confluence in this session. Drop any related ticket keys or Confluence page IDs you want me to know about, or say 'none' to proceed."* The PM provides context manually.
+
+Phase 1 produces a candidate list saved internally — no PM interaction yet (other than the fallback prompt above when the MCP is unavailable).
 
 ### Phase 2 — Verify Context with PM
 
@@ -179,7 +181,7 @@ PM gets the draft inline + asked: "First-pass draft above. Read it through. Anyt
 
 Skill runs two automated passes on the draft:
 
-1. **Anti-repetition.** Detects sentences that restate a rule already covered in another section. If found, asks PM "Section [5] says '<X>'; section [6] also says '<Y>'. Same rule? If yes, I'll keep it in [5] only." Cap: 5 such prompts per draft. (Algorithm details: `.deep-think/06-anti-repetition.md`.)
+1. **Anti-repetition.** Detects sentences that restate a rule already covered in another section. If found, asks PM "Section [5] says '<X>'; section [6] also says '<Y>'. Same rule? If yes, I'll keep it in [5] only." Cap: 5 such prompts per draft.
 2. **Glossary sweep.** Auto-populates the footer Glossary section with definitions for every term used in the body (pulled from `knowledge-base/lap-glossary.md`). Any ghost term that escaped Phase 4 gets caught here and triggers a follow-up question.
 
 Exit criterion: no repetition prompts left to resolve AND every term in the body has a glossary entry.
@@ -190,22 +192,19 @@ Skill checks the draft against 8 universal gates + 2-4 type-specific gates. See 
 
 If any gate fails → loop back to the relevant Phase 4 question or Phase 5 redraft.
 
-### Phase 8 — Deliver
+### Phase 8 — Deliver (v1.0.1 beta: markdown only)
 
-If PM picked "markdown" at Phase 0:
 - Skill outputs the final ticket as fenced markdown in chat.
 - PM copies, opens Jira, pastes into description, sets Reporter / Assignee / Sprint / Fix Version per skill's footer hints.
+- Skill provides a copy-paste hint for the title field separately (since Jira's title is not part of the description body).
 
-If PM picked "push to Jira":
-- Skill asks for Sprint and Fix Version (deferred from Phase 0).
-- Skill calls `createJiraIssue` with the markdown body, returns LAP-XXXX key + direct URL.
-- Skill does NOT auto-assign — PM confirms Reporter and Assignee inline before push.
+**v1.1 roadmap (not in this version):** push-to-Jira via `createJiraIssue`. When the Atlassian MCP is bundled into the plugin, this phase will offer a second option ("push directly to Jira and return the LAP-XXXX key"). Until then, markdown-only is the only delivery path.
 
 ---
 
 ## 5. The MUST-Question Taxonomy
 
-Full taxonomy with exact phrasings: `.deep-think/03-question-taxonomy.md`. The categories below show what gets asked per type.
+The categories below show what gets asked per type. (Full taxonomy with exact question phrasings is preserved in the skill author's design notes at `../lap-jira-uniform-ticket-design/deep-think/03-question-taxonomy.md` — not loaded at runtime.)
 
 ### Universal MUST (asked for ALL types, in order)
 
@@ -286,29 +285,27 @@ For **MX**:
 
 If any gate fails after 2 redraft loops → skill ships a partial draft with `[BLOCKED — needs PM input: <gate>]` markers and asks PM whether to push partial / hold / discard.
 
-Full gate enumeration with severities: `.deep-think/09-output-schema.md` §"Verification Gates".
+Full gate enumeration with severities is in the skill author's design notes at `../lap-jira-uniform-ticket-design/deep-think/09-output-schema.md` (not loaded at runtime).
 
 ---
 
-## 7. Output Destination — Markdown vs Push to Jira
+## 7. Output Destination — Markdown Only (v1.0.1 beta)
 
-PM picks at Phase 0. Tradeoffs:
+This version of the skill ships with markdown output only. Push-to-Jira is on the v1.1 roadmap.
 
-| Option | When to pick | Tradeoff |
-|---|---|---|
-| **Markdown** | First time using the skill, or PM wants to tweak before publishing | Lower risk; PM stays in control of when ticket exists in Jira |
-| **Push to Jira** | PM has used the skill 3+ times and trusts the output | Faster; ticket exists in Jira before PM has read the final draft (skill shows draft inline before push, but ticket is created on PM's "go") |
+**v1.0.1 beta — markdown delivery:**
+- Skill outputs the full ticket body as fenced markdown in chat at Phase 8.
+- Skill ALSO outputs the H1 title separately (Jira's "Summary" field is not part of the description, so it needs its own copy step).
+- PM opens Jira → New Issue → LAP project → Story (or Epic per PM's classification) → pastes title into "Summary" → pastes body into "Description" → sets Reporter / Assignee / Sprint / Fix Version manually per the skill's footer hints.
+- PM closes the loop: posts the resulting LAP-XXXX key back to the skill so it can be logged for downstream tools (e.g. the kissht-field-release-notes skill).
 
-For "push to Jira", skill calls `createJiraIssue` with:
-- `project = "LAP"`
-- `issuetype` = inferred from type (WC/MX → Story; SC → Story; BO → Story; RD → Story; explicit Epic only when PM says "epic")
-- `description` = the full markdown body
-- `summary` = the H1 title from the draft
-- `assignee.accountId` = mapped from PM's N1 answer
-- `reporter.accountId` = mapped from PM's N1 answer
-- `customfield_<sprint>` and `fixVersions` = from PM's Phase 8 confirmation
+**v1.1 roadmap (not in this version):** Push-to-Jira via `createJiraIssue`. Implementation requires:
+- The Atlassian MCP bundled into the plugin (currently the skill assumes the user has it connected separately).
+- A scripted `createJiraIssue` wrapper that maps the skill's question answers (Phase 4 N1 = Reporter / Assignee, Phase 8 confirmation = Sprint / Fix Version) into the API call.
+- A `tests/push-to-jira-roundtrip.md` smoke test to prove the round-trip stays consistent with the markdown path.
+- Issue type inference from skill type (WC/MX → Story; SC/BO/RD → Story; Epic only when PM says "epic" at Phase 0).
 
-Skill returns: LAP-XXXX key + direct URL (`https://kissht.atlassian.net/browse/LAP-XXXX`) + a hash of the body so the next session can detect "you're updating an existing ticket".
+Until v1.1 ships, every ticket is created manually by the PM after the skill produces the markdown body.
 
 ---
 
@@ -340,9 +337,16 @@ lap-jira-uniform-ticket/
 │   ├── LAP-2046.md                         ← WC exemplar (PAN re-verification)
 │   ├── LAP-2048.md                         ← MX exemplar (LSQ Video KYC + branches)
 │   ├── LAP-2052.md                         ← RD exemplar (dropdown changes)
+│   ├── LAP-2154.md                         ← BO exemplar (LSQ Renach handling)
 │   └── LAP-2242.md                         ← RD exemplar (approval matrix)
-└── .deep-think/                            ← Architectural notes (00-blueprint through 09-output-schema)
-                                              Internal to the skill author; not loaded at runtime.
+├── tests/
+│   ├── sc-from-lap-2039.md                 ← Smoke test: SC type from a LAP-2039-style PM input
+│   ├── rd-from-lap-2242.md                 ← Smoke test: RD type from a LAP-2242-style PM input
+│   └── bo-from-lap-2154.md                 ← Smoke test: BO type from a LAP-2154-style PM input
+└── (skill author's design notes at sibling
+   ../lap-jira-uniform-ticket-design/         ← deep-think/ + round1_archive/
+                                                Quarantined OUT of the active skill folder.
+                                                Not loaded at runtime; preserved for skill maintainer.)
 ```
 
 ---
@@ -427,4 +431,4 @@ The team already writes good LAP tickets sometimes. LAP-2039, LAP-2242, LAP-2052
 | Version | Date | Change |
 |---|---|---|
 | 1.0.0 | 2026-05-14 | Initial release. 5 ticket types (WC/BO/SC/RD/MX). 8-phase Socratic flow. Auto-search Jira+Confluence on every run. Ghost terms block until defined. Output destination PM-picks per session. 6 LAP exemplars canonical. 3 external borrowings (GitLab release-note line, Shape Up Out-of-scope, Google design doc Alternatives considered). 3 patterns rejected (Given-When-Then AC, mandatory Connextra, PR-FAQ). Glossary built from kissht-field-release-notes references + LAP exemplars. Built using deep-thinker + research-analyst + parallel-builder methodology. |
-| 1.0.1 | 2026-05-14 | v1.1 considerations resolved before first marketplace push. (a) AC budget reframed as "3-5 per area, max 4 areas" — multi-area exemplar is LAP-1812. (b) §15 Open Considerations and §15a Out of scope marked CONDITIONAL for RD type when ticket is purely additive AND every assumption is closed — LAP-2052 is the canonical conditional exemplar. (c) BO canonical exemplar added: LAP-2154 (LSQ Renach handling) — same ticket the release-notes skill uses as its Pattern B source. (d) `lap-jira-uniform-bug` sister skill removed from forward references — bugs continue with existing process. (e) Glossary audit completed against canonical Confluence pageId 1088716805: `Branch Verification` confirmed FABRICATED by subagent and removed from both knowledge-base files. `Lead Initiation` and `Sourcing` confirmed NOT LOS opportunity stages (they are pre-LOS LSQ leadgen steps) and removed from lap-stages.md. `Rate Approval Pending`, `Financier Review`, legacy `Relook Approval Pending`, `Partially Disbursed` all confirmed REAL per Confluence (TODO markers cleared). Relook Revamp two-step (`Relook CCM Approval Pending` → `Relook NCM Approval Pending`) confirmed LIVE in production (Confluence is stale on Relook; sister skill is canonical). `Disbursed by Financier` documented as future-state stage with no current owner pending financier onboarding. `Disbursal Details` Post Sanction subtab populated from LAP-1879 / LAP-1868 / LAP-1505 / LAP-1663 (marked "inferred — validate"). 7 standard fintech acronyms (OSV / OKYC / CKYC / eKYC / NTB / AA / OD) auto-resolved to industry definitions. `CPA User` mapped verbatim to BCPA. Veriphy retained with TODO marker pending vendor-stack confirmation. |
+| 1.0.1 | 2026-05-14 | **v1.0.1 markdown-only beta — five reviewer risks addressed before first marketplace push.** (1) **Overpromise removed.** Frontmatter description updated to make Atlassian-MCP integration explicitly conditional ("if Atlassian MCP connected, otherwise asks PM directly"). Phase 0 D2 question (markdown vs push-to-Jira) removed. Phase 1 (auto-search) made conditional on MCP availability. Phase 8 (deliver) is markdown-only in this version; push-to-Jira deferred to v1.1 with implementation requirements documented in §7. (2) **Inconsistencies fixed.** LAP-2046 was tagged BO in PRINCIPLES.md and WC in SKILL.md — reconciled to WC (with matrix) across all files. LAP-2048 was tagged WC in PRINCIPLES.md — reconciled to MX. LAP-2154 added to PRINCIPLES.md exemplar table (was already in SKILL.md). All template frontmatter bumped from v1.0.0 to v1.0.1. BO template TIPs updated to reference LAP-2154 (canonical BO) primarily and LAP-2046 (WC with internal Cases) as structural cross-reference. SF (Simple Feature) round-1 terminology no longer in active skill (archives moved out — see #3 below). (3) **Quarantined heavy context.** `.deep-think/` (10 design notes) and `round1_archive/` moved OUT of the skill folder to a sibling `../lap-jira-uniform-ticket-design/` location. Active skill folder dropped from 5,312 lines / 32 files to 3,757 lines / 26 files. SKILL.md cross-references to `.deep-think/` paths updated to point to the sibling location with a "not loaded at runtime" note. (4) **TODO markers quarantined.** Created `knowledge-base/pending-validation.md` for the 4 outstanding uncertainties (RM vs SM distinctness, Auditor First/Second, Paras Arora's accountId, Veriphy LAP-flow status). Inline TODO comments removed from canonical KB files; replaced with "see pending-validation.md §VN" pointers. lap-glossary.md "How to use" preamble updated: every entry in canonical KB is now asserted as canonical; uncertainties live separately in pending-validation.md. (5) **Template footer headers aligned to PATTERN.md contract verbatim.** All 5 templates: `**System strings referenced** (verbatim):` → `**System strings referenced in this ticket** (verbatim, for downstream use):`; `**Glossary used:**` → `**Glossary used in this ticket** (auto-generated):`. Header text is the contract per PATTERN.md mapping section — release-notes parser depends on these exact strings. (6) **Three smoke tests added** under `tests/`: `sc-from-lap-2039.md`, `rd-from-lap-2242.md`, `bo-from-lap-2154.md`. Each test specifies PM input, Phase 0-8 expected behaviour, validation gates that must pass, and a release-notes-extractability checklist for downstream consumption. To be run after first marketplace install and after any change to SKILL.md §5 (question taxonomy) or `kissht-field-release-notes` Pattern A/B extraction. |

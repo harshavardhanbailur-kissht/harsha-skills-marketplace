@@ -83,11 +83,12 @@ Every PM should read at least the four marked **canonical**.
 | Key | Type | Why it is canonical | Link |
 |---|---|---|---|
 | LAP-2039 | SC (gold) | Workaround removal, bidirectional toggle, exemplary BA Open Considerations format with named assumption + proposal + impact | https://kissht.atlassian.net/browse/LAP-2039 |
-| LAP-2242 | RD | 10-rule Logic section with zero repetition; clean Approval Matrix; Role Definitions footer; QA Testing Notes that name the simulation method | https://kissht.atlassian.net/browse/LAP-2242 |
-| LAP-2052 | RD | Per-system breakdown (Leadgen / LOS / SARAL / BT+Topup); plain-English intent; Sheet Link footer; cross-stage touchpoint coverage | https://kissht.atlassian.net/browse/LAP-2052 |
-| LAP-1812 | WC | Best-in-class header with Primary / Secondary actor + Preconditions; verbatim SMS string; AC organised by area; Lovable prototype link | https://kissht.atlassian.net/browse/LAP-1812 |
-| LAP-2046 | BO | Branching outcome with named cases (See / Do / Verify / Consequence) — read for BO shape | https://kissht.atlassian.net/browse/LAP-2046 |
-| LAP-2048 | WC | Workflow change with new approval stage and SLA — read for WC shape | https://kissht.atlassian.net/browse/LAP-2048 |
+| LAP-2242 | RD | 10-rule Logic section with zero repetition; clean Approval Matrix; Role Definitions footer; QA Scope that names the simulation method | https://kissht.atlassian.net/browse/LAP-2242 |
+| LAP-2052 | RD | Per-system breakdown (Leadgen / LOS / SARAL / BT+Topup); plain-English intent; Sheet Link footer; cross-stage touchpoint coverage. Canonical for RD-type Open-Considerations + Out-of-scope conditional omission. | https://kissht.atlassian.net/browse/LAP-2052 |
+| LAP-1812 | WC | Best-in-class header with Primary / Secondary actor + Preconditions; verbatim SMS string; AC organised by area (multi-area pattern); Lovable prototype link | https://kissht.atlassian.net/browse/LAP-1812 |
+| LAP-2046 | WC (with matrix) | Numbered Problem → Proposed Solution → Applicability → Exception → Summary table. WC shape that uses a matrix without becoming an RD ticket. | https://kissht.atlassian.net/browse/LAP-2046 |
+| LAP-2154 | BO | ONE operator action (`'Initiate E-Mandate Registration?'` dropdown click) with three backend-state branches + buffer-policy edge case. The release-notes skill cites this as its canonical Pattern B (Renach) source. | https://kissht.atlassian.net/browse/LAP-2154 |
+| LAP-2048 | MX | Mixed: workflow change with branching outcomes embedded. 3-act epic structure (Pre-initiation → Digital Journey → VCIP & Auditor Review). Bypass Protocol + soft/hard reject branches. | https://kissht.atlassian.net/browse/LAP-2048 |
 
 When a PM disagrees with the skill, the order of authority is: exemplar > `PATTERN.md` > skill behaviour. The exemplars trump everything because they are written in the voice of senior LAP PMs and have survived contact with the BCM, CCM, BA, and QA teams.
 

@@ -65,7 +65,7 @@ Personal Confluence spaces hold private working drafts. Cite cautiously; double-
 | Vishaw Kashyap | `~712020bc942d513dd54fe789341fe9cf7dbe61` | Canonical LAP-LOS workspace. Holds master page (1088716805) + 4 stage children. |
 | Harshavardhan Bailur | `~712020d14f4537151b4d03a774c0f2ab2a3e75` | LAP Query Module guide (1101660180), Third Party Triggers stage spec (1089569179). |
 | Shweta Iyengar | `~712020b616e54a5a85414487cf407d5e251dbc` | Internal Top-Up PRD (1020199073), Lead-gen Final PRD (978288872). |
-| Paras Arora | <!-- TODO: confirm with PM — account ID required for queries --> | Co-named on LAP Inhouse CRM Leadgen (896401462). |
+| Paras Arora | *(accountId not on file — see `pending-validation.md` §V3; not load-bearing until v1.1 push-to-Jira ships)* | Co-named on LAP Inhouse CRM Leadgen (896401462). |
 
 ---
 

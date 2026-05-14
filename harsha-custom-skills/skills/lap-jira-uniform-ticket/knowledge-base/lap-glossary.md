@@ -5,10 +5,9 @@
 > **How to use this file:**
 > - Humans: scan tables to confirm a term before writing.
 > - The skill: auto-define ghost terms by looking them up here.
-> - When a term is `<!-- TODO: confirm with PM -->` it means a definition is best-guess and needs human validation.
-> - When a term is `<!-- PLACEHOLDER: needs definition -->` it appears in source material but no canonical definition was found.
+> - **Every entry below is asserted as canonical.** Items where canonical-status is uncertain do NOT live in this file — they live in [`pending-validation.md`](./pending-validation.md). When the skill encounters a ghost term, it checks `pending-validation.md` FIRST before asking the PM.
 >
-> Cross-references: detailed role roster in [`lap-roles.md`](./lap-roles.md); detailed stage list in [`lap-stages.md`](./lap-stages.md); Confluence source pages in [`lap-confluence-sources.md`](./lap-confluence-sources.md).
+> Cross-references: detailed role roster in [`lap-roles.md`](./lap-roles.md); detailed stage list in [`lap-stages.md`](./lap-stages.md); Confluence source pages in [`lap-confluence-sources.md`](./lap-confluence-sources.md); pending validations in [`pending-validation.md`](./pending-validation.md).
 
 ---
 
@@ -152,7 +151,7 @@
 | **LOS (Loan Origination System)** | Kissht's pre-disbursement system; this is where the LAP flow lives. |
 | **Digio** | E-sign partner; receives one flow per applicant with single OTP (LAP-1812). |
 | **Digilocker** | Government e-document wallet; Aadhaar-based; 72-hour bypass window (LAP-2048). |
-| **Veriphy** | KYC verification vendor. <!-- TODO: confirm with PM whether Veriphy is in current LAP flow --> |
+| **Veriphy** | KYC verification vendor (likely sister-product use only — see `pending-validation.md` §V4 for the unverified claim that Veriphy is NOT currently in the LAP flow). |
 | **Finbox** | Bureau / underwriting input source; dropdown values must match the Finbox input parameter (LAP-2052 QA scenarios). |
 | **Polaris** | Internal product / experiment tracking system; LAP-1812 references "Polaris items" in linked issues. |
 | **Kissht** | The hosting platform; stores `user_consents` table, generates SMS links (LAP-1812). |
@@ -216,8 +215,8 @@ All three are mandatory. Combined PDF; one upload only for Physical Sign; cannot
 ## 8. Update Protocol
 
 1. New term encountered in a Jira ticket: add to the relevant section above with citation.
-2. Term marked `<!-- TODO: confirm with PM -->` is verified by user: remove the comment, update.
-3. Term marked `<!-- PLACEHOLDER: needs definition -->` is defined by user: replace placeholder with the definition + citation.
+2. Uncertainty discovered: do NOT add as a TODO inline. Add to [`pending-validation.md`](./pending-validation.md) using the 5-field template there.
+3. Pending item confirmed: move from `pending-validation.md` to this file with citation; record in `pending-validation.md` §Resolved.
 4. New system string discovered: add to §6 verbatim with single quotes.
 
 > **Glossary KB version 1.0 — 2026-05-14**
