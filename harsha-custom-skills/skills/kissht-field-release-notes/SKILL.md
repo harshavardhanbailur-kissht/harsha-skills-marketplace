@@ -10,7 +10,7 @@ description: |
   NCM / BCPA / Sales RM who reads the note at 9am before opening a case, not for exec
   dashboards. Every output is context-rich, stage-rich, role-aware, and grounded in
   real Jira ticket data and the canonical LAP Confluence space.
-version: 1.1.1
+version: 1.1.2
 author: Harshavardhan Bailur
 replaces:
   - harsha-custom-skills:kissht-release-notes
@@ -184,7 +184,7 @@ Canonical artifact: `examples/lsq-renach-handling-bcpa-pager.md` (Voice B-strict
 | "Write a release note for this Jira ticket" + paste | Phase 2→7 (skip Jira fetch) |
 | "Write a release note in Relook style" | Force Workflow Change pattern |
 | "Write a release note in Renach style" / "branching outcome release note" | Force Branching Outcome pattern |
-| "Release note for BCPA only" / "BCPA pager" / "WhatsApp-friendly" | Single-role one-pager output shape, voice B |
+| "Release note for BCPA only" / "BCPA pager" / "WhatsApp-friendly" | Single-role one-pager output shape, **voice B-strict** for field roles (BCPA / BOM / COM / BCM / CCM / NCM / Sales); voice B for tech-ops / QA / SRE |
 | "Bundle these tickets into one release note" | Phase 1 + ticket-grouping logic, then 2→7 |
 | "Update the release note — they changed the rule" | Edit pass, re-run verification |
 | "Generate both — multi-role + BCPA pager" | Multi-role first → verify → derive pager |
@@ -310,8 +310,8 @@ For **Multi-role document** (any pattern):
 
 For **Single-role one-pager** (any pattern):
 - [ ] No "What this means for you" header — the document IS the role section.
-- [ ] Voice B applied throughout (see `references/voice-and-pattern.md` §Voice Levels conversion checklist).
-- [ ] Closing "Quick reminder" with 4–6 numbered imperative steps.
+- [ ] **Voice B or B-strict** applied throughout — B-strict for field-role audiences (BCPA / BOM / COM / BCM / CCM / NCM / Sales); B for product-support / tech-ops / QA / SRE audiences. See §3 Output Shape Selection and `references/voice-and-pattern.md` §Voice B-strict.
+- [ ] Closing structure is **"The simple rule"** (2-bullet TL;DR of the core decision) followed by **"If something looks wrong"** (escalation guidance). No numbered "Quick reminder" steps.
 - [ ] Body word count ≤ 350.
 - [ ] Standalone — does not reference the multi-role document.
 
@@ -344,7 +344,7 @@ kissht-field-release-notes/
 │   ├── lap-roles.md                        ← Role roster: BCM, CCM, NCM, BCPA, CCPA, BOM, COM, NSM, SM, BM
 │   └── lap-confluence-sources.md           ← Canonical Confluence pages + IDs to consult
 └── scripts/
-    └── generate.py                         ← Optional helper — feeds Jira ticket data through the pipeline
+    └── generate.py                         ← Scaffolding skeleton only — fetch_ticket() is a stub (raises NotImplementedError); verify() validates Pattern A (Workflow Change) only; wire up Atlassian MCP before using in production
 ```
 
 ---

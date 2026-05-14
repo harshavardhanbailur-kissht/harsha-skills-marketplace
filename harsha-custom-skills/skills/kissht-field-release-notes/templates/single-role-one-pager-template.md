@@ -1,11 +1,12 @@
 # Release Note for <Role>s: <Feature Name>
 
 <!--
-  TEMPLATE — Single-Role One-Pager (voice level B, plain English).
+  TEMPLATE — Single-Role One-Pager.
   USE WHEN: user asks for "release note for <Role> only" / "<Role>-only release note" /
   "WhatsApp-friendly release note" / a personal one-pager.
-  Canonical example: examples/lsq-renach-handling-bcpa-pager.md
-  Voice rules: see references/voice-and-pattern.md §Voice Levels.
+  VOICE: B-strict for field roles (BCPA / BOM / COM / BCM / CCM / NCM / Sales);
+         B for tech-ops / QA / SRE. See references/voice-and-pattern.md §Voice B-strict.
+  Canonical example: examples/lsq-renach-handling-bcpa-pager.md (Voice B-strict)
   Word count target: ≤350 body words.
   Replace every <…> placeholder. Delete this comment block.
 -->
@@ -55,12 +56,14 @@ Wait for the system to respond.
 
 <Plain English downstream consequence. "If LMS does not accept it, escalate to product support.">
 
-## Quick reminder
+## The simple rule
 
-1. <First step: the click>.
-2. <Auto + backup line>.
-3. <Verification line>.
-4. <Escalation line>.
+- <Core decision bullet 1 — the key If / Then in plain English. E.g. "Link appears → send it to the customer manually too.">
+- <Core decision bullet 2. E.g. "No link appears → the system used the old mandate. You're done.">
+
+## If something looks wrong
+
+<Escalation guidance in 2–3 sentences. Lead with what the operator will see ("If the case gets stuck and does not move forward…"). Then: "Do not try to fix it from the panel — there is nothing you can change from your end. Escalate to product support.">
 
 ## For any issues or clarifications
 
@@ -72,7 +75,7 @@ Please contact product support: <Named Human 1>, <Named Human 2>, <Named Human 3
   Source ticket(s): <LAP-XXXX>
   Pattern: <Workflow Change | Branching Outcome>
   Output shape: Single-role one-pager
-  Voice level: B (field-grade plain)
+  Voice level: B-strict (field roles: BCPA / BOM / COM / BCM / CCM / NCM / Sales) or B (tech-ops / QA / SRE)
   Body word count: <N> (target ≤ 350)
   Drafted: <YYYY-MM-DD>
 -->

@@ -1,35 +1,65 @@
 # Release Note: LSQ Renach Handling
 
-## The new flow
+## What this is about
 
-BCPA selects Yes on 'Initiate E-Mandate Registration?'  →  system checks for an existing approved mandate  →  conditions met or not  →  Success callback auto-applied (no link) or Link shown on the repayment activity
+When a BCPA initiates E-Mandate registration at Post Sanction, the system now checks whether the customer already has an approved mandate from a previous loan. Depending on what it finds, one of three things happens automatically — no new stage is introduced, and the BCPA's only action is one click.
 
-Stages in the system:
+- If an existing approved mandate fits this loan → the system reuses it; no new link is generated.
+- If no prior approved mandate exists, or the existing one does not fit this loan → a fresh E-Mandate link is shown on the repayment activity.
 
-- Post Sanction  (with BCPA — Repayment Details subtab on the Repayment & Disbursal Details Capture - v5 form)
+The BCPA cannot override the outcome. The backend decides.
 
-Outcomes when the dropdown is set to Yes:
+## What you do
 
-- Success callback auto-applied to the opportunity and the repayment activity, no link shown — only when an existing approved mandate satisfies both conditions below.
-- Link shown on the repayment activity — when no prior approved mandate exists, or either condition fails.
+Go to the case and open:
 
-## Key rules
+- Stage: **Post Sanction** (with BCPA)
+- Subtab: **Repayment Details**
+- Form: **Repayment & Disbursal Details Capture - v5**
+- Dropdown: `'Initiate E-Mandate Registration?'`
 
-- The system re-uses an existing approved mandate only when BOTH conditions are met: Sanction Loan amount ≤ 'mandate_amount', AND Last EMI date + 5 years ≤ 'mandate_expiry_date'. If either fails, a fresh E-Mandate link is generated on the repayment activity.
-- When the mandate is re-used, the success callback is mapped into the opportunity AND the repayment activity. Every field maps in EXCEPT 'enach_session_id' and 'juspay_pg_reference'.
-- The latest NACH reference number is sent in the Push-to-LMS API request body and validated against the loan in LMS. If LMS rejects, the case will not Push to LMS until the mandate is reconciled.
-- All conditions are evaluated in the backend. The BCPA cannot override the decision from the panel; selecting Yes on the dropdown is the only trigger.
-- Buffer policy on mandate expiry: the initial mandate uses a 5-year buffer (tenure 5 years + 5 years = expiry at 10 years). For revised-mandate requests, the payment team checks if Last EMI date + 4 years ≤ existing 'mandate_expiry_date' — if yes, the existing mandate is re-used; if no, a fresh link is sent. When a fresh link generates a new mandate, that new mandate's buffer is 5 years again.
+Select **Yes** on the dropdown. That is the only action that triggers the new logic. The system does the rest.
+
+## What happens next — 3 cases
+
+Wait for the system to respond.
+
+### Case 1 — First-time customer (no prior approved mandate)
+
+- A new E-Mandate link appears on the repayment activity.
+- The system sends an SMS with the link to the customer automatically. Also send the link to the customer manually — just to confirm they received it.
+
+### Case 2 — Repeat customer; existing mandate fits this loan
+
+Both conditions are met: Sanction Loan amount ≤ `'mandate_amount'`, AND Last EMI date + 5 years ≤ `'mandate_expiry_date'`.
+
+- No link is shown. The success callback is auto-applied to the opportunity and the repayment activity. Every field maps in EXCEPT `'enach_session_id'` and `'juspay_pg_reference'`.
+- Confirm reuse by checking that `'enach_reference_number'`, `'mandate_amount'`, `'mandate_approved_date'`, `'mandate_expiry_date'`, and `'status'` = `'APPROVED'` are populated on the opportunity and the repayment activity.
+- You cannot override this outcome from the panel.
+
+### Case 3 — Repeat customer; existing mandate does not fit this loan
+
+Either condition failed: sanction loan amount > `'mandate_amount'`, or Last EMI date + 5 years > `'mandate_expiry_date'`.
+
+- A fresh E-Mandate link appears on the repayment activity.
+- The system sends an SMS with the link to the customer automatically. Also send the link manually as a backup.
+- You cannot override from the panel. The fresh link generates a new mandate.
+
+## After the E-Mandate step
+
+The latest NACH reference number is included in the Push-to-LMS API request body and validated against the loan in LMS. If LMS rejects the push, the case will not move forward until the mandate is reconciled — escalate to product support.
+
+Buffer policy on mandate expiry: the initial mandate uses a 5-year expiry buffer. For revised-mandate requests, the payment team checks if Last EMI date + 4 years ≤ existing `'mandate_expiry_date'`; if yes, the existing mandate is reused; if no, a fresh link is sent. When a fresh mandate is created, its buffer is 5 years again.
 
 ## What this means for you
 
 ### BCPAs
 
-- Open the Repayment Details subtab on the Repayment & Disbursal Details Capture - v5 form. Selecting Yes on 'Initiate E-Mandate Registration?' is the only action that triggers the new logic.
-- For first-time users (no prior approved mandate), proceed as before. The system will show an E-Mandate link on the repayment activity. Send it to the customer.
-- For repeat customers with an approved mandate, the system may auto-apply the existing mandate and no link will be shown. Confirm re-use by checking that 'enach_reference_number', 'mandate_amount', 'mandate_approved_date', 'mandate_expiry_date', and 'status' = 'APPROVED' are populated on the opportunity and the repayment activity.
-- If you expected re-use but a link still appeared, the case failed one of the conditions (sanction loan amount > mandate amount, or last EMI date + 5 years > mandate expiry). You cannot override from the panel. Send the link; a fresh mandate will be generated.
-- Push to LMS now carries the latest NACH reference number for validation. If LMS rejects the push, the case will not move forward until the mandate is reconciled — escalate to product support.
+- Open the Repayment Details subtab on the Repayment & Disbursal Details Capture - v5 form. Selecting Yes on `'Initiate E-Mandate Registration?'` is the only action that triggers the new logic.
+- For first-time customers (Case 1), proceed as before — a link appears; send it to the customer, and send manually as a backup even though the SMS fires automatically.
+- For repeat customers where the system reuses the existing mandate (Case 2), no link appears. Confirm reuse by checking that `'enach_reference_number'`, `'mandate_amount'`, `'mandate_approved_date'`, `'mandate_expiry_date'`, and `'status'` = `'APPROVED'` are populated on the opportunity and the repayment activity.
+- If you expected reuse but a link appeared (Case 3), the existing mandate failed one of the conditions. You cannot override from the panel — send the link and a fresh mandate will be generated.
+- If LMS rejects the Push-to-LMS after the mandate step, the case will not move forward until the mandate is reconciled — escalate to product support.
 
 ## For any issues or clarifications
 
@@ -44,6 +74,11 @@ Please contact product support: Prem, Kiran, Vinesh, Anjali, or Mahesh. You can 
   Voice level: A (operator-grade dense).
   Confluence sources: 1088716805 (LAP LOS canonical, Post Sanction stage owner = BCPA).
   Verified against glossary: yes — Post Sanction stage / BCPA owner / NACH-and-mandate vocabulary.
-  Word count: ~545 (body, excluding hidden footer).
+  Word count: ~400 (body, excluding hidden footer).
   Drafted: 2026-05-04.
+  Structure corrected: 2026-05-14 — removed Pattern-A headings (## The new flow, arrow diagram,
+  Stages in the system, ## Key rules); replaced with correct Pattern-B structure
+  (## What this is about / ## What you do / ## What happens next — 3 cases /
+  ## After the E-Mandate step). All factual content preserved; SMS auto-send + manual
+  backup added to Cases 1 & 3 (consistent with lsq-renach-handling-bcpa-pager.md).
 -->

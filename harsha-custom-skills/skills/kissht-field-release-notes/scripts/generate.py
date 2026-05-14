@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 """
-generate.py — Pipeline helper for kissht-field-release-notes skill.
+generate.py — Scaffolding skeleton for kissht-field-release-notes skill.
 
-Takes one or more LAP Jira ticket keys, pulls them via the Atlassian API,
-and emits a draft release note populated against templates/release-note-template.md.
+Takes one or more LAP Jira ticket keys and emits a DRAFT release note pre-populated
+with the title placeholder from templates/release-note-template.md (Pattern A only).
 
 Usage:
     python generate.py LAP-2180 LAP-2181 LAP-2222 --feature-name "DigiLocker Journey Revamp" --out drafts/digilocker.md
+    python generate.py LAP-2154 --feature-name "LSQ Renach Handling" --pattern branching_outcome --out drafts/renach.md
 
-Note:
-    This is a SKELETON. Final production should:
-      - Wire up authentication via the Atlassian MCP (handled by Claude when running this skill)
-      - Replace the stubbed fetch_ticket() with the real getJiraIssue MCP call
-      - Add stage/role glossary lookups via knowledge-base/lap-stages.md and lap-roles.md
-      - Run the §6 verification gate from SKILL.md before emitting
-    For now, the skill itself runs end-to-end through Claude — this script is
-    here for users who want to scaffold a draft locally before iterating.
+IMPORTANT — THIS IS A SKELETON:
+  - fetch_ticket() is a stub that raises NotImplementedError.
+    Wire up the Atlassian MCP (getJiraIssue) before using in production.
+  - populate_template() only fills the title; all other placeholders remain.
+    The LLM step (Claude running the skill) does the real population.
+  - verify() supports both patterns: workflow_change and branching_outcome.
+    Pass --pattern to select. Defaults to workflow_change.
+  - The skill itself runs end-to-end through Claude. This script is here
+    for users who want to scaffold a draft locally before iterating.
 """
 
 import argparse
@@ -90,32 +92,70 @@ def populate_template(reconciled: dict[str, Any], feature_name: str) -> str:
     return template.replace("<Feature Name>", feature_name)
 
 
-def verify(draft: str) -> list[str]:
-    """Run the §6 verification gate from SKILL.md. Returns list of failures."""
+def verify(draft: str, pattern: str = "workflow_change") -> list[str]:
+    """
+    Run the §7 Phase 7 verification gate from SKILL.md. Returns list of failures.
+
+    Args:
+        draft:   The markdown draft text.
+        pattern: "workflow_change" (Pattern A — Relook) or
+                 "branching_outcome" (Pattern B — Renach).
+                 Defaults to "workflow_change".
+    """
     failures: list[str] = []
 
+    # ── Universal checks (both patterns) ──────────────────────────────────────
     if not draft.strip().startswith("# Release Note:"):
-        failures.append("Beat 1: Title must start with '# Release Note: '.")
-
-    if "## The new flow" not in draft:
-        failures.append("Beat 2: '## The new flow' heading missing.")
-    if "→" not in draft:
-        failures.append("Beat 2: Flow arrow diagram (→) missing.")
-
-    if "## Key rules" not in draft:
-        failures.append("Beat 3: '## Key rules' heading missing.")
-
-    if "## What this means for you" not in draft:
-        failures.append("Beat 4: '## What this means for you' heading missing.")
+        failures.append("Title must start with '# Release Note: '.")
 
     if "## For any issues or clarifications" not in draft:
-        failures.append("Beat 5: '## For any issues or clarifications' heading missing.")
+        failures.append("Contacts block ('## For any issues or clarifications') missing.")
 
     word_count = len(draft.split())
     if word_count > 900:
         failures.append(
             f"Length: {word_count} words. Target ≤ 600 for single-feature notes; "
             "anything > 900 should be split."
+        )
+
+    # ── Pattern A — Workflow Change ────────────────────────────────────────────
+    if pattern == "workflow_change":
+        if "## The new flow" not in draft:
+            failures.append("Workflow Change: '## The new flow' heading missing.")
+        if "→" not in draft:
+            failures.append("Workflow Change: Flow arrow diagram (→) missing.")
+        if "Stages in the system" not in draft:
+            failures.append("Workflow Change: 'Stages in the system' list missing.")
+        if "## Key rules" not in draft:
+            failures.append("Workflow Change: '## Key rules' heading missing.")
+        if "## What this means for you" not in draft:
+            failures.append("Workflow Change: '## What this means for you' heading missing.")
+
+    # ── Pattern B — Branching Outcome ─────────────────────────────────────────
+    elif pattern == "branching_outcome":
+        # Negative checks: Pattern B must NOT contain Pattern-A constructs.
+        if "## The new flow" in draft:
+            failures.append(
+                "Branching Outcome: '## The new flow' found — this heading belongs to "
+                "Workflow Change only. Replace with '## What this is about'."
+            )
+        if "Stages in the system" in draft:
+            failures.append(
+                "Branching Outcome: 'Stages in the system' list found — this belongs to "
+                "Workflow Change only. The stage is unchanged in Branching Outcome; "
+                "embed the locator inside '## What you do' instead."
+            )
+        # Positive checks: Pattern B required headings.
+        if "## What this is about" not in draft:
+            failures.append("Branching Outcome: '## What this is about' heading missing.")
+        if "## What you do" not in draft:
+            failures.append("Branching Outcome: '## What you do' heading missing.")
+        if "## What happens next" not in draft:
+            failures.append("Branching Outcome: '## What happens next' heading missing.")
+
+    else:
+        failures.append(
+            f"Unknown pattern '{pattern}'. Use 'workflow_change' or 'branching_outcome'."
         )
 
     return failures
@@ -125,6 +165,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Generate a Kissht field release note.")
     parser.add_argument("tickets", nargs="+", help="LAP Jira ticket keys (e.g. LAP-2180 LAP-2181)")
     parser.add_argument("--feature-name", required=True, help="Colloquial feature name for the title")
+    parser.add_argument(
+        "--pattern",
+        choices=["workflow_change", "branching_outcome"],
+        default="workflow_change",
+        help="Release note pattern: workflow_change (Relook/Pattern A) or branching_outcome (Renach/Pattern B). Default: workflow_change",
+    )
     parser.add_argument("--out", type=Path, default=Path("draft.md"), help="Output path for draft")
     args = parser.parse_args()
 
@@ -148,8 +194,8 @@ def main() -> int:
     reconciled = reconcile(decomposed)
     draft = populate_template(reconciled, args.feature_name)
 
-    print("[generate] Running verification gate…", file=sys.stderr)
-    failures = verify(draft)
+    print(f"[generate] Running verification gate (pattern: {args.pattern})…", file=sys.stderr)
+    failures = verify(draft, pattern=args.pattern)
     if failures:
         print("[generate] VERIFICATION FAILED:", file=sys.stderr)
         for f in failures:
