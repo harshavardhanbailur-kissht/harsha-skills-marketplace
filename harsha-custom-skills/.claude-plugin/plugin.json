@@ -1,6 +1,6 @@
 {
   "name": "harsha-custom-skills",
-  "version": "1.4.12",
+  "version": "1.4.13",
   "description": "Harsha's custom skill collection (30 active skills) spanning the build pipeline end-to-end: brainstorm (web-brainstorm, cowork-think-with-me, cowork-prompting-mastery), research (deep-research, mckinsey-research, research-analyst, search-mastery-skill, behavioral-interface-psychology), planning (prd-mastery, decompose-prd, deep-thinker-v4), design (design-philosophy-replication, mobile-ux-transformer, interactive-learning-guide-builder), build (parallel-builder, super-pipeline, skill-deployer, codebase-documenter, phaser3-card-game, game-audio), ship (kissht-release-notes, claude-code-best-practices), and quality (safe-refactor, security-audit, performance-debugger, ultimate-debugging-tool, workflow-guardian, git-merge-intelligence, tech-stack, mobile-mastery).",
   "author": {
     "name": "Harshavardhan Bailur",

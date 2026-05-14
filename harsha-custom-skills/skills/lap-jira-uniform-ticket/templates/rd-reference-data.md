@@ -64,7 +64,7 @@
 8. **State-wise variants:** {{GEOGRAPHIC_OR_BRANCH_SPLITS}}
 <!-- TIP: numbered list, every rule carries a system consequence, no repetition. See LAP-2242 §"Logic" — 10 rules, each with a verb and a consequence (route, fallback, log, escalate, configurable). State-wise variants are mandatory when geography matters — see LAP-2242 §9 (Maharashtra/AP/Telangana → SCH 2). -->
 
-## QA Testing Notes
+## QA Scope
 
 - {{VERIFY_DROPDOWN_VALUES_MATCH_SOURCE_SHEET}}
 - {{VERIFY_EVERY_TOUCHPOINT_LISTED_ABOVE}}
@@ -72,7 +72,7 @@
 - {{VERIFY_FALLBACK_BY_INACTIVATING_PRIMARY}}
 - {{VERIFY_CONFIG_SCREEN_EDIT_WITHOUT_CODE_DEPLOY}}
 - {{SARAL_JOURNEY_PARITY_CHECK}}
-<!-- TIP: RD QA focuses on (a) dropdown values match the source-of-truth sheet exactly, (b) every touchpoint enumerated above shows the new values, (c) fallback simulation. See LAP-2052 §"QA Scenarios" for sheet-match check. See LAP-2242 §"QA Testing Notes" for fallback-simulation pattern. -->
+<!-- TIP: header MUST be `## QA Scope` verbatim — the release-notes skill parser reads this exact header. RD QA focuses on (a) dropdown values match the source-of-truth sheet exactly, (b) every touchpoint enumerated above shows the new values, (c) fallback simulation. See LAP-2052 §"QA Scenarios" for sheet-match check. See LAP-2242 §"QA Testing Notes" for fallback-simulation pattern (LAP-2242 used "QA Testing Notes" but new tickets must use "QA Scope" verbatim). -->
 
 ## Open Considerations for BA
 

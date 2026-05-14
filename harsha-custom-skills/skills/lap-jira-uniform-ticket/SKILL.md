@@ -13,7 +13,7 @@ description: |
   Data, Mixed), then asks 9-17 type-trimmed MUST questions before drafting. Never
   assumes. Blocks on undefined glossary terms. Outputs either markdown for the PM to
   paste or pushes directly via createJiraIssue.
-version: 1.0.0
+version: 1.0.1
 author: Harshavardhan Bailur
 references:
   - kissht-field-release-notes (downstream consumer — every ticket from this skill

@@ -52,7 +52,7 @@ Sales rarely raises queries; they receive them. Sales sections in tickets / rele
 | **Financier Reviewer** | (no abbreviation in panel) | Stage owner of `Financier Review`. Lender-side. |
 | **Auditor** | KYC / VCIP Auditor | Reviews Video KYC submissions. Issues Soft Reject / Hard Reject (LAP-2048). <!-- TODO: confirm with PM whether First and Second Auditor are distinct roles in panel --> |
 | **Vendor (Legal / Technical / RCU / FI)** | — | External verification vendors. Receive queries from BCPA. |
-| **CPA User** | (LAP-1812 verbiage) | Generic Internal / Assisted Journey actor; usually CCPA or BCPA in practice. <!-- TODO: confirm with PM which specific role "CPA User" maps to in LAP-1812 e-Sign context --> |
+| **CPA User** | (LAP-1812 verbiage) | **Maps to BCPA (Branch CPA)** verbatim — confirmed by PM. Skill auto-rewrites `CPA User` → `BCPA` in drafts. See [`lap-glossary.md`](./lap-glossary.md) §1 Roles. |
 
 ---
 

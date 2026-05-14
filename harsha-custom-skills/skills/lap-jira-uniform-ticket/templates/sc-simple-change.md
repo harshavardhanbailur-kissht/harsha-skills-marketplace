@@ -11,6 +11,11 @@
 > **Release-note line:** {{RELEASE_NOTE_LINE}}
 <!-- TIP: one sentence naming the form/field/toggle and the workaround being killed. See LAP-2039 release-note style: "Income Considered moves to the Mark as Complete form so BCM can set No in one step instead of seven." Operator-readable, names the form. -->
 
+## Intent
+
+{{INTENT_PARAGRAPH}}
+<!-- TIP: 2-5 sentences, plain English, present or past tense. State WHAT is changing and WHY. Don't restate the workaround (that goes in §Problem) and don't restate the solution (§Proposed solution). Smell test: a new PM joining tomorrow can read this paragraph cold and tell you what is changing. See PATTERN.md §1. -->
+
 ## Problem
 
 {{PROBLEM_PARAGRAPH}}
