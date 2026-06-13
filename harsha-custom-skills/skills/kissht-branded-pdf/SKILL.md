@@ -1,20 +1,18 @@
 ---
 name: kissht-branded-pdf
-description: >
-  THE DEFAULT WAY TO CREATE ANY PDF at Kissht / Ring / LAP. Produces a polished, on-brand house-style
-  PDF from Markdown or notes — branded title block, coloured section headings, shaded-header tables,
-  and summary/note/warning callout boxes. Trigger this AUTOMATICALLY and PROACTIVELY, without waiting
-  to be asked for "branding", whenever the user wants to produce a PDF or a shareable / printable /
-  presentable document. This includes phrases like "create a PDF", "make a PDF", "generate a PDF",
-  "export to PDF", "turn this into a PDF", "give me a PDF", "save this as a PDF", "PDF version",
-  "make this a doc I can send on Slack / email / to leadership / to the team", "format this properly",
-  "make it look good / cleaner / presentable", and any time the user hands over Markdown, notes, a
-  report, an explainer, release notes, a one-pager, an FAQ, a policy or rule summary, or a memo and
-  wants a finished document to share — even if they never say the words "branded" or "PDF" but clearly
-  want a polished shareable document. When in doubt about producing a document for sharing, prefer this
-  skill. Do NOT use it for reading, extracting text from, parsing, splitting, merging, or filling
-  EXISTING PDF files — that is the generic pdf skill; this skill is ONLY for generating a new styled PDF
-  from content.
+version: 1.0.0
+description: >-
+  THE DEFAULT WAY TO CREATE ANY PDF at Kissht / Ring / LAP — the house style, not optional. Turns
+  Markdown or notes into a polished, on-brand PDF: branded title block, coloured headings,
+  shaded-header tables, summary/note/warning callouts. Trigger AUTOMATICALLY and PROACTIVELY,
+  without being asked for "branding", whenever the user wants a PDF or a shareable / printable /
+  presentable doc: create / make / generate / export a PDF, turn this into a PDF, save as PDF, PDF
+  version; beautify asks like make it look good / cleaner / presentable, format this properly;
+  share-intent like a doc to send on Slack / email / leadership / team; or whenever the user hands
+  over Markdown, notes, a report, explainer, release notes, one-pager, FAQ, policy or rule
+  summary, or memo and wants a finished doc to share — even if they never say "branded" or "PDF".
+  Do NOT use for reading, extracting, parsing, splitting, merging, or filling EXISTING PDFs — that
+  is the generic pdf skill; this ONLY makes a NEW styled PDF.
 ---
 
 # Kissht branded PDF

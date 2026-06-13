@@ -1,26 +1,22 @@
 ---
 name: search-mastery-skill
-description: >
+description: >-
   Comprehensive search technology knowledge base covering every type of search implementation,
-  algorithm, architecture, and optimization strategy. Use this skill whenever the user mentions
-  search, find, query, lookup, autocomplete, typeahead, full-text search, semantic search,
-  vector search, hybrid search, fuzzy matching, relevance, ranking, indexing, Elasticsearch,
+  algorithm, architecture, and optimization strategy. Use whenever the user mentions search,
+  find, query, lookup, autocomplete, typeahead, full-text search, semantic search, vector
+  search, hybrid search, fuzzy matching, relevance, ranking, indexing, Elasticsearch,
   Meilisearch, Typesense, Algolia, Solr, Fuse.js, MiniSearch, Lunr, pgvector, BM25, TF-IDF,
   embeddings, RAG, retrieval, information retrieval, search UX, faceted search, filtering,
-  recommendations engine, e-commerce search, enterprise search, knowledge graph search,
-  geospatial search, multilingual search, or any question about how to build, optimize,
-  evaluate, or scale a search system. Also trigger when users ask about choosing between
-  search libraries, comparing search engines, search architecture decisions, search quality
-  metrics (NDCG, MRR, MAP), Learning-to-Rank, query understanding, spell correction,
-  autocomplete, or any AI/ML approach to improving search. Also trigger for advanced
-  research topics: generative retrieval, differentiable search index (DSI), ColPali,
-  visual document retrieval, multi-hop retrieval, compositional search, learned index
-  structures, agentic RAG, CRAG, self-reflective retrieval, SPLADE, learned sparse
-  retrieval, late interaction models, ColBERT, PLAID, test-time compute for retrieval,
-  inference scaling, neural reranking, cross-encoder distillation, or production search
-  architectures from companies like Perplexity, Pinterest, Airbnb, Spotify, YouTube.
-  This skill covers 49 reference categories (4 action guides + 45 deep references)
-  with 94,000+ lines of research — use it liberally for ANY search-related question.
+  recommendations engine, e-commerce/enterprise/knowledge-graph/geospatial/multilingual
+  search, or how to build, optimize, evaluate, or scale a search system. Also trigger for
+  choosing between search libraries, comparing search engines, search architecture decisions,
+  quality metrics (NDCG, MRR, MAP), Learning-to-Rank, query understanding, spell correction,
+  neural reranking, cross-encoder distillation, or any AI/ML approach to improving search.
+  Also for advanced topics: generative retrieval, differentiable search index (DSI), ColPali,
+  visual document retrieval, multi-hop/compositional search, learned index structures, agentic
+  RAG, CRAG, self-reflective retrieval, SPLADE, learned sparse retrieval, late interaction
+  models, ColBERT, PLAID, test-time compute/inference scaling for retrieval, or production
+  search architectures from companies like Perplexity, Pinterest, Airbnb, Spotify, YouTube.
 ---
 
 # Search Mastery Skill v3
