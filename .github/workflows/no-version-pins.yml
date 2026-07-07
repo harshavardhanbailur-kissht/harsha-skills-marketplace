@@ -2,18 +2,15 @@ name: no-version-pins
 
 # Enforces AGENTS.md: plugin/marketplace manifests must carry NO version pins,
 # so the git commit SHA is the version and every push auto-releases.
+# Runs on every push/PR (no path filter) so it can serve as a required status check
+# without leaving PRs stuck "waiting" when manifests are untouched.
 on:
   push:
-    paths:
-      - '**/.claude-plugin/*.json'
-      - '.github/workflows/no-version-pins.yml'
   pull_request:
-    paths:
-      - '**/.claude-plugin/*.json'
-      - '.github/workflows/no-version-pins.yml'
 
 jobs:
   check:
+    name: no-version-pins
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
