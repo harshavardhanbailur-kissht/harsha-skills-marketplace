@@ -1,0 +1,56 @@
+name: no-version-pins
+
+# Enforces AGENTS.md: plugin/marketplace manifests must carry NO version pins,
+# so the git commit SHA is the version and every push auto-releases.
+on:
+  push:
+    paths:
+      - '**/.claude-plugin/*.json'
+      - '.github/workflows/no-version-pins.yml'
+  pull_request:
+    paths:
+      - '**/.claude-plugin/*.json'
+      - '.github/workflows/no-version-pins.yml'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure published manifests have no version pins
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          errors = []
+          root = ".claude-plugin/marketplace.json"
+          if not os.path.exists(root):
+              print(f"::error::{root} not found"); sys.exit(1)
+          mp = json.load(open(root))
+          if "version" in mp:
+              errors.append(f"{root}: top-level 'version' is forbidden (SHA is the version).")
+          md = mp.get("metadata", {})
+          if isinstance(md, dict) and "buildId" in md:
+              errors.append(f"{root}: metadata.buildId cache-buster is forbidden.")
+          for i, p in enumerate(mp.get("plugins", [])):
+              name = p.get("name", f"[{i}]")
+              if "version" in p:
+                  errors.append(f"{root}: plugins entry '{name}' has a forbidden 'version' key.")
+              src = p.get("source")
+              if isinstance(src, dict):
+                  for k in ("sha", "tag", "ref", "rev", "commit"):
+                      if k in src:
+                          errors.append(f"{root}: plugin '{name}' source pinned via '{k}' — forbidden.")
+                  path = src.get("path") or src.get("source")
+              else:
+                  path = src
+              if isinstance(path, str) and path.startswith("."):
+                  pj = os.path.join(path, ".claude-plugin", "plugin.json")
+                  if os.path.exists(pj) and "version" in json.load(open(pj)):
+                      errors.append(f"{pj}: plugin manifest has a forbidden 'version' key.")
+          if errors:
+              print("Version-pin guardrail FAILED (see AGENTS.md):")
+              for e in errors:
+                  print(f"::error::{e}")
+              sys.exit(1)
+          print("OK: no version pins in published manifests.")
+          PY
